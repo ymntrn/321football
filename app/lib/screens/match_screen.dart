@@ -156,6 +156,7 @@ class _MatchScreenState extends State<MatchScreen> {
 
   void _drive() {
     if (_phaseSeen != _room.phase) {
+      final leaving = _phaseSeen;
       _phaseSeen = _room.phase;
       _phaseSince = DateTime.now();
       _firstAnswerAt = null;
@@ -172,7 +173,12 @@ class _MatchScreenState extends State<MatchScreen> {
           (_room.phase == MatchPhase.matchOver &&
               _room.endedReason == 'goals' &&
               _room.roundReason != null);
-      if (roundEnded) {
+      // finish_round writes the deciding goal as round_over and then, in the
+      // same call, match_over - Realtime delivers BOTH updates. Count that
+      // round once, or the summary reads 0/4 after a three-round match.
+      final alreadyCounted = _room.phase == MatchPhase.matchOver &&
+          leaving == MatchPhase.roundOver;
+      if (roundEnded && !alreadyCounted) {
         _rounds.add(_RoundRecord(
           reason: _room.roundReason,
           winner: _room.roundWinner,
@@ -440,7 +446,9 @@ class _MatchScreenState extends State<MatchScreen> {
       opponentScore: _room.scoreOf(_them),
       summary: _summary(),
       note: note,
-      onRematch: reason == 'abandoned' ? null : _rematch,
+      // A rematch needs both players still here: only a match decided on goals.
+      // After a forfeit or an abandoned match the other seat is gone.
+      onRematch: reason == 'goals' ? _rematch : null,
       onHome: () => Navigator.of(context).popUntil((route) => route.isFirst),
     );
   }

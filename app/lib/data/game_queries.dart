@@ -261,24 +261,27 @@ class GameQueries {
     return rows.map(Player.fromRow).toList();
   }
 
-  /// The years a mutual player spent at each of the two clubs, for the
-  /// GOOOL screen's "Takım 1 (2009–13) → Takım 2 (2013–17)" line.
+  /// A mutual player's spells at the two clubs of a pair, in career order,
+  /// for the "Takım 1 (2009–13) → Takım 2 (2013–17)" line on GOOOL, the
+  /// practice Doğru popup and the answer list.
   ///
   /// The room row only carries the scorer's DISPLAY NAME, so the player is
   /// found among the pair's mutual players by that name (most famous first,
-  /// should two share it). Several spells at one club collapse to the
-  /// earliest start and latest end; an open end (still at the club) stays
-  /// null. Ordered by start year so the line reads as a career.
+  /// should two share it).
+  ///
+  /// One entry per spell, NOT one per club: Steve Staunton went Liverpool →
+  /// Villa → Liverpool → Villa, and collapsing each club to its earliest start
+  /// and latest end printed "Liverpool (1986–2000) → Aston Villa (1991–2003)",
+  /// which is a career he never had. Only back-to-back spells at the SAME club
+  /// (a contract renewal split into two rows) are joined. An open end (still
+  /// at the club) stays null.
   Future<List<({int clubId, int? from, int? to})>> mutualSpells(
     String displayName,
     int clubAId,
     int clubBId,
   ) async {
     final rows = await _db.rawQuery('''
-      SELECT s.club_id,
-             MIN(s.start_year) AS from_year,
-             CASE WHEN COUNT(*) > COUNT(s.end_year) THEN NULL
-                  ELSE MAX(s.end_year) END AS to_year
+      SELECT s.club_id, s.start_year AS from_year, s.end_year AS to_year
       FROM player_club_spells s
       WHERE s.club_id IN (?, ?)
         AND s.player_id = (
@@ -292,18 +295,29 @@ class GameQueries {
             ORDER BY p.fame_score DESC
             LIMIT 1
         )
-      GROUP BY s.club_id
-      ORDER BY from_year IS NULL, from_year
+      ORDER BY s.start_year IS NULL, s.start_year, s.end_year IS NULL, s.end_year
     ''', [clubAId, clubBId, displayName, clubAId, clubBId]);
 
-    return [
-      for (final r in rows)
-        (
-          clubId: r['club_id'] as int,
-          from: r['from_year'] as int?,
-          to: r['to_year'] as int?,
-        ),
-    ];
+    final spells = <({int clubId, int? from, int? to})>[];
+    for (final r in rows) {
+      final spell = (
+        clubId: r['club_id'] as int,
+        from: r['from_year'] as int?,
+        to: r['to_year'] as int?,
+      );
+      final last = spells.isEmpty ? null : spells.last;
+      if (last != null && last.clubId == spell.clubId) {
+        // Back-to-back at the same club: one spell, the later end wins
+        // (null = still there, which is the latest of all).
+        final int? to = (last.to == null || spell.to == null)
+            ? null
+            : (spell.to! > last.to! ? spell.to : last.to);
+        spells[spells.length - 1] = (clubId: last.clubId, from: last.from, to: to);
+      } else {
+        spells.add(spell);
+      }
+    }
+    return spells;
   }
 
   Future<int> countMutualPlayers(int clubAId, int clubBId) async {

@@ -12,10 +12,21 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  // Supabase is initialised before the app runs, but NOT awaited on anything
-  // Practice needs: Practice is entirely offline and must keep working with no
-  // network at all. A failure here is logged and swallowed for that reason —
-  // only Friend Match cares, and it reports its own connection errors.
+  // Supabase is started here but NOT awaited before the first frame: it used
+  // to block runApp for a couple of seconds of blank screen on every launch,
+  // even for offline Practice. _Boot waits for it alongside the database open,
+  // so both run in parallel. A failure is logged and swallowed - only Friend
+  // Match needs the network, and it reports its own connection errors.
+  supabaseReady = _initSupabase();
+  await Identity.load();
+
+  runApp(const App());
+}
+
+/// Completes once Supabase.initialize has finished (or failed). Never throws.
+late final Future<void> supabaseReady;
+
+Future<void> _initSupabase() async {
   try {
     await Supabase.initialize(
       url: SupabaseConfig.url,
@@ -24,9 +35,6 @@ Future<void> main() async {
   } catch (e) {
     debugPrint('Supabase init failed (Friend Match will be unavailable): $e');
   }
-  await Identity.load();
-
-  runApp(const App());
 }
 
 class App extends StatelessWidget {
@@ -54,7 +62,8 @@ class _Boot extends StatefulWidget {
 }
 
 class _BootState extends State<_Boot> {
-  late final Future<void> _ready = AppDatabase.instance.open();
+  late final Future<void> _ready =
+      Future.wait([AppDatabase.instance.open(), supabaseReady]);
 
   @override
   Widget build(BuildContext context) {

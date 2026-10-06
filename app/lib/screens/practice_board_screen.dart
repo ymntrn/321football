@@ -142,6 +142,7 @@ class _PracticeBoardScreenState extends State<PracticeBoardScreen> {
         _won = result.player;
         _streak += 1;
         _suggestions = const [];
+        _rejection = null; // a stale miss must not sit under the Doğru card
       });
     } else {
       HapticFeedback.heavyImpact();

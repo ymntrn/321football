@@ -82,6 +82,20 @@ the 44 clubs missing from slim are empty duplicate rows tombstoned by
 - **Difficulty from absolute Wikipedia language count**: ≥100 languages easy,
   50–99 medium, under 50 hard.
 - **Untypeable players removed** (753 with non-Latin-only names or no name).
+- **Era filter (6 Oct 2026).** A spell with no end year, or no years at all,
+  is dropped for a player born before 1955 when it started before 1985 or has
+  no start - those are pre-1990 careers the 1990 cutoff could not see (Bertram
+  Goode, Villa and Liverpool before WWI, used to be a valid answer). Players
+  with no known birth year keep everything. Birth years live in the
+  maintenance DB only and are blanked in the slim copy: the game still ships
+  nationality and nothing else biographical. `enrich_players.py`.
+- **Player fame is the player's own (6 Oct 2026):** 70% his own Wikipedia
+  language count, 30% the old club-based score. It used to be clubs only, so
+  anyone with two famous clubs scored ~99. `compute_fame_scores.py`.
+- **Club nicknames and nationality labels are curated by hand** in
+  `curate.py` (PSG, Barça, Spurs, GS, Cimbom...; "Kingdom of the
+  Netherlands" -> Netherlands). The app translates nationalities through
+  `countryNamesTr` in models.dart, which must cover every value left.
 
 ---
 
@@ -263,10 +277,17 @@ A few windows a year, so this is manual by design:
 
 ```powershell
 python reset_scrape.py --apply
-python build_database.py --from 2      # ~12 minutes
+python build_database.py --from 2      # ~12 minutes + ~30 for step 5's Wikidata pass
+python merge_duplicates.py             # report; --apply if it lists anything
 python verify.py
 python finalize.py --slim --drop-single-club
 ```
+
+The build has 9 steps since 6 Oct 2026: 0 leagues, 1 clubs, 2 spells,
+3 enrich, **4 curate** (nicknames + nationality labels), **5 enrich_players**
+(own fame + era filter, ~300 cached Wikidata queries), 6 fame, 7 practice
+pairs, 8 verify. A new nationality value after a rebuild needs a Turkish
+entry in `countryNamesTr`.
 
 Then replace the slim database in the app bundle — **and bump
 `AppDatabase.assetVersion` in the Flutter app**, or the stale copy already on

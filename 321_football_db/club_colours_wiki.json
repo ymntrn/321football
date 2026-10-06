@@ -1,0 +1,3147 @@
+{
+ "Q101859": {
+  "a": "1A3A2F",
+  "b": "FFFFFF",
+  "title": "VfL Wolfsburg"
+ },
+ "Q101959": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Borussia Mönchengladbach"
+ },
+ "Q1023163": {
+  "a": "FFFFFF",
+  "b": "FF0000",
+  "title": "C.D. Aves"
+ },
+ "Q102720": {
+  "a": "FFFFFF",
+  "b": "040404",
+  "title": "Hertha BSC"
+ },
+ "Q10300": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Rayo Vallecano"
+ },
+ "Q1031200": {
+  "a": "0A4042",
+  "b": "FFFFFF",
+  "title": "Portland Timbers"
+ },
+ "Q10315": {
+  "a": "0042FF",
+  "b": "FFFFFF",
+  "title": "Real Sociedad"
+ },
+ "Q10319": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Real Valladolid"
+ },
+ "Q10329": {
+  "a": "FFFFFF",
+  "b": "E20001",
+  "title": "Sevilla FC"
+ },
+ "Q10333": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Valencia CF"
+ },
+ "Q10383": {
+  "a": "FFD000",
+  "b": "FFFFFF",
+  "title": "AD Alcorcón"
+ },
+ "Q10407": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "UD Almería"
+ },
+ "Q1046440": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Casa Pia A.C."
+ },
+ "Q104761": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Bayer 04 Leverkusen"
+ },
+ "Q104770": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "1. FC Köln"
+ },
+ "Q10499": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Córdoba CF"
+ },
+ "Q1051013": {
+  "a": "000060",
+  "b": "FFFFFF",
+  "title": "Paris FC"
+ },
+ "Q1052219": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Ceará Sporting Club"
+ },
+ "Q1052365": {
+  "a": "8B0000",
+  "b": "FFFFFF",
+  "title": "SSD Città di Acireale 1946"
+ },
+ "Q105254": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "1. FSV Mainz 05"
+ },
+ "Q105844": {
+  "a": "0030FF",
+  "b": "000000",
+  "title": "Arminia Bielefeld"
+ },
+ "Q105853": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Karlsruher SC"
+ },
+ "Q105861": {
+  "a": "313055",
+  "b": "FFFFFF",
+  "title": "VfL Bochum"
+ },
+ "Q1059186": {
+  "a": "81C0FF",
+  "b": "000066",
+  "title": "FC Rotor Volgograd"
+ },
+ "Q1061627": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "FC Emmen"
+ },
+ "Q106394": {
+  "a": "FE0000",
+  "b": "FFFFFF",
+  "title": "SC Freiburg"
+ },
+ "Q1067737": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "UD Logroñés"
+ },
+ "Q107818": {
+  "a": "EF0000",
+  "b": "FFFFFF",
+  "title": "FC Energie Cottbus"
+ },
+ "Q108708": {
+  "a": "0033FF",
+  "b": "FFFFFF",
+  "title": "CF Fuenlabrada"
+ },
+ "Q11193588": {
+  "a": "FFFFFF",
+  "b": "0042FF",
+  "title": "Chalkidona F.C."
+ },
+ "Q1120838": {
+  "a": "215AAE",
+  "b": "FFFFFF",
+  "title": "Como 1907"
+ },
+ "Q1127498": {
+  "a": "FFFFFF",
+  "b": "800000",
+  "title": "Elazığspor"
+ },
+ "Q113000": {
+  "a": "FFD700",
+  "b": "000000",
+  "title": "KV Mechelen"
+ },
+ "Q1130849": {
+  "a": "8F1E32",
+  "b": "FFFFFF",
+  "title": "Liverpool F.C."
+ },
+ "Q1132418": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "FC Martigues"
+ },
+ "Q1136016": {
+  "a": "000050",
+  "b": "FFFFFF",
+  "title": "Cosenza Calcio"
+ },
+ "Q1140106": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "FC KAMAZ Naberezhnye Chelny"
+ },
+ "Q1153687": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "SSD Virtus CiseranoBergamo 1909"
+ },
+ "Q1170018": {
+  "a": "FFFFFF",
+  "b": "191919",
+  "title": "Kartal S.K."
+ },
+ "Q118919": {
+  "a": "FCF366",
+  "b": "FFFFFF",
+  "title": "Eyüpspor"
+ },
+ "Q118945347": {
+  "a": "02152B",
+  "b": "FFFFFF",
+  "title": "San Diego FC"
+ },
+ "Q11938": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "PSV Eindhoven"
+ },
+ "Q11945": {
+  "a": "FFFFFF",
+  "b": "0042FF",
+  "title": "Girona FC"
+ },
+ "Q1195376": {
+  "a": "E30817",
+  "b": "000000",
+  "title": "Ciudad de Murcia"
+ },
+ "Q11961": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Heracles Almelo"
+ },
+ "Q11971": {
+  "a": "AA0000",
+  "b": "000090",
+  "title": "SD Huesca"
+ },
+ "Q11979": {
+  "a": "FFFF00",
+  "b": "0000FF",
+  "title": "UD Las Palmas"
+ },
+ "Q11984": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "CD Lugo"
+ },
+ "Q11997": {
+  "a": "EF0000",
+  "b": "000000",
+  "title": "CD Mirandés"
+ },
+ "Q12158": {
+  "a": "FF0000",
+  "b": "0000CA",
+  "title": "CD Numancia"
+ },
+ "Q12168": {
+  "a": "FFFFFF",
+  "b": "0000DD",
+  "title": "SD Ponferradina"
+ },
+ "Q12230": {
+  "a": "EF0000",
+  "b": "FFFFFF",
+  "title": "Real Murcia CF"
+ },
+ "Q12236": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Racing de Santander"
+ },
+ "Q12247430": {
+  "a": "FFFFFF",
+  "b": "86BDF8",
+  "title": "Al-Okhdood Club"
+ },
+ "Q12247491": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Neom SC"
+ },
+ "Q12249": {
+  "a": "0000FF",
+  "b": "000050",
+  "title": "Recreativo de Huelva"
+ },
+ "Q12297": {
+  "a": "FFFF00",
+  "b": "FFFFFF",
+  "title": "Villarreal CF"
+ },
+ "Q12308": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Xerez CD"
+ },
+ "Q1231804": {
+  "a": "008000",
+  "b": "FFFFFF",
+  "title": "Amed S.F.K."
+ },
+ "Q124007617": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "SK Sturm Graz"
+ },
+ "Q1262908": {
+  "a": "FF8811",
+  "b": "FFFFFF",
+  "title": "FC Zhemchuzhina-Sochi"
+ },
+ "Q126334": {
+  "a": "0000DD",
+  "b": "FFFFFF",
+  "title": "RC Strasbourg Alsace"
+ },
+ "Q1269120": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "PFC Dynamo Stavropol"
+ },
+ "Q1279917": {
+  "a": "FF9000",
+  "b": "FF0000",
+  "title": "FC Pistoiese SSD"
+ },
+ "Q128148": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Manisaspor"
+ },
+ "Q128446": {
+  "a": "0122EB",
+  "b": "FFFFFF",
+  "title": "FC Porto"
+ },
+ "Q1296697": {
+  "a": "FFFFFF",
+  "b": "0000FF",
+  "title": "Egaleo F.C."
+ },
+ "Q131215": {
+  "a": "009150",
+  "b": "FFFFFF",
+  "title": "SK Rapid Wien"
+ },
+ "Q131499": {
+  "a": "FE0000",
+  "b": "FFFFFF",
+  "title": "S.L. Benfica"
+ },
+ "Q131603": {
+  "a": "A0C7E5",
+  "b": "FFFFFF",
+  "title": "TSV 1860 Munich"
+ },
+ "Q1328077": {
+  "a": "AA0000",
+  "b": "FFFFFF",
+  "title": "US Fiumana"
+ },
+ "Q132885": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Olympique de Marseille"
+ },
+ "Q13361030": {
+  "a": "ABCAE9",
+  "b": "0B1F4B",
+  "title": "New York City FC"
+ },
+ "Q13381": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "US Triestina Calcio 1918"
+ },
+ "Q13385": {
+  "a": "0A94CD",
+  "b": "FFFFFF",
+  "title": "Ars et Labor Ferrara Calcio"
+ },
+ "Q13391": {
+  "a": "FFFF00",
+  "b": "000055",
+  "title": "US Lecce"
+ },
+ "Q134073": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "1. Wiener Neustädter SC"
+ },
+ "Q1346121": {
+  "a": "FFFFFF",
+  "b": "0000FF",
+  "title": "FC Lada-Tolyatti"
+ },
+ "Q1346314": {
+  "a": "FFFFFF",
+  "b": "008000",
+  "title": "Moreirense F.C."
+ },
+ "Q1347349": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Pendikspor"
+ },
+ "Q1349814": {
+  "a": "000055",
+  "b": "FFFFFF",
+  "title": "Ravenna FC"
+ },
+ "Q136680236": {
+  "a": "FFFF00",
+  "b": "1C4FA0",
+  "title": "Perpignan FC"
+ },
+ "Q1369461": {
+  "a": "000000",
+  "b": "009150",
+  "title": "Sakaryaspor"
+ },
+ "Q138230": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Kasımpaşa S.K."
+ },
+ "Q138248": {
+  "a": "FFFF00",
+  "b": "0000FF",
+  "title": "Sint-Truidense VV"
+ },
+ "Q1386850": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "F.C. Alverca"
+ },
+ "Q1386854": {
+  "a": "000055",
+  "b": "FFD000",
+  "title": "FC Andorra"
+ },
+ "Q1386869": {
+  "a": "FFFF00",
+  "b": "0000FF",
+  "title": "F.C. Arouca"
+ },
+ "Q1387105": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "F.C. Famalicão"
+ },
+ "Q1387471": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "F.C. Penafiel"
+ },
+ "Q1387710": {
+  "a": "FFFFFF",
+  "b": "FF0000",
+  "title": "FC Südtirol"
+ },
+ "Q1387855": {
+  "a": "66D2FD",
+  "b": "000066",
+  "title": "F.C. Vizela"
+ },
+ "Q1389103": {
+  "a": "000000",
+  "b": "8A8D8F",
+  "title": "FC Tyumen"
+ },
+ "Q139399": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Calcio Foggia 1920"
+ },
+ "Q14161251": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "FC Tambov"
+ },
+ "Q1417287": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Panserraikos F.C."
+ },
+ "Q141931": {
+  "a": "FFCC00",
+  "b": "000000",
+  "title": "Dynamo Dresden"
+ },
+ "Q141971": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "1. FC Union Berlin"
+ },
+ "Q142005": {
+  "a": "006EB9",
+  "b": "FFFFFF",
+  "title": "FC Hansa Rostock"
+ },
+ "Q1423718": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "KAS Eupen"
+ },
+ "Q14508335": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "FC Tosno"
+ },
+ "Q14551982": {
+  "a": "FBFBFB",
+  "b": "0B1F4B",
+  "title": "SSV Ulm 1846"
+ },
+ "Q1457": {
+  "a": "2345C0",
+  "b": "FFFFFF",
+  "title": "UC Sampdoria"
+ },
+ "Q1460053": {
+  "a": "FFEA00",
+  "b": "FFFFFF",
+  "title": "Panetolikos F.C."
+ },
+ "Q1515369": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Racing Besançon"
+ },
+ "Q151747": {
+  "a": "B00000",
+  "b": "FFFFFF",
+  "title": "Fortuna Düsseldorf"
+ },
+ "Q15214308": {
+  "a": "7460EE",
+  "b": "41297A",
+  "title": "Orlando City SC"
+ },
+ "Q1534448": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Goiânia Esporte Clube"
+ },
+ "Q153535": {
+  "a": "FFDE00",
+  "b": "FFFFFF",
+  "title": "Alemannia Aachen"
+ },
+ "Q153539": {
+  "a": "FFEFDD",
+  "b": "01744D",
+  "title": "SpVgg Greuther Fürth"
+ },
+ "Q154053": {
+  "a": "FFDD00",
+  "b": "0044FF",
+  "title": "Eintracht Braunschweig"
+ },
+ "Q154293": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "MSV Duisburg"
+ },
+ "Q1543": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "AC Milan"
+ },
+ "Q1547133": {
+  "a": "000080",
+  "b": "FFFFFF",
+  "title": "Athens Kallithea F.C."
+ },
+ "Q155730": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "1. FC Magdeburg"
+ },
+ "Q157352": {
+  "a": "0000FF",
+  "b": "000000",
+  "title": "FSV Frankfurt"
+ },
+ "Q1573797": {
+  "a": "FFDE00",
+  "b": "FFFFFF",
+  "title": "SAS Épinal"
+ },
+ "Q157453": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "FC Okean Nakhodka"
+ },
+ "Q157463": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "1. FC Saarbrücken"
+ },
+ "Q157464": {
+  "a": "FF0000",
+  "b": "0000FF",
+  "title": "KFC Uerdingen 05"
+ },
+ "Q15755": {
+  "a": "EDE6DC",
+  "b": "680F00",
+  "title": "FC Augsburg"
+ },
+ "Q157828": {
+  "a": "0042FF",
+  "b": "FFFFFF",
+  "title": "Holstein Kiel"
+ },
+ "Q15786": {
+  "a": "900000",
+  "b": "000000",
+  "title": "1. FC Nürnberg"
+ },
+ "Q15789": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "FC Bayern Munich"
+ },
+ "Q158121": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "SpVgg Unterhaching"
+ },
+ "Q15966154": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Fundación Albacete"
+ },
+ "Q160530": {
+  "a": "493AA6",
+  "b": "FFFFFF",
+  "title": "VfL Osnabrück"
+ },
+ "Q160532": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "SC Paderborn 07"
+ },
+ "Q1621755": {
+  "a": "FFE600",
+  "b": "FFFFFF",
+  "title": "Stade Briochin"
+ },
+ "Q162251": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "1. FC Heidenheim"
+ },
+ "Q16245443": {
+  "a": "002147",
+  "b": "FFFFFF",
+  "title": "A.E. Kifisia F.C."
+ },
+ "Q1628465": {
+  "a": "EA0000",
+  "b": "000000",
+  "title": "TKİ Tavşanlı Linyitspor"
+ },
+ "Q16344": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "AC Perugia Calcio"
+ },
+ "Q1635367": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "FC Sokol Saratov"
+ },
+ "Q167615": {
+  "a": "0000FF",
+  "b": "000000",
+  "title": "CF Montréal"
+ },
+ "Q16836317": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Atlanta United FC"
+ },
+ "Q16844931": {
+  "a": "FFB0C0",
+  "b": "0B1F4B",
+  "title": "Inter Miami CF"
+ },
+ "Q16848949": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Cesena FC"
+ },
+ "Q170040": {
+  "a": "AA2704",
+  "b": "FFFFFF",
+  "title": "FC Rubin Kazan"
+ },
+ "Q170105": {
+  "a": "01A2F1",
+  "b": "FFFFFF",
+  "title": "Stuttgarter Kickers"
+ },
+ "Q170117": {
+  "a": "DC0000",
+  "b": "000000",
+  "title": "FC Ingolstadt 04"
+ },
+ "Q172476": {
+  "a": "000055",
+  "b": "FFFFFF",
+  "title": "FC Girondins de Bordeaux"
+ },
+ "Q172567": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Beşiktaş J.K."
+ },
+ "Q17479": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "CR Flamengo"
+ },
+ "Q1757655": {
+  "a": "0071BC",
+  "b": "FFFFFF",
+  "title": "Olympique Alès"
+ },
+ "Q176371": {
+  "a": "EB2F2D",
+  "b": "0148CC",
+  "title": "PFC CSKA Moscow"
+ },
+ "Q178180": {
+  "a": "6600BB",
+  "b": "FFFFFF",
+  "title": "Orduspor"
+ },
+ "Q180305": {
+  "a": "FE0000",
+  "b": "FFFFFF",
+  "title": "AS Monaco FC"
+ },
+ "Q180420": {
+  "a": "181146",
+  "b": "FFFFFF",
+  "title": "Ross County F.C."
+ },
+ "Q1815297": {
+  "a": "000066",
+  "b": "FFFFFF",
+  "title": "USL Dunkerque"
+ },
+ "Q18232": {
+  "a": "0023DD",
+  "b": "FFFFFF",
+  "title": "KAA Gent"
+ },
+ "Q182876": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "AJ Auxerre"
+ },
+ "Q182930": {
+  "a": "FFDD00",
+  "b": "000060",
+  "title": "FC Rostov"
+ },
+ "Q18380286": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Los Angeles FC"
+ },
+ "Q185163": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "OGC Nice"
+ },
+ "Q18519": {
+  "a": "CE131A",
+  "b": "FFFFFF",
+  "title": "Lincoln City F.C."
+ },
+ "Q18529": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Wrexham A.F.C."
+ },
+ "Q1857213": {
+  "a": "006215",
+  "b": "FFFFFF",
+  "title": "Uberlândia Esporte Clube"
+ },
+ "Q18656": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Manchester United F.C."
+ },
+ "Q18659": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Swansea City A.F.C."
+ },
+ "Q18661": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Middlesbrough F.C."
+ },
+ "Q18662": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Cardiff City F.C."
+ },
+ "Q18708": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Fulham F.C."
+ },
+ "Q187091": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "FC Wil"
+ },
+ "Q18711": {
+  "a": "69091C",
+  "b": "BBD5F2",
+  "title": "Aston Villa F.C."
+ },
+ "Q18716": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Newcastle United F.C."
+ },
+ "Q18721": {
+  "a": "FFFF00",
+  "b": "1B7A3E",
+  "title": "Norwich City F.C."
+ },
+ "Q18729": {
+  "a": "FFFFFF",
+  "b": "0000FF",
+  "title": "Reading F.C."
+ },
+ "Q18732": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Southampton F.C."
+ },
+ "Q187326": {
+  "a": "FF0000",
+  "b": "880000",
+  "title": "Aberdeen F.C."
+ },
+ "Q18736": {
+  "a": "FFFFFF",
+  "b": "FF0000",
+  "title": "Stoke City F.C."
+ },
+ "Q18739": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Sunderland A.F.C."
+ },
+ "Q18741": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Tottenham Hotspur F.C."
+ },
+ "Q18744": {
+  "a": "091453",
+  "b": "FFFFFF",
+  "title": "West Bromwich Albion F.C."
+ },
+ "Q18747": {
+  "a": "7E1823",
+  "b": "FFFFFF",
+  "title": "West Ham United F.C."
+ },
+ "Q18750": {
+  "a": "0000FF",
+  "b": "1C4FA0",
+  "title": "Wigan Athletic F.C."
+ },
+ "Q187528": {
+  "a": "5C2195",
+  "b": "FFFFFF",
+  "title": "RSC Anderlecht"
+ },
+ "Q188277": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Cruzeiro EC"
+ },
+ "Q188841": {
+  "a": "FD1220",
+  "b": "0E00EE",
+  "title": "Fortaleza Esporte Clube"
+ },
+ "Q1893": {
+  "a": "00003C",
+  "b": "FFFFFF",
+  "title": "Bologna FC 1909"
+ },
+ "Q189671": {
+  "a": "0000FF",
+  "b": "FF0000",
+  "title": "FC Basel"
+ },
+ "Q1900": {
+  "a": "022249",
+  "b": "FF0000",
+  "title": "Cagliari Calcio"
+ },
+ "Q190526": {
+  "a": "FFEE00",
+  "b": "000000",
+  "title": "BSC Young Boys"
+ },
+ "Q190561": {
+  "a": "DD0000",
+  "b": "FFFFFF",
+  "title": "Standard Liège"
+ },
+ "Q190916": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Club Brugge KV"
+ },
+ "Q191264": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "AZ Alkmaar"
+ },
+ "Q192071": {
+  "a": "FFFF00",
+  "b": "00B211",
+  "title": "FC Nantes"
+ },
+ "Q192597": {
+  "a": "335649",
+  "b": "FFFFFF",
+  "title": "Hibernian F.C."
+ },
+ "Q192641": {
+  "a": "5A1129",
+  "b": "FFFFFF",
+  "title": "Trabzonspor"
+ },
+ "Q192873": {
+  "a": "F16622",
+  "b": "000000",
+  "title": "Dundee United F.C."
+ },
+ "Q193377": {
+  "a": "206AEF",
+  "b": "DD0000",
+  "title": "Stade Malherbe Caen"
+ },
+ "Q19353": {
+  "a": "008800",
+  "b": "FFFFFF",
+  "title": "FC Anzhi Makhachkala"
+ },
+ "Q19442": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Barnsley F.C."
+ },
+ "Q19444": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Birmingham City F.C."
+ },
+ "Q19446": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Blackburn Rovers F.C."
+ },
+ "Q19451": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Bolton Wanderers F.C."
+ },
+ "Q19453": {
+  "a": "1144DD",
+  "b": "FFFFFF",
+  "title": "Brighton & Hove Albion F.C."
+ },
+ "Q19462": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Charlton Athletic F.C."
+ },
+ "Q19467": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Crystal Palace F.C."
+ },
+ "Q19470": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Derby County F.C."
+ },
+ "Q19473": {
+  "a": "037FF8",
+  "b": "000000",
+  "title": "Huddersfield Town A.F.C."
+ },
+ "Q19477": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Hull City A.F.C."
+ },
+ "Q19481": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Leicester City F.C."
+ },
+ "Q19487": {
+  "a": "000F36",
+  "b": "FFFFFF",
+  "title": "Millwall F.C."
+ },
+ "Q19490": {
+  "a": "D70926",
+  "b": "FFFFFF",
+  "title": "Nottingham Forest F.C."
+ },
+ "Q19498": {
+  "a": "0257BD",
+  "b": "FFFFFF",
+  "title": "Sheffield Wednesday F.C."
+ },
+ "Q19500": {
+  "a": "F4B125",
+  "b": "000000",
+  "title": "Wolverhampton Wanderers F.C."
+ },
+ "Q19509": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Stade Rennais FC"
+ },
+ "Q19513": {
+  "a": "000055",
+  "b": "FF6600",
+  "title": "Montpellier HSC"
+ },
+ "Q19516": {
+  "a": "FE0000",
+  "b": "221F64",
+  "title": "Lille OSC"
+ },
+ "Q19518": {
+  "a": "3C0082",
+  "b": "FFFFFF",
+  "title": "Toulouse FC"
+ },
+ "Q19523": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "AS Nancy Lorraine"
+ },
+ "Q19568": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "AFC Bournemouth"
+ },
+ "Q19571": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Brentford F.C."
+ },
+ "Q19580": {
+  "a": "62B5E5",
+  "b": "FFFFFF",
+  "title": "Coventry City F.C."
+ },
+ "Q19585": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Royal Charleroi SC"
+ },
+ "Q19593": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Celtic F.C."
+ },
+ "Q19597": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Rangers F.C."
+ },
+ "Q19598": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Notts County F.C."
+ },
+ "Q19601": {
+  "a": "0044FF",
+  "b": "FFFFFF",
+  "title": "Oldham Athletic A.F.C."
+ },
+ "Q19603": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "FC Twente"
+ },
+ "Q19604": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Portsmouth F.C."
+ },
+ "Q19607": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Sheffield United F.C."
+ },
+ "Q196107": {
+  "a": "FFFFFF",
+  "b": "001F5E",
+  "title": "Vancouver Whitecaps FC"
+ },
+ "Q19612": {
+  "a": "FFFFFF",
+  "b": "000055",
+  "title": "Preston North End F.C."
+ },
+ "Q19613395": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Çorum F.K."
+ },
+ "Q196160": {
+  "a": "FFE000",
+  "b": "000055",
+  "title": "Royale Union Saint-Gilloise"
+ },
+ "Q19628": {
+  "a": "FFFFFF",
+  "b": "FF0000",
+  "title": "Olympiacos F.C."
+ },
+ "Q19634": {
+  "a": "EF0000",
+  "b": "FFFFFF",
+  "title": "Swindon Town F.C."
+ },
+ "Q1963926": {
+  "a": "F1FF4D",
+  "b": "FFFFFF",
+  "title": "Najran S.FC"
+ },
+ "Q198032": {
+  "a": "FFFFFF",
+  "b": "0000BF",
+  "title": "Esporte Clube Bahia"
+ },
+ "Q198034": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Atlético Clube Goianiense"
+ },
+ "Q19828435": {
+  "a": "2C2526",
+  "b": "FFFFFF",
+  "title": "Minnesota United FC"
+ },
+ "Q2001271": {
+  "a": "FFFFFF",
+  "b": "0000FF",
+  "title": "Apollon Smyrnis F.C."
+ },
+ "Q200321": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "SC Heerenveen"
+ },
+ "Q2006188": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "OFC Charleville"
+ },
+ "Q201360": {
+  "a": "FFFFFF",
+  "b": "0000FF",
+  "title": "Grasshopper Club Zurich"
+ },
+ "Q201969": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "FC Winterthur"
+ },
+ "Q202093": {
+  "a": "601F2E",
+  "b": "FFFFFF",
+  "title": "Heart of Midlothian F.C."
+ },
+ "Q2027718": {
+  "a": "FFFF00",
+  "b": "FFFFFF",
+  "title": "Al-Khaleej FC"
+ },
+ "Q2035444": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Joinville Esporte Clube"
+ },
+ "Q203573": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Bursaspor"
+ },
+ "Q204220": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "New York Red Bulls"
+ },
+ "Q204357": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "LA Galaxy"
+ },
+ "Q204675": {
+  "a": "FF0000",
+  "b": "007B35",
+  "title": "Associação Portuguesa de Desportos"
+ },
+ "Q20472948": {
+  "a": "008000",
+  "b": "FFFFFF",
+  "title": "Bodrum F.K."
+ },
+ "Q204888": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "PAOK FC"
+ },
+ "Q2052": {
+  "a": "552A79",
+  "b": "FFFFFF",
+  "title": "ACF Fiorentina"
+ },
+ "Q2074": {
+  "a": "FFFFFF",
+  "b": "000040",
+  "title": "Genoa CFC"
+ },
+ "Q20740338": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "FC Nizhny Novgorod"
+ },
+ "Q208228": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Stade de Reims"
+ },
+ "Q208399": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "SC Bastia"
+ },
+ "Q20855983": {
+  "a": "032BE4",
+  "b": "03134C",
+  "title": "FC Cincinnati"
+ },
+ "Q208585": {
+  "a": "FFFFFF",
+  "b": "006030",
+  "title": "Vitória F.C."
+ },
+ "Q2095117": {
+  "a": "FFFF00",
+  "b": "0000FF",
+  "title": "Fermana FC"
+ },
+ "Q2095484": {
+  "a": "0000FE",
+  "b": "FFFFFF",
+  "title": "FC Orenburg"
+ },
+ "Q20979061": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "RWDM Brussels"
+ },
+ "Q209895": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Sparta Rotterdam"
+ },
+ "Q210864": {
+  "a": "FF0000",
+  "b": "FFFF00",
+  "title": "Le Mans FC"
+ },
+ "Q2114224": {
+  "a": "A90000",
+  "b": "FFFFFF",
+  "title": "FC Trapani 1905"
+ },
+ "Q2118510": {
+  "a": "0000CD",
+  "b": "000000",
+  "title": "Latina Calcio 1932"
+ },
+ "Q2137561": {
+  "a": "6C3082",
+  "b": "FFFFFF",
+  "title": "FC Ufa"
+ },
+ "Q2155470": {
+  "a": "FFFFFF",
+  "b": "D71920",
+  "title": "ASOA Valence"
+ },
+ "Q216032": {
+  "a": "007AFF",
+  "b": "FFFFFF",
+  "title": "KRC Genk"
+ },
+ "Q216459": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "C.D. Nacional"
+ },
+ "Q216503": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "C.S. Marítimo"
+ },
+ "Q216510": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "C.F. Os Belenenses"
+ },
+ "Q216523": {
+  "a": "FFBE00",
+  "b": "FFFFFF",
+  "title": "Motherwell F.C."
+ },
+ "Q216661": {
+  "a": "FFFFFF",
+  "b": "0000BC",
+  "title": "CD Tenerife"
+ },
+ "Q216773": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "FC Vaduz"
+ },
+ "Q218372": {
+  "a": "EF0000",
+  "b": "FFFFFF",
+  "title": "Stade Brestois 29"
+ },
+ "Q219098": {
+  "a": "000000",
+  "b": "FF0000",
+  "title": "Sport Club do Recife"
+ },
+ "Q219120": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Associação Atlética Ponte Preta"
+ },
+ "Q219233": {
+  "a": "FFDD00",
+  "b": "000000",
+  "title": "SBV Vitesse"
+ },
+ "Q219235": {
+  "a": "820013",
+  "b": "FFFFFF",
+  "title": "Servette FC"
+ },
+ "Q219241": {
+  "a": "000066",
+  "b": "FF0000",
+  "title": "Falkirk F.C."
+ },
+ "Q2195773": {
+  "a": "FFFFFF",
+  "b": "FC0A10",
+  "title": "Royal Excel Mouscron"
+ },
+ "Q219703": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Boavista F.C."
+ },
+ "Q220854": {
+  "a": "000000",
+  "b": "0000FF",
+  "title": "FC Krasnodar"
+ },
+ "Q221695": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Grêmio FBPA"
+ },
+ "Q221927": {
+  "a": "FFFFFF",
+  "b": "1C4FA0",
+  "title": "De Graafschap"
+ },
+ "Q221940": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "KSC Lokeren Oost-Vlaanderen"
+ },
+ "Q223450": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Vitória S.C."
+ },
+ "Q223620": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Deportivo Alavés"
+ },
+ "Q2268833": {
+  "a": "6104D2",
+  "b": "FFFFFF",
+  "title": "K Beerschot VA"
+ },
+ "Q22707": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "TSG 1899 Hoffenheim"
+ },
+ "Q2272132": {
+  "a": "0000FF",
+  "b": "000000",
+  "title": "Sporting Club de Bruxelles"
+ },
+ "Q2276413": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Virtus Entella"
+ },
+ "Q2312558": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "RWD Molenbeek (1909)"
+ },
+ "Q238593": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "D.C. United"
+ },
+ "Q2387559": {
+  "a": "137932",
+  "b": "000000",
+  "title": "FC Tirol Innsbruck"
+ },
+ "Q240438": {
+  "a": "FFF000",
+  "b": "FFFFFF",
+  "title": "FC Alania Vladikavkaz (2019)"
+ },
+ "Q240444": {
+  "a": "00782F",
+  "b": "FFFFFF",
+  "title": "FC Akhmat Grozny"
+ },
+ "Q2426819": {
+  "a": "FFFFFF",
+  "b": "0000FF",
+  "title": "Erzurumspor F.K."
+ },
+ "Q243235": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Académica de Coimbra (football)"
+ },
+ "Q24474": {
+  "a": "F50000",
+  "b": "FFFFFF",
+  "title": "Platanias F.C."
+ },
+ "Q24680": {
+  "a": "ED1A2F",
+  "b": "FFFFFF",
+  "title": "FC Utrecht"
+ },
+ "Q24689": {
+  "a": "FFCC00",
+  "b": "000000",
+  "title": "VVV-Venlo"
+ },
+ "Q24699": {
+  "a": "FFFF00",
+  "b": "0000AA",
+  "title": "RKC Waalwijk"
+ },
+ "Q2470164": {
+  "a": "D2D2D2",
+  "b": "000000",
+  "title": "Al-Tai FC"
+ },
+ "Q24711": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "FC Groningen"
+ },
+ "Q24719": {
+  "a": "E1AD00",
+  "b": "000000",
+  "title": "Roda JC Kerkrade"
+ },
+ "Q24904": {
+  "a": "FFFF00",
+  "b": "FFFFFF",
+  "title": "ADO Den Haag"
+ },
+ "Q2494171": {
+  "a": "3DABEA",
+  "b": "FFFFFF",
+  "title": "FC Dynamo Makhachkala"
+ },
+ "Q2528035": {
+  "a": "336699",
+  "b": "FFFFFF",
+  "title": "FC Tekstilshchik Kamyshin"
+ },
+ "Q2536715": {
+  "a": "007744",
+  "b": "FFFFFF",
+  "title": "Associação Chapecoense de Futebol"
+ },
+ "Q2552872": {
+  "a": "111533",
+  "b": "FFFFFF",
+  "title": "Clube do Remo"
+ },
+ "Q257078": {
+  "a": "00B33C",
+  "b": "000000",
+  "title": "Nuovo Pordenone 2024 FC ASD"
+ },
+ "Q257984": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Gimnàstic de Tarragona"
+ },
+ "Q2609": {
+  "a": "88BFF7",
+  "b": "FFFFFF",
+  "title": "SS Lazio"
+ },
+ "Q261813": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "FC Wacker Innsbruck (2002)"
+ },
+ "Q2619514": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "AS Béziers (2007)"
+ },
+ "Q263320": {
+  "a": "00AA00",
+  "b": "FFFFFF",
+  "title": "SV Mattersburg"
+ },
+ "Q2636005": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Al Shabab Club"
+ },
+ "Q2655899": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Al-Riyadh SC"
+ },
+ "Q2656362": {
+  "a": "FF8000",
+  "b": "FFFFFF",
+  "title": "Al-Ansar FC (Saudi Arabia)"
+ },
+ "Q2674": {
+  "a": "FFB8CA",
+  "b": "0B1F4B",
+  "title": "Palermo FC"
+ },
+ "Q268776": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "St Johnstone F.C."
+ },
+ "Q269151": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "PEC Zwolle"
+ },
+ "Q2693": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Parma Calcio 1913"
+ },
+ "Q270051": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "AC Ajaccio"
+ },
+ "Q270995": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Clube Atlético Mineiro"
+ },
+ "Q2710": {
+  "a": "1E90FF",
+  "b": "FFFFFF",
+  "title": "Delfino Pescara 1936"
+ },
+ "Q2714": {
+  "a": "FDF200",
+  "b": "FF0000",
+  "title": "Watford F.C."
+ },
+ "Q271574": {
+  "a": "0000DD",
+  "b": "FFFFFF",
+  "title": "Real Oviedo"
+ },
+ "Q272712": {
+  "a": "0000FF",
+  "b": "008000",
+  "title": "Çaykur Rizespor"
+ },
+ "Q2739": {
+  "a": "980729",
+  "b": "FFFFFF",
+  "title": "AS Roma"
+ },
+ "Q2744247": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Kalamata F.C."
+ },
+ "Q274465": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Esporte Clube Vitória"
+ },
+ "Q274642": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "FC Amkar Perm"
+ },
+ "Q274778": {
+  "a": "80C0FE",
+  "b": "000060",
+  "title": "PFC Krylia Sovetov Samara"
+ },
+ "Q2756": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Siena FC"
+ },
+ "Q275626": {
+  "a": "601A22",
+  "b": "FFFFFF",
+  "title": "Athlitiki Enosi Larissa F.C."
+ },
+ "Q2768": {
+  "a": "65001B",
+  "b": "FFFFFF",
+  "title": "Torino FC"
+ },
+ "Q280679": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "PAS Giannina F.C."
+ },
+ "Q2829334": {
+  "a": "600020",
+  "b": "FFFFFF",
+  "title": "Al Faisaly FC"
+ },
+ "Q2857911": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Anápolis Futebol Clube"
+ },
+ "Q286191": {
+  "a": "FC1C14",
+  "b": "FFFFFF",
+  "title": "Al Qadsiah FC"
+ },
+ "Q287695": {
+  "a": "004AB9",
+  "b": "FFFFFF",
+  "title": "Fidelis Andria 2018"
+ },
+ "Q289482": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "AC Monza"
+ },
+ "Q289613": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Pisa SC"
+ },
+ "Q289707": {
+  "a": "4F0E14",
+  "b": "FFFFFF",
+  "title": "AC Reggiana 1919"
+ },
+ "Q289713": {
+  "a": "FFFFFF",
+  "b": "FF0000",
+  "title": "Rimini Calcio S.S.D."
+ },
+ "Q290781": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "AD Almería"
+ },
+ "Q29103": {
+  "a": "FFFF00",
+  "b": "008000",
+  "title": "FC Kuban Krasnodar"
+ },
+ "Q29112": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "FC Spartak Moscow"
+ },
+ "Q29115": {
+  "a": "094422",
+  "b": "FF0000",
+  "title": "FC Lokomotiv Moscow"
+ },
+ "Q291297": {
+  "a": "0055A3",
+  "b": "000000",
+  "title": "Kayseri Erciyesspor"
+ },
+ "Q292231": {
+  "a": "DD0000",
+  "b": "FFFFFF",
+  "title": "Rodez AF"
+ },
+ "Q29400": {
+  "a": "000075",
+  "b": "D71920",
+  "title": "SS Taranto Calcio"
+ },
+ "Q2945011": {
+  "a": "FFEE00",
+  "b": "007020",
+  "title": "Cuiabá Esporte Clube"
+ },
+ "Q2946171": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Centro de Ensino Unificado de Brasília Esporte Clube"
+ },
+ "Q296046": {
+  "a": "0000BC",
+  "b": "FFFFFF",
+  "title": "PAE Kerkyra"
+ },
+ "Q297430": {
+  "a": "8E3145",
+  "b": "000000",
+  "title": "SS Arezzo"
+ },
+ "Q297431": {
+  "a": "FF0000",
+  "b": "FFD200",
+  "title": "ACD Castel di Sangro Cep 1953"
+ },
+ "Q297680": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "ASG Nocerina"
+ },
+ "Q297858": {
+  "a": "FFFFFF",
+  "b": "008000",
+  "title": "ASKÖ Pasching"
+ },
+ "Q298217": {
+  "a": "3D8776",
+  "b": "008000",
+  "title": "US Avellino 1912"
+ },
+ "Q298267": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "AS Cannes"
+ },
+ "Q298314": {
+  "a": "001960",
+  "b": "FF0000",
+  "title": "AS Gubbio 1910"
+ },
+ "Q298333": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Lucchese Calcio"
+ },
+ "Q301332": {
+  "a": "CC1115",
+  "b": "182761",
+  "title": "Kardemir Karabükspor"
+ },
+ "Q303121": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Yeni Malatyaspor"
+ },
+ "Q309059": {
+  "a": "0044FF",
+  "b": "FFFFFF",
+  "title": "Inverness Caledonian Thistle F.C."
+ },
+ "Q309095": {
+  "a": "122946",
+  "b": "FFFFFF",
+  "title": "New England Revolution"
+ },
+ "Q309456": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "FC Lausanne-Sport"
+ },
+ "Q309480": {
+  "a": "FFDD00",
+  "b": "000000",
+  "title": "Al-Ittihad Club (Jeddah)"
+ },
+ "Q3163786": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Blau-Weiß 1890 Berlin"
+ },
+ "Q316865": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "SC Preußen Münster"
+ },
+ "Q318348": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "NEC Nijmegen"
+ },
+ "Q321061": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "FC Sion"
+ },
+ "Q324338": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "FC Torpedo Moscow"
+ },
+ "Q32494": {
+  "a": "0000DD",
+  "b": "FFFFFF",
+  "title": "FC Schalke 04"
+ },
+ "Q327238": {
+  "a": "AA182C",
+  "b": "FFFFFF",
+  "title": "Toronto FC"
+ },
+ "Q328313": {
+  "a": "FF6B00",
+  "b": "FFFFFF",
+  "title": "Houston Dynamo FC"
+ },
+ "Q328658": {
+  "a": "8ED6F9",
+  "b": "0D2142",
+  "title": "Le Havre AC"
+ },
+ "Q329510": {
+  "a": "FFFFFF",
+  "b": "008000",
+  "title": "FC Tom Tomsk"
+ },
+ "Q329812": {
+  "a": "A0D0FF",
+  "b": "0B1F4B",
+  "title": "Sporting Kansas City"
+ },
+ "Q332642": {
+  "a": "FFFF00",
+  "b": "000000",
+  "title": "NAC Breda"
+ },
+ "Q333838": {
+  "a": "000055",
+  "b": "FFFFFF",
+  "title": "Thonon Evian Grand Genève FC"
+ },
+ "Q335195": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Neuchâtel Xamax FCS"
+ },
+ "Q335483": {
+  "a": "172643",
+  "b": "FFFFFF",
+  "title": "Dundee F.C."
+ },
+ "Q33748": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Hannover 96"
+ },
+ "Q338285": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "América Futebol Clube (MG)"
+ },
+ "Q339492": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Anglo-American Club Zürich"
+ },
+ "Q3486282": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Skill FC de Bruxelles"
+ },
+ "Q348659": {
+  "a": "FFEE00",
+  "b": "000055",
+  "title": "FC Luch Vladivostok"
+ },
+ "Q352270": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Adanaspor"
+ },
+ "Q35933": {
+  "a": "FCFAF5",
+  "b": "000000",
+  "title": "SC Corinthians Paulista"
+ },
+ "Q364698": {
+  "a": "00852D",
+  "b": "000000",
+  "title": "Cercle Brugge KSV"
+ },
+ "Q370206": {
+  "a": "FF0000",
+  "b": "00A553",
+  "title": "KV Oostende"
+ },
+ "Q370712": {
+  "a": "000000",
+  "b": "FF0000",
+  "title": "Excelsior Rotterdam"
+ },
+ "Q37091": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "FC Mordovia Saransk"
+ },
+ "Q371136": {
+  "a": "FFDD00",
+  "b": "114422",
+  "title": "F.C. Paços de Ferreira"
+ },
+ "Q372599": {
+  "a": "E00000",
+  "b": "FFFFFF",
+  "title": "Sivasspor"
+ },
+ "Q376635": {
+  "a": "FF0026",
+  "b": "FFFFFF",
+  "title": "SV Zulte Waregem"
+ },
+ "Q38245": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Eintracht Frankfurt"
+ },
+ "Q38568": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "São Paulo FC"
+ },
+ "Q388487": {
+  "a": "1F7C40",
+  "b": "FFD200",
+  "title": "Şanlıurfaspor"
+ },
+ "Q391099": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "FC Lokomotiv Nizhny Novgorod"
+ },
+ "Q391102": {
+  "a": "0000FF",
+  "b": "FFD200",
+  "title": "FC Elista"
+ },
+ "Q391353": {
+  "a": "DF0000",
+  "b": "000360",
+  "title": "Real Salt Lake"
+ },
+ "Q392115": {
+  "a": "B02020",
+  "b": "000000",
+  "title": "FC Moscow"
+ },
+ "Q392310": {
+  "a": "FFFFFF",
+  "b": "FFDD00",
+  "title": "LASK"
+ },
+ "Q4122219": {
+  "a": "1B6A64",
+  "b": "FFFFFF",
+  "title": "Panathinaikos F.C."
+ },
+ "Q41420": {
+  "a": "FFE300",
+  "b": "000000",
+  "title": "Borussia Dortmund"
+ },
+ "Q417685": {
+  "a": "000000",
+  "b": "007711",
+  "title": "Akhisarspor"
+ },
+ "Q421009": {
+  "a": "00FFFF",
+  "b": "000037",
+  "title": "Tampa Bay Mutiny"
+ },
+ "Q427491": {
+  "a": "FFFFFF",
+  "b": "0000FF",
+  "title": "SKN St. Pölten"
+ },
+ "Q43375974": {
+  "a": "FF0000",
+  "b": "0000FF",
+  "title": "Volos F.C."
+ },
+ "Q43477": {
+  "a": "006DB5",
+  "b": "000000",
+  "title": "FC Shinnik Yaroslavl"
+ },
+ "Q434929": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Altay S.K."
+ },
+ "Q4365736": {
+  "a": "FF6666",
+  "b": "000000",
+  "title": "New Brighton Tower F.C."
+ },
+ "Q43710": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Antalyaspor"
+ },
+ "Q44441": {
+  "a": "FFFFFF",
+  "b": "008456",
+  "title": "Al-Ahli Saudi FC"
+ },
+ "Q447191": {
+  "a": "0B0F3E",
+  "b": "FFFFFF",
+  "title": "Altınordu F.K."
+ },
+ "Q4512": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "VfB Stuttgart"
+ },
+ "Q457163": {
+  "a": "FFF200",
+  "b": "000000",
+  "title": "Columbus Crew"
+ },
+ "Q457460": {
+  "a": "175C49",
+  "b": "000000",
+  "title": "SV Ried"
+ },
+ "Q459148": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "En Avant Guingamp"
+ },
+ "Q459794": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Piacenza Calcio 1919"
+ },
+ "Q460448": {
+  "a": "FFEE00",
+  "b": "0000FF",
+  "title": "Cádiz CF"
+ },
+ "Q460494": {
+  "a": "318CE7",
+  "b": "D71920",
+  "title": "Panionios F.C."
+ },
+ "Q464775": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "FC Thun"
+ },
+ "Q47518754": {
+  "a": "ECE83A",
+  "b": "FFFFFF",
+  "title": "Nashville SC"
+ },
+ "Q477073": {
+  "a": "0042FF",
+  "b": "FFFFFF",
+  "title": "FC Saturn Ramenskoye"
+ },
+ "Q479351": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "SV Darmstadt 98"
+ },
+ "Q482764": {
+  "a": "FFFF00",
+  "b": "000044",
+  "title": "Al-Nassr FC"
+ },
+ "Q483020": {
+  "a": "0000CC",
+  "b": "FFFFFF",
+  "title": "Paris Saint-Germain FC"
+ },
+ "Q48879": {
+  "a": "FFD700",
+  "b": "7A1F2B",
+  "title": "Bradford City A.F.C."
+ },
+ "Q48929": {
+  "a": "F7B206",
+  "b": "000000",
+  "title": "Burton Albion F.C."
+ },
+ "Q48946": {
+  "a": "F9E758",
+  "b": "0B1F4B",
+  "title": "Oxford United F.C."
+ },
+ "Q48950": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Rotherham United F.C."
+ },
+ "Q492159": {
+  "a": "0000DD",
+  "b": "FFFFFF",
+  "title": "Union Sportive Créteil Football"
+ },
+ "Q492826": {
+  "a": "040D42",
+  "b": "FFD200",
+  "title": "MKE Ankaragücü"
+ },
+ "Q495299": {
+  "a": "270E8B",
+  "b": "8B0E2C",
+  "title": "Galatasaray S.K. (football)"
+ },
+ "Q501245": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Venezia FC"
+ },
+ "Q501372": {
+  "a": "FFFF00",
+  "b": "FF0000",
+  "title": "US Catanzaro 1929"
+ },
+ "Q503317": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Dijon FCO"
+ },
+ "Q50602": {
+  "a": "98C6EB",
+  "b": "FFFFFF",
+  "title": "Manchester City F.C."
+ },
+ "Q506832": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Club Athletico Paranaense"
+ },
+ "Q508322": {
+  "a": "F7DB4A",
+  "b": "1B375F",
+  "title": "FC Gueugnon"
+ },
+ "Q513840": {
+  "a": "008250",
+  "b": "FFFFFF",
+  "title": "Konyaspor"
+ },
+ "Q515516": {
+  "a": "0000FF",
+  "b": "000055",
+  "title": "SD Amorebieta"
+ },
+ "Q51974": {
+  "a": "FFFFFF",
+  "b": "FF0000",
+  "title": "Hamburger SV"
+ },
+ "Q51976": {
+  "a": "FFFFFF",
+  "b": "009A59",
+  "title": "SV Werder Bremen"
+ },
+ "Q522283": {
+  "a": "FFFFFF",
+  "b": "D71920",
+  "title": "Red Star FC"
+ },
+ "Q524378": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "SG Wattenscheid 09"
+ },
+ "Q534448": {
+  "a": "FFD000",
+  "b": "000000",
+  "title": "FBC Torinese"
+ },
+ "Q536651": {
+  "a": "009150",
+  "b": "FFFFFF",
+  "title": "RAAL La Louvière"
+ },
+ "Q541744": {
+  "a": "FFFFFF",
+  "b": "D71920",
+  "title": "Red Bull Bragantino"
+ },
+ "Q5425199": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "FC Torpedo-ZIL Moscow"
+ },
+ "Q543467": {
+  "a": "191970",
+  "b": "7A1F2B",
+  "title": "G.D. Chaves"
+ },
+ "Q546034": {
+  "a": "FF0000",
+  "b": "990000",
+  "title": "FC Yenisey Krasnoyarsk"
+ },
+ "Q546646": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "FC Presnya Moscow"
+ },
+ "Q556570": {
+  "a": "FFFFFF",
+  "b": "0000EE",
+  "title": "Ankaraspor"
+ },
+ "Q575370": {
+  "a": "0079FB",
+  "b": "000000",
+  "title": "San Jose Earthquakes"
+ },
+ "Q576285": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Albacete Balompié"
+ },
+ "Q5773365": {
+  "a": "FEFEFE",
+  "b": "0B1F4B",
+  "title": "AD Ceuta FC"
+ },
+ "Q578104": {
+  "a": "000000",
+  "b": "D71920",
+  "title": "Royal Daring Club de Bruxelles"
+ },
+ "Q5794": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Everton F.C."
+ },
+ "Q580259": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Accrington F.C."
+ },
+ "Q582342": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Cultural y Deportiva Leonesa"
+ },
+ "Q59212899": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "B-SAD"
+ },
+ "Q592241": {
+  "a": "000066",
+  "b": "FFFFFF",
+  "title": "Iraklis F.C. (Thessaloniki)"
+ },
+ "Q598834": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Criciúma Esporte Clube"
+ },
+ "Q600232": {
+  "a": "173097",
+  "b": "FFFFFF",
+  "title": "CD Eldense"
+ },
+ "Q603271": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "FC Aarau"
+ },
+ "Q6062228": {
+  "a": "DC143C",
+  "b": "FFFFFF",
+  "title": "Ümraniyespor"
+ },
+ "Q60643348": {
+  "a": "3ADB69",
+  "b": "000000",
+  "title": "Austin FC"
+ },
+ "Q608122": {
+  "a": "AE1022",
+  "b": "000000",
+  "title": "Kayserispor"
+ },
+ "Q608988": {
+  "a": "008000",
+  "b": "FF0000",
+  "title": "CS Sedan Ardennes"
+ },
+ "Q610482": {
+  "a": "006400",
+  "b": "FFFFFF",
+  "title": "SS Alba-Audace Roma"
+ },
+ "Q610621": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "AC Carpi"
+ },
+ "Q611222": {
+  "a": "87CEFA",
+  "b": "FFFFFF",
+  "title": "Treviso FBC"
+ },
+ "Q611653": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "FC Cartagena"
+ },
+ "Q618620": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "KV Kortrijk"
+ },
+ "Q621120": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Portimonense S.C."
+ },
+ "Q622432": {
+  "a": "FFFFFF",
+  "b": "007711",
+  "title": "Rio Ave F.C."
+ },
+ "Q627334": {
+  "a": "FF0000",
+  "b": "000055",
+  "title": "Gazélec Ajaccio"
+ },
+ "Q631": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Inter Milan"
+ },
+ "Q632511": {
+  "a": "00BD62",
+  "b": "97EAE0",
+  "title": "Seattle Sounders FC"
+ },
+ "Q633521": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "FC Lugano"
+ },
+ "Q634829": {
+  "a": "FFE000",
+  "b": "0033FF",
+  "title": "G.D. Estoril Praia"
+ },
+ "Q639525": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "SV Sandhausen"
+ },
+ "Q640726": {
+  "a": "FFFFFF",
+  "b": "000088",
+  "title": "FC Mulhouse"
+ },
+ "Q641373": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Gençlerbirliği S.K."
+ },
+ "Q642408": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Colorado Rapids"
+ },
+ "Q642433": {
+  "a": "FFFFFF",
+  "b": "DD0000",
+  "title": "Chivas USA"
+ },
+ "Q643083": {
+  "a": "0033FF",
+  "b": "FFFFFF",
+  "title": "FC Volga Nizhny Novgorod"
+ },
+ "Q643107": {
+  "a": "296636",
+  "b": "000000",
+  "title": "Denizlispor"
+ },
+ "Q646079": {
+  "a": "400080",
+  "b": "FFFFFF",
+  "title": "Beerschot AC"
+ },
+ "Q6463150": {
+  "a": "FFFFFF",
+  "b": "1C4FA0",
+  "title": "Lorca FC"
+ },
+ "Q6481836": {
+  "a": "FFFFFF",
+  "b": "0000FF",
+  "title": "PAS Lamia 1964"
+ },
+ "Q650365": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Carrarese Calcio 1908"
+ },
+ "Q65124755": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "FC Akron Tolyatti"
+ },
+ "Q652516": {
+  "a": "FFFF00",
+  "b": "000000",
+  "title": "Benevento Calcio"
+ },
+ "Q653119": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Almere City FC"
+ },
+ "Q657865": {
+  "a": "FFFFFF",
+  "b": "D71920",
+  "title": "CD Logroñés"
+ },
+ "Q659212": {
+  "a": "087B57",
+  "b": "FFFFFF",
+  "title": "FC St. Gallen"
+ },
+ "Q659780": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Grazer AK"
+ },
+ "Q66210522": {
+  "a": "0042FF",
+  "b": "FFFFFF",
+  "title": "FC Rodina Moscow"
+ },
+ "Q6630": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Ascoli Calcio 1898 FC"
+ },
+ "Q6641": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "SSC Bari"
+ },
+ "Q6651": {
+  "a": "0033FF",
+  "b": "FFFFFF",
+  "title": "Brescia Calcio"
+ },
+ "Q665690": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Fortitudo-Pro Roma SGS"
+ },
+ "Q6664": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "AC Cesena"
+ },
+ "Q66642491": {
+  "a": "EC1458",
+  "b": "FFFFFF",
+  "title": "St. Louis City SC"
+ },
+ "Q6673": {
+  "a": "8D0000",
+  "b": "FFFFFF",
+  "title": "AS Cittadella"
+ },
+ "Q6690": {
+  "a": "000040",
+  "b": "FFFFFF",
+  "title": "FC Crotone"
+ },
+ "Q669130": {
+  "a": "008000",
+  "b": "FFFFFF",
+  "title": "Yverdon-Sport FC"
+ },
+ "Q6703": {
+  "a": "0055FF",
+  "b": "FFFFFF",
+  "title": "Empoli FC"
+ },
+ "Q670438": {
+  "a": "FFFF00",
+  "b": "000000",
+  "title": "SC Rheindorf Altach"
+ },
+ "Q670795": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "CA Bastia"
+ },
+ "Q671042": {
+  "a": "0033FF",
+  "b": "FFFFFF",
+  "title": "C.D. Feirense"
+ },
+ "Q6721": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "US Grosseto 1912"
+ },
+ "Q6748": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "SS Juve Stabia"
+ },
+ "Q6767": {
+  "a": "8D0000",
+  "b": "000000",
+  "title": "US Livorno 1915"
+ },
+ "Q686659": {
+  "a": "00924F",
+  "b": "FFFFFF",
+  "title": "WSG Tirol"
+ },
+ "Q688300": {
+  "a": "FFDD00",
+  "b": "000000",
+  "title": "S.C. Beira-Mar"
+ },
+ "Q689874": {
+  "a": "182430",
+  "b": "FFFFFF",
+  "title": "Philadelphia Union"
+ },
+ "Q692586": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "VfR Aalen"
+ },
+ "Q692691": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "SV Elversberg"
+ },
+ "Q694484": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Wolfsberger AC"
+ },
+ "Q696507": {
+  "a": "008000",
+  "b": "FFFFFF",
+  "title": "SC Austria Lustenau"
+ },
+ "Q696514": {
+  "a": "FFFFFF",
+  "b": "0000BB",
+  "title": "SV Grödig"
+ },
+ "Q696525": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "FC Blau-Weiß Linz"
+ },
+ "Q697353": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "UD Salamanca"
+ },
+ "Q698702": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Admira Wacker"
+ },
+ "Q699184": {
+  "a": "FFFFFF",
+  "b": "5B009E",
+  "title": "SK Austria Klagenfurt (2007)"
+ },
+ "Q699746": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "TSV Hartberg"
+ },
+ "Q702455": {
+  "a": "FFFFFF",
+  "b": "FF0000",
+  "title": "RB Leipzig"
+ },
+ "Q704": {
+  "a": "FFFFFF",
+  "b": "0000FF",
+  "title": "Olympique Lyonnais"
+ },
+ "Q7156": {
+  "a": "05003B",
+  "b": "FFFFFF",
+  "title": "FC Barcelona"
+ },
+ "Q725506": {
+  "a": "1E2339",
+  "b": "FFFFFF",
+  "title": "FC Sibir Novosibirsk"
+ },
+ "Q727147": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "FC Khimki"
+ },
+ "Q72844": {
+  "a": "006B3C",
+  "b": "FFFFFF",
+  "title": "Al-Ettifaq Club"
+ },
+ "Q728986": {
+  "a": "000088",
+  "b": "FFFFFF",
+  "title": "US Internazionale Napoli"
+ },
+ "Q730809": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Nîmes Olympique"
+ },
+ "Q732002": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Royal Antwerp FC"
+ },
+ "Q732742": {
+  "a": "AA0000",
+  "b": "1C4FA0",
+  "title": "CF Extremadura"
+ },
+ "Q738060": {
+  "a": "F97500",
+  "b": "000000",
+  "title": "FC Volendam"
+ },
+ "Q738158": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Gretna F.C."
+ },
+ "Q73965": {
+  "a": "0000DF",
+  "b": "FFFFFF",
+  "title": "Al Hilal SFC"
+ },
+ "Q73971": {
+  "a": "FFFFFF",
+  "b": "FF0000",
+  "title": "Clube Náutico Capibaribe"
+ },
+ "Q740637": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "C.D. Santa Clara"
+ },
+ "Q741382": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Kapfenberger SV"
+ },
+ "Q743557": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "CD Castellón"
+ },
+ "Q744353": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "S.C. Farense"
+ },
+ "Q747693": {
+  "a": "ECE605",
+  "b": "C60606",
+  "title": "Louhans-Cuiseaux FC"
+ },
+ "Q748445": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Eskişehirspor"
+ },
+ "Q749113": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "SK Austria Kärnten"
+ },
+ "Q749589": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Go Ahead Eagles"
+ },
+ "Q752483": {
+  "a": "72AEFC",
+  "b": "1F4169",
+  "title": "UC AlbinoLeffe"
+ },
+ "Q75684": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "S.C. Braga"
+ },
+ "Q75729": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Sporting CP"
+ },
+ "Q757320": {
+  "a": "FFFF00",
+  "b": "FFFFFF",
+  "title": "Asteras Tripolis F.C."
+ },
+ "Q757754": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Atromitos F.C."
+ },
+ "Q760736": {
+  "a": "FF6000",
+  "b": "FFFFFF",
+  "title": "Stade Lavallois"
+ },
+ "Q769204": {
+  "a": "FFFFFF",
+  "b": "2E8B57",
+  "title": "Al-Shoulla FC"
+ },
+ "Q770740": {
+  "a": "192030",
+  "b": "FFFFFF",
+  "title": "SD Eibar"
+ },
+ "Q784572": {
+  "a": "191970",
+  "b": "FFFFFF",
+  "title": "VV DOS"
+ },
+ "Q78944434": {
+  "a": "0085CA",
+  "b": "FFFFFF",
+  "title": "Charlotte FC"
+ },
+ "Q795978": {
+  "a": "FFFFFF",
+  "b": "0000FE",
+  "title": "FC Baltika Kaliningrad"
+ },
+ "Q797530": {
+  "a": "550099",
+  "b": "000000",
+  "title": "Istres FC"
+ },
+ "Q805909": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Balıkesirspor"
+ },
+ "Q80845": {
+  "a": "EF0000",
+  "b": "FFFFFF",
+  "title": "SC Internacional"
+ },
+ "Q80955": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Santos FC"
+ },
+ "Q80958": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Botafogo FR"
+ },
+ "Q80964": {
+  "a": "035F30",
+  "b": "FFFFFF",
+  "title": "SE Palmeiras"
+ },
+ "Q80987": {
+  "a": "800000",
+  "b": "FFFFFF",
+  "title": "Fluminense FC"
+ },
+ "Q81888": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "AFC Ajax"
+ },
+ "Q822722": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "Partick Thistle F.C."
+ },
+ "Q824450": {
+  "a": "005754",
+  "b": "FFFFFF",
+  "title": "Levadiakos F.C."
+ },
+ "Q837218": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "UE Lleida"
+ },
+ "Q838134": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "C.F. Estrela da Amadora"
+ },
+ "Q8408": {
+  "a": "FFEC00",
+  "b": "000040",
+  "title": "Modena FC 2018"
+ },
+ "Q8416": {
+  "a": "1F77C1",
+  "b": "FFFFFF",
+  "title": "Novara FC"
+ },
+ "Q8428": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Calcio Padova"
+ },
+ "Q843396": {
+  "a": "008800",
+  "b": "FFFFFF",
+  "title": "Racing de Ferrol"
+ },
+ "Q845137": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Angers SCO"
+ },
+ "Q8455": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "FC Pro Vercelli 1892"
+ },
+ "Q8466": {
+  "a": "FF0019",
+  "b": "FFFFFF",
+  "title": "1. FC Kaiserslautern"
+ },
+ "Q847030": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Jerez Industrial CF"
+ },
+ "Q847587": {
+  "a": "671912",
+  "b": "FFFFFF",
+  "title": "US Salernitana 1919"
+ },
+ "Q8476": {
+  "a": "8D0000",
+  "b": "FFFFFF",
+  "title": "AS Reggina 1914"
+ },
+ "Q849544": {
+  "a": "FFFF00",
+  "b": "0000FF",
+  "title": "KVC Westerlo"
+ },
+ "Q852079": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Burgos CF"
+ },
+ "Q854167": {
+  "a": "FFFF00",
+  "b": "00684B",
+  "title": "Fortuna Sittard"
+ },
+ "Q856119": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "CD Leganés"
+ },
+ "Q856416": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "CP Mérida"
+ },
+ "Q8603": {
+  "a": "00A746",
+  "b": "000000",
+  "title": "US Sassuolo Calcio"
+ },
+ "Q8615": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Spezia Calcio"
+ },
+ "Q8623": {
+  "a": "008433",
+  "b": "000000",
+  "title": "Nuova Ternana 1925"
+ },
+ "Q862647": {
+  "a": "1C39BB",
+  "b": "FFFFFF",
+  "title": "Miami Fusion"
+ },
+ "Q8633": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Varese FC"
+ },
+ "Q8639": {
+  "a": "203664",
+  "b": "FFFFFF",
+  "title": "Hellas Verona FC"
+ },
+ "Q8648": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "SS Virtus Lanciano 1924"
+ },
+ "Q865735": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Royal Excelsior Mouscron"
+ },
+ "Q866884": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Amiens SC"
+ },
+ "Q867320": {
+  "a": "D80000",
+  "b": "FFFFFF",
+  "title": "FC Rouen"
+ },
+ "Q867921": {
+  "a": "FFD20F",
+  "b": "000000",
+  "title": "Livingston F.C."
+ },
+ "Q8682": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Real Madrid CF"
+ },
+ "Q8687": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Athletic Bilbao"
+ },
+ "Q869907": {
+  "a": "DD0000",
+  "b": "FFFFFF",
+  "title": "FC Stade Lausanne Ouchy"
+ },
+ "Q8701": {
+  "a": "FF0000",
+  "b": "0000FF",
+  "title": "Atlético Madrid"
+ },
+ "Q870173": {
+  "a": "000000",
+  "b": "FFFFFF",
+  "title": "Vannes OC"
+ },
+ "Q8723": {
+  "a": "359B5C",
+  "b": "FFFFFF",
+  "title": "Real Betis"
+ },
+ "Q875120": {
+  "a": "FFEE00",
+  "b": "0000FF",
+  "title": "SC Cambuur"
+ },
+ "Q8806": {
+  "a": "0000FF",
+  "b": "FFFFFF",
+  "title": "Getafe CF"
+ },
+ "Q8812": {
+  "a": "E00000",
+  "b": "0000DD",
+  "title": "Granada CF"
+ },
+ "Q8823": {
+  "a": "222730",
+  "b": "FFFFFF",
+  "title": "Levante UD"
+ },
+ "Q8835": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "RCD Mallorca"
+ },
+ "Q8857": {
+  "a": "FFFFFF",
+  "b": "103E9E",
+  "title": "Málaga CF"
+ },
+ "Q891679": {
+  "a": "FF0000",
+  "b": "FFFFFF",
+  "title": "Boluspor"
+ },
+ "Q910453": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "Esporte Clube Juventude"
+ },
+ "Q913041": {
+  "a": "AF0000",
+  "b": "FFFFFF",
+  "title": "Portogruaro Calcio ASD"
+ },
+ "Q925973": {
+  "a": "FF0000",
+  "b": "000000",
+  "title": "RFC Seraing (1922)"
+ },
+ "Q926438": {
+  "a": "D60000",
+  "b": "FFFFFF",
+  "title": "Gil Vicente F.C."
+ },
+ "Q927084": {
+  "a": "FFFFFF",
+  "b": "0000FF",
+  "title": "FC SKA-Khabarovsk"
+ },
+ "Q929753": {
+  "a": "87CEEB",
+  "b": "FFFFFF",
+  "title": "SD Compostela"
+ },
+ "Q950835": {
+  "a": "FFFFFF",
+  "b": "000000",
+  "title": "Sevilla Atlético"
+ },
+ "Q9616": {
+  "a": "14349B",
+  "b": "FFFFFF",
+  "title": "Chelsea F.C."
+ },
+ "Q9617": {
+  "a": "F00000",
+  "b": "FFFFFF",
+  "title": "Arsenal F.C."
+ },
+ "Q9653": {
+  "a": "0333A0",
+  "b": "FFFFFF",
+  "title": "Ipswich Town F.C."
+ },
+ "Q987939": {
+  "a": "FFFFFF",
+  "b": "33AAFF",
+  "title": "Ionikos F.C."
+ },
+ "Q994224": {
+  "a": "BE0000",
+  "b": "000040",
+  "title": "Extremadura UD"
+ },
+ "Q994811": {
+  "a": "FFFFFF",
+  "b": "0B1F4B",
+  "title": "FC Red Bull Salzburg"
+ },
+ "Q994918": {
+  "a": "FFFF00",
+  "b": "D71920",
+  "title": "ASD Città di Gallipoli"
+ }
+}

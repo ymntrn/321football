@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../theme/tokens.dart';
 import 'club_card.dart';
+import 'club_crest.dart';
 import 'club_search_panel.dart';
 
 /// `Skor Şeridi` — the scoreboard across the top of every PvP screen
@@ -618,7 +619,7 @@ class LiveStatusStrip extends StatelessWidget {
 ///
 /// 390 wide at radius/xl, beyaz/006 over a 1.2pt beyaz/022 border, 14/8
 /// padding, a 38pt crest each side and PoetsenOne "VS" at type/20 in red.
-/// The crest is the same initials badge as [ClubCard]'s, scaled down.
+/// The crest is the same shield as [ClubCard]'s, scaled down.
 class CompactMatchupStrip extends StatelessWidget {
   const CompactMatchupStrip({
     super.key,
@@ -690,34 +691,14 @@ class CompactMatchupStrip extends StatelessWidget {
   }
 }
 
-/// `Arma` at 38pt (87:192): beyaz/012 fill, 1.5pt beyaz/038 ring, initials
-/// at type/11.
+/// `Arma` at 38pt (87:192): the club's crest, 38pt tall.
 class _MiniCrest extends StatelessWidget {
   const _MiniCrest({required this.name});
 
   final String name;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 38,
-      height: 38,
-      decoration: BoxDecoration(
-        color: T.beyaz012,
-        shape: BoxShape.circle,
-        border: Border.all(color: T.beyaz038, width: 1.5),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        clubInitials(name),
-        style: TextStyle(
-          fontFamily: T.fontUi,
-          fontSize: T.t11,
-          color: clubTint(name),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => ClubCrest(name: name, size: 38 / 1.15);
 }
 
 /// `Nokta` — three 5pt dots at 30%, 50% and 80% white, cycling so the chip

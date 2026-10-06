@@ -16,11 +16,17 @@ Hand-curated data that Wikidata does not give us in a usable shape.
    one clean name per country. The app shows these through a Turkish table
    (countryNamesTr in models.dart) that must cover every value left here.
 
+3. CREST COLOURS. clubs.color_a / color_b, the two halves of the shield the
+   app draws for every club. From club_colours_wiki.json (Wikipedia home kit,
+   fetch_club_colours.py) overridden by club_colours_curated.json.
+
 Run as part of build_database.py (step 4), after enrich.
 """
 from __future__ import annotations
 
+import json
 import sys
+from pathlib import Path
 
 import db
 
@@ -219,11 +225,39 @@ def apply_nationality(conn) -> int:
     return changed + cur.rowcount
 
 
+def apply_colours(conn) -> tuple[int, int]:
+    """clubs.color_a / color_b for the in-app crest (left half / right half).
+    club_colours_wiki.json comes from fetch_club_colours.py (Wikipedia home
+    kit); club_colours_curated.json is hand-set and wins. Clubs in neither
+    keep NULL and the app falls back to a tint derived from the name."""
+    db.ensure_column(conn, "clubs", "color_a", "TEXT")
+    db.ensure_column(conn, "clubs", "color_b", "TEXT")
+    here = Path(__file__).parent
+    pairs: dict[str, tuple[str, str]] = {}
+    wiki = here / "club_colours_wiki.json"
+    if wiki.exists():
+        for qid, v in json.loads(wiki.read_text(encoding="utf-8")).items():
+            if v.get("a") and v.get("b"):
+                pairs[qid] = (v["a"].upper(), v["b"].upper())
+    curated = json.loads((here / "club_colours_curated.json").read_text(encoding="utf-8"))
+    for qid, v in curated.items():
+        if not qid.startswith("_"):
+            pairs[qid] = (v[0].upper(), v[1].upper())
+    conn.execute("UPDATE clubs SET color_a = NULL, color_b = NULL")
+    set_ = 0
+    for qid, (a, b) in pairs.items():
+        set_ += conn.execute("UPDATE clubs SET color_a = ?, color_b = ? WHERE wikidata_qid = ?",
+                             (a, b, qid)).rowcount
+    return set_, len(curated) - 1
+
+
 def main() -> int:
     conn = db.connect()
     added, missing = apply_nicknames(conn)
     relabelled = apply_nationality(conn)
+    coloured, curated = apply_colours(conn)
     conn.commit()
+    print(f"  crest colours: {coloured} clubs ({curated} hand-set)")
     print(f"  club nicknames: {added} added ({sum(map(len, NICKNAMES.values()))} listed)")
     if missing:
         print(f"  !! {len(missing)} nickname QID(s) not found: {', '.join(missing)}")

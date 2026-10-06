@@ -11,6 +11,7 @@ import 'screens/settings_screen.dart';
 import 'screens/username_screen.dart';
 import 'settings/app_settings.dart';
 import 'theme/tokens.dart';
+import 'widgets/club_crest.dart';
 import 'widgets/screen_background.dart';
 
 Future<void> main() async {
@@ -74,8 +75,10 @@ class _Boot extends StatefulWidget {
 }
 
 class _BootState extends State<_Boot> {
-  late final Future<void> _ready =
-      Future.wait([AppDatabase.instance.open(), supabaseReady]);
+  late final Future<void> _ready = Future.wait([
+    AppDatabase.instance.open().then(ClubColours.instance.load),
+    supabaseReady,
+  ]);
 
   @override
   Widget build(BuildContext context) {

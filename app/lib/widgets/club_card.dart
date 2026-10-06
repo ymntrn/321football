@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/tokens.dart';
+import 'club_crest.dart';
 
 /// `Kulüp Kartı` (Figma 76:413) — the club card in the Eşleşme row.
 ///
@@ -8,11 +9,8 @@ import '../theme/tokens.dart';
 /// horizontal / 18pt vertical padding, 14pt gap. Inside sits the 88pt `Arma`
 /// circle (beyaz/012 fill, 2pt beyaz/038 border) and the club name at type/19.
 ///
-/// The Arma slot is the crest placeholder. `clubs.crest_asset_url` is empty
-/// for every club, and the agreed plan is two colour stripes rather than real
-/// (trademarked) crests — so this shows the club's initials on a colour
-/// derived from its name, keeping a given club visually stable. Swap the
-/// [_ArmaSlot] body when the stripes land; the card around it does not change.
+/// The Arma slot holds the club's [ClubCrest]: no real (trademarked) crests,
+/// just a gold-rimmed shield in the club's two colours.
 class ClubCard extends StatelessWidget {
   const ClubCard({super.key, required this.name, this.width = 150});
 
@@ -59,23 +57,9 @@ class _ArmaSlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 88,
+    return SizedBox(
       height: 88,
-      decoration: BoxDecoration(
-        color: T.beyaz012,
-        shape: BoxShape.circle,
-        border: Border.all(color: T.beyaz038, width: 2),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        clubInitials(name),
-        style: TextStyle(
-          fontFamily: T.fontUi,
-          fontSize: 30,
-          color: clubTint(name),
-        ),
-      ),
+      child: ClubCrest(name: name, size: 88 / 1.15),
     );
   }
 }

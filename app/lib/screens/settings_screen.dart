@@ -48,7 +48,15 @@ class SettingsScreen extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(28, 22, 28, 22),
                         child: Column(
                           children: [
-                            _SwitchRow(label: 'Ses', value: s.sound, onChanged: s.setSound),
+                            _SwitchRow(
+                              label: 'Ses',
+                              value: s.sound,
+                              onChanged: (on) async {
+                                await s.setSound(on);
+                                // Heard only when switching ON.
+                                Sounds.play(Sfx.tap);
+                              },
+                            ),
                             const SizedBox(height: 28),
                             _SwitchRow(
                               label: 'Titreşim',

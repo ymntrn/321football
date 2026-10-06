@@ -106,6 +106,10 @@ class _MatchScreenState extends State<MatchScreen> {
   /// hiccup, short enough that nobody stares at a frozen round.
   static const _opponentSilence = 20;
 
+  /// The 3-2-1 numeral last ticked for, so each beat sounds once although
+  /// the loop runs four times a second.
+  int? _lastBeat;
+
   /// Claims are rate-limited because the tick runs four times a second and
   /// the answer does not change that fast.
   DateTime? _lastClaim;
@@ -195,6 +199,8 @@ class _MatchScreenState extends State<MatchScreen> {
       }
     }
 
+    _countdownBeat();
+
     // Either player may claim an abandoned match, not just the host — a host
     // who walks out must not be the only one able to end the match, or the
     // guest waits forever.
@@ -265,6 +271,20 @@ class _MatchScreenState extends State<MatchScreen> {
       case MatchPhase.matchOver:
         break;
     }
+  }
+
+  /// One tick per numeral of the countdown, timed by the same unlock_at
+  /// instant MatchCountdownScreen counts down to.
+  void _countdownBeat() {
+    final unlock = _local(_room.unlockAt);
+    if (_room.phase != MatchPhase.countdown || unlock == null) {
+      _lastBeat = null;
+      return;
+    }
+    final ms = unlock.difference(DateTime.now()).inMilliseconds;
+    final n = ms <= 0 ? 0 : (ms / 1000).ceil();
+    if (n > 0 && n != _lastBeat) Sounds.play(Sfx.tick);
+    _lastBeat = n;
   }
 
   /// Has the opponent stopped checking in?

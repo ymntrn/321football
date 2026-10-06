@@ -17,6 +17,7 @@ dependencies:
   supabase_flutter: ^2.17.2
   shared_preferences: ^2.5.5
   share_plus: ^13.3.0
+  audioplayers: ^6.8.1
 
 dev_dependencies:
   flutter_test:
@@ -29,6 +30,7 @@ flutter:
   assets:
     - assets/db/321_football.db
     - assets/img/
+    - assets/audio/
 
   fonts:
     - family: PoetsenOne

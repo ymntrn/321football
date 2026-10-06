@@ -475,3 +475,46 @@ the database copy. Measure again on a release build on a real phone.
 - Data: pre-1990 players with year-less spells (e.g. Bertram Goode for Aston
   Villa × Liverpool) still count as answers — the 1990 cutoff lets NULL-year
   spells through.
+
+
+---
+
+## §A results — emulator run, 6 Oct 2026 (evening)
+
+Backend: anonymous sign-ins switched on in the dashboard; 006–009 applied in
+order; smoke tests 006/007/008/009 all `FAILURES: 0` (006 needed one re-run
+right after migrating — PostgREST's schema cache had not caught up yet).
+`finish_round` is untouched by 006–009, so 005's fix stands.
+
+**Verified on the emulator:** first launch → username screen (validation
+both ways, keyboard ✓ submits, real tag `#UKZH` from the server) → Ana Sayfa;
+Profil, Global and Arkadaş leaderboards, Ayarlar; ranked Hemen Oyna against
+`bot.py --ranked` (paired in ~1 s, Versus says SIRALI MAÇ, live room updates
+arrive under the new room RLS, +30 🏆 / +10 coins, loser floored at 0
+trophies with +2 coins); Friend Match under the new RLS (stats count,
+trophies/coins unchanged, no economy row); Practice Cevap spends real coins
+(50 → 47 on the server); friends: add by `bot#5wdx` (case-insensitive),
+request, accepted list with trophies and remove button.
+
+**Bugs found and fixed:**
+
+1. **Coins/trophies went stale after a ranked match** when the opponent
+   recorded the result first: `_recordResult` returned early on an
+   already-recorded room, and that call is also what refreshes the account
+   (Ana Sayfa's own refresh fires when matchmaking is *replaced* by the match,
+   i.e. at the start). It now always calls the idempotent RPC once.
+2. **Ranked result screen pushed Ana Sayfa off the bottom** — the trophy/coin
+   row did not fit with the frame's fixed gaps on a ~860 pt phone. Gaps now
+   shrink to 55 % when the available height is under 900 pt.
+3. **Test accounts on the real leaderboard.** Every bot run created a new
+   `Bot#XXXX`. `sbclient.Player(session=...)` now reuses a saved session and
+   `bot.py` keeps one per name in `supabase/.bot_<name>.local` (gitignored).
+   `supabase/purge_test_accounts.py` lists the leftovers (dry run) and deletes
+   them with `--apply`; run it after smoke tests. 006's test creates
+   realistically named players (`Yaman2`, `Şükrü_10`, `Yaman`) — pass their
+   tags with `--also`.
+
+**Not checked on device:** vibration (the emulator cannot show it; covered by
+the unit test that fails if any haptic skips the Titreşim setting), the
+offline first launch, incoming friend requests and the badge, rename, and
+cancelling matchmaking.

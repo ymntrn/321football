@@ -1,4 +1,196 @@
-# Testing checklist — branch `screens-from-figma`
+# Testing checklists
+
+- **§A — branch `front-door-and-ranked` (6 Oct 2026): NOT yet run.** Below.
+- §B onwards — branch `screens-from-figma`, run on the emulator 6 Oct 2026
+  (results at the end). Its fixed-bugs list still applies; nothing on the
+  new branch touches those code paths' rules (range comparisons, minPrefix
+  3, explicit fontFamily on RichText, blur-0 hard shadows, full-width
+  buttons).
+
+---
+
+# A. Accounts, front door, ranked — branch `front-door-and-ranked`
+
+Written in a cloud session with no emulator, no database file and no route
+to Supabase. What WAS checked there:
+
+- `flutter analyze` — clean
+- `flutter test` — 62 pass, including `test/front_door_layout_test.dart`
+  (every new screen at 430x932, 411x914, 360x640, offline state) and
+  `test/haptics_test.dart` (no raw HapticFeedback outside `Haptics`)
+- migrations 006–009 applied in order to a local Postgres 16 with Supabase
+  stubs and exercised by `supabase/localpg/check_00{6,7,8,9}.py` — 0
+  failures (profiles, tags, RLS, a whole match through
+  record_match_result twice, the economy, friends, pairing, the widening
+  window, cancel)
+
+Not checked anywhere: how any screen looks, the real Supabase project (auth
+settings, grants, Realtime under the new RLS), and any timing.
+
+## A0. Before anything — Supabase dashboard
+
+1. **Authentication → Sign In / Providers → "Allow anonymous sign-ins": ON.**
+   Without it the app cannot sign in, and after 006 nobody can read a room.
+2. Authentication → Rate Limits: the anonymous sign-in limit is per IP
+   (30/hour by default). Each smoke test makes 2–4 users; if a test says
+   "anonymous sign-in failed (429)", wait or raise the limit.
+3. (Optional baseline) run the OLD smoke tests now, before 006:
+   `python supabase\smoke_test.py`, `smoke_test_flow.py`, `smoke_test_004.py`,
+   `smoke_test_005.py`. **After 006 they fail by design** (they use the bare
+   key and random ids, which the new RLS refuses).
+
+## A1. Apply the migrations — in this order
+
+```
+python supabase\migrate.py supabase\006_accounts.sql
+python supabase\smoke_test_006.py
+python supabase\migrate.py supabase\007_results.sql
+python supabase\smoke_test_007.py
+python supabase\migrate.py supabase\008_friends.sql
+python supabase\smoke_test_008.py
+python supabase\migrate.py supabase\009_matchmaking.sql
+python supabase\smoke_test_009.py
+```
+
+Each smoke test ends with `FAILURES: 0`. If one fails, stop and paste its
+output. (009 assumes nobody else is queueing for ranked at that moment.)
+
+## A2. Build
+
+1. `git checkout front-door-and-ranked`
+2. **Run `app\tools\fetch_assets.ps1`** — 13 new exports (nav icons, trophy,
+   leaderboard toggle icons, pencil, the four profile stat icons, and the
+   Apple button). The URLs expire about **13 Oct 2026**. Then
+   `git add app/assets/img/*.png` and commit them. Until fetched, slots show
+   Material icons / emoji and the Apple button slot is empty.
+3. `app\tools\rebuild.ps1` (no Kotlin changed; incremental is fine).
+
+## A3. First launch — splash and username (48:570, 92:190, 94:190)
+
+1. `adb shell pm clear com.yamanturan.football321`, launch.
+2. **Splash:** `Yükleniyor` / `Veritabanı hazırlanıyor… %NN` over the
+   purple-to-blue bar on a dark track, `V 1.0.2026` at the foot.
+3. **Username screen** appears (only on a first launch). Tap the field — the
+   SYSTEM keyboard opens (deliberate: digits and `_` are allowed).
+   - Type `ab` → DEVAM ET stays dim, the hint turns red.
+   - Type `Yaman` → green ✓ in the field, green `Bu kullanıcı adı uygun`.
+   - DEVAM ET → for ~1 s the pill shows `Etiketin #XXXX` in green (the real
+     tag), then Ana Sayfa.
+4. Kill and relaunch: straight to Ana Sayfa, no username screen.
+5. Supabase → Table editor → `profiles`: one row, username `Yaman`, a
+   4-char tag with no 0/O/1/I, 0 trophies, 30 coins.
+
+Also try once **offline** (airplane mode) on a fresh `pm clear`: the
+username screen still accepts the name and goes to Ana Sayfa; coins and
+trophies read `–`; Practice works; Cevap is dimmed. Turn the network back
+on, relaunch → the chips fill in and the profile exists.
+
+## A4. Ana Sayfa (4:4)
+
+- Coin chip (top-left), trophy chip, the 👥 friends button with a green
+  count badge when someone has sent you a request.
+- Hemen Oyna (orange-red), Alıştırma Yap (green), Arkadaş Maçı (violet).
+- Bottom nav: leaderboard · shop · settings · person. Shop → `Mağaza
+  yakında`. From any tab, the Undo arrow returns to Ana Sayfa.
+- **Debug builds only:** long-press the coin chip → the old dev menu.
+- Back button on Ana Sayfa exits the app.
+
+## A5. Practice coins
+
+1. Alıştırma Yap → any level → Cevap → the confirm popup now shows
+   `Bakiyen 🪙 30` (82:469).
+2. `3 ALTIN HARCA` → the answer list; Ana Sayfa's coin chip later reads 27.
+3. Repeat until under 3 coins → the Cevap chip dims to 45% and does nothing.
+   (Give yourself coins back in the table editor.)
+
+## A6. Profil (53:469)
+
+- Name, `#TAG`, copy (copies `Name#TAG`), share, trophies, coin chip,
+  the Apple button **dimmed and not tappable**, four stat cards: Toplam
+  Maç, Kazanma Oranı `%NN`, Şu Anki Seri (+ `En iyi: N`), En Hızlı Cevap.
+- Pencil → rename popup. Try `x` (refused), then a valid name → saved; the
+  tag is unchanged. Check `profiles` in the dashboard.
+
+## A7. Friends (92:230, 97:190) — needs a second account
+
+Use the bot's account or `python -c` with sbclient; the simplest is:
+`python supabase\bot.py --ranked --name Kanka` (Ctrl+C it at once — it has
+created a profile `Kanka#XXXX`; the tag is printed as `bot is Kanka#XXXX`).
+
+1. 👥 → Arkadaşlar: your own card (tap → `Kimliğin kopyalandı`).
+2. ARKADAŞ EKLE → type `kanka#xxxx` (any case) → the result card with EKLE →
+   `İstek gönderildi`. Wrong tag → `Böyle bir oyuncu yok`. Your own id →
+   EKLE dimmed.
+3. The request shows under ARKADAŞLARIN as `bekliyor` with ✕.
+4. Accept it from the other side (smoke_test_008 style, or the dashboard:
+   set `friendships.status = 'accepted'`) → the row shows 🏆 and ✕.
+5. ✕ → confirm popup → SİL → gone.
+6. Incoming: have the other account send YOU a request → Ana Sayfa's 👥
+   shows a green `1`; Arkadaşlar shows it under İSTEKLER with ✓ / ✕.
+
+## A8. Leaderboards (51:567, 51:860)
+
+- Global: gold/silver/bronze podium, `4 – 100. SIRA`, the list scrolls, and
+  YOUR row is pinned above the nav with your rank in green.
+- Toggle (people icon) → Arkadaş: `N ARKADAŞ`, one list, your row green.
+- No flags (no country data — deliberate).
+
+## A9. Ayarlar (51:1088)
+
+- Two switches, `Ses` and `Titreşim`, both on. Version text.
+- **Titreşim off → play Practice: a wrong answer and a correct answer must
+  NOT vibrate; the team picker must not tick.** Back on → they vibrate.
+  Kill/relaunch → the switch keeps its state.
+- Ses toggles and persists; it plays nothing (no sound files yet).
+
+## A10. Ranked "Hemen Oyna" with the bot (12:95 → match → result)
+
+The app must host (the bot cannot drive a match); `--ranked` takes care of
+that whichever side pairs.
+
+1. `python supabase\bot.py --ranked` (add `--slow` to let yourself win). It
+   prints `queueing for ranked ...`.
+2. In the app: **Hemen Oyna** → Maç Aranıyor: the arched title, orange dots
+   circling, `Rakip aranıyor 0:0N`, `0 – 100 kupa aralığında
+   eşleştiriliyorsun` (widening by 100 every 5 s), your slot with trophies,
+   the dashed `?` slot, the red İptal.
+3. Within a second or two the slot fills with `Bot`, `bulundu!`, then
+   **Versus with `SIRALI MAÇ · İLK 3 GOL`**, then the normal match.
+4. Win (with `--slow`) → Kazandın with **`+30 🏆` and `+10 🪙`** under MAÇ
+   ÖZETİ. Lose → **`0 🏆`** (if you were at 0) or **`-20 🏆`** in red, and
+   `+2 🪙`.
+5. Ana Sayfa → the chips show the new trophies and coins. Profil: matches
+   +1, win rate, streak, fastest answer updated.
+6. Kazandın → **Tekrar Oyna → back to Maç Aranıyor** (queues again).
+7. **Cancel:** Hemen Oyna with no bot running → İptal → back on Ana Sayfa.
+   Android back does the same.
+8. Dashboard: `rooms` row has `ranked = true`, `result_recorded_at` set, the
+   four delta columns; `match_queue` is empty afterwards.
+
+## A11. Friend Match still works — and now counts
+
+1. Arkadaş Maçı → Oda Kur → `python supabase\bot.py <code>` → Başlat.
+2. Play to the end. The result screen has **no** trophy/coin row.
+3. Profil: matches +1 (stats count); trophies and coins unchanged.
+
+## A12. Things I am unsure about
+
+1. **Realtime under the new room RLS.** Postgres changes are filtered by
+   RLS, so the subscription now depends on the session JWT reaching
+   Realtime (supabase_flutter does this). The 2-second poll is a backstop
+   either way; if updates feel ~2 s late, Realtime is not seeing the JWT.
+2. Two clients polling find_match: the advisory lock serialises them;
+   watch for two rooms being created for one pair (should be impossible).
+3. Arc title and orbit loader on Maç Aranıyor — painted approximations;
+   compare with the frame.
+4. Nav-bar icon positions are scaled from the 430 frame; check on the
+   Pixel 6.
+5. Long usernames (16 chars) in the profile header and the leaderboard rows
+   (they shrink/ellipsize, never overflow — tested, but not looked at).
+
+---
+
+# B. Testing checklist — branch `screens-from-figma`
 
 Everything on this branch was written in a cloud session with **no emulator,
 no Android SDK and no database file**. What was checked there:
@@ -283,3 +475,46 @@ the database copy. Measure again on a release build on a real phone.
 - Data: pre-1990 players with year-less spells (e.g. Bertram Goode for Aston
   Villa × Liverpool) still count as answers — the 1990 cutoff lets NULL-year
   spells through.
+
+
+---
+
+## §A results — emulator run, 6 Oct 2026 (evening)
+
+Backend: anonymous sign-ins switched on in the dashboard; 006–009 applied in
+order; smoke tests 006/007/008/009 all `FAILURES: 0` (006 needed one re-run
+right after migrating — PostgREST's schema cache had not caught up yet).
+`finish_round` is untouched by 006–009, so 005's fix stands.
+
+**Verified on the emulator:** first launch → username screen (validation
+both ways, keyboard ✓ submits, real tag `#UKZH` from the server) → Ana Sayfa;
+Profil, Global and Arkadaş leaderboards, Ayarlar; ranked Hemen Oyna against
+`bot.py --ranked` (paired in ~1 s, Versus says SIRALI MAÇ, live room updates
+arrive under the new room RLS, +30 🏆 / +10 coins, loser floored at 0
+trophies with +2 coins); Friend Match under the new RLS (stats count,
+trophies/coins unchanged, no economy row); Practice Cevap spends real coins
+(50 → 47 on the server); friends: add by `bot#5wdx` (case-insensitive),
+request, accepted list with trophies and remove button.
+
+**Bugs found and fixed:**
+
+1. **Coins/trophies went stale after a ranked match** when the opponent
+   recorded the result first: `_recordResult` returned early on an
+   already-recorded room, and that call is also what refreshes the account
+   (Ana Sayfa's own refresh fires when matchmaking is *replaced* by the match,
+   i.e. at the start). It now always calls the idempotent RPC once.
+2. **Ranked result screen pushed Ana Sayfa off the bottom** — the trophy/coin
+   row did not fit with the frame's fixed gaps on a ~860 pt phone. Gaps now
+   shrink to 55 % when the available height is under 900 pt.
+3. **Test accounts on the real leaderboard.** Every bot run created a new
+   `Bot#XXXX`. `sbclient.Player(session=...)` now reuses a saved session and
+   `bot.py` keeps one per name in `supabase/.bot_<name>.local` (gitignored).
+   `supabase/purge_test_accounts.py` lists the leftovers (dry run) and deletes
+   them with `--apply`; run it after smoke tests. 006's test creates
+   realistically named players (`Yaman2`, `Şükrü_10`, `Yaman`) — pass their
+   tags with `--also`.
+
+**Not checked on device:** vibration (the emulator cannot show it; covered by
+the unit test that fails if any haptic skips the Titreşim setting), the
+offline first launch, incoming friend requests and the badge, rename, and
+cancelling matchmaking.

@@ -1,5 +1,6 @@
 # --- Secrets: never commit ---
 supabase/.pgpass.local
+supabase/*.local
 .env
 .env.*
 *.jks

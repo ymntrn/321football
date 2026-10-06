@@ -19,6 +19,9 @@ enum JoinFailure {
 
   /// Could not reach Supabase at all.
   network,
+
+  /// The code is this player's own room (006 refuses playing yourself).
+  ownRoom,
 }
 
 class JoinException implements Exception {
@@ -39,6 +42,8 @@ class JoinException implements Exception {
         return 'Oda dolu';
       case JoinFailure.network:
         return 'Bağlantı kurulamadı';
+      case JoinFailure.ownRoom:
+        return 'Bu senin odan';
     }
   }
 
@@ -95,6 +100,9 @@ class RoomRepository {
       }
       if (message.contains('room_in_progress')) {
         throw const JoinException(JoinFailure.inProgress);
+      }
+      if (message.contains('own_room')) {
+        throw const JoinException(JoinFailure.ownRoom);
       }
       if (message.contains('room_full')) {
         throw const JoinException(JoinFailure.full);
@@ -299,6 +307,35 @@ class RoomRepository {
     final row = await _client.rpc('active_room_for', params: {
       'p_player_id': playerId,
     });
+    if (row == null) return null;
+    final map = Map<String, dynamic>.from(row as Map);
+    if (map['code'] == null) return null;
+    return Room.fromRow(map);
+  }
+
+  /// Writes the finished match into both players' profiles (007). Safe to
+  /// call any number of times, from either seat: only the first call on a
+  /// finished match changes anything.
+  Future<Room> recordResult(String code) =>
+      _flow('record_match_result', {'p_code': code});
+
+  // -------------------------------------------------------------------------
+  // Ranked matchmaking (009)
+  // -------------------------------------------------------------------------
+  /// Joins the queue / heartbeats / tries to pair. Null while still waiting.
+  Future<Room?> findMatch() async {
+    final row = await _client.rpc('find_match');
+    return _roomOrNull(row);
+  }
+
+  /// Leaves the queue. Returns a room only if a match was made in the
+  /// instant before the cancel landed — the caller then enters it.
+  Future<Room?> leaveQueue() async {
+    final row = await _client.rpc('leave_queue');
+    return _roomOrNull(row);
+  }
+
+  static Room? _roomOrNull(Object? row) {
     if (row == null) return null;
     final map = Map<String, dynamic>.from(row as Map);
     if (map['code'] == null) return null;

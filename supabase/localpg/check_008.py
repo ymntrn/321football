@@ -1,0 +1,38 @@
+a, b, c = User(conn), User(conn), User(conn)
+pa = a.one("select * from create_profile('Ali_1')")
+pb = b.one("select * from create_profile('Kerem_07')")
+pc = c.one("select * from create_profile('Can')")
+ok("find exact, case-insensitive", a.one("select * from find_player('kerem_07', %s)", (pb["tag"].lower(),))["id"] == b.id)
+ok("underscore is not a wildcard", a.one("select * from find_player('keremX07', %s)", (pb["tag"],))["id"] is None)
+ok("not found raises", a.fails("select send_friend_request('Nobody', 'AAAA')"))
+ok("self refused", a.fails("select send_friend_request('Ali_1', %s)", (pa["tag"],)))
+ok("sent", a.one("select send_friend_request('Kerem_07', %s) as s", (pb["tag"],))["s"] == "sent")
+ok("already sent", a.one("select send_friend_request('Kerem_07', %s) as s", (pb["tag"],))["s"] == "already_sent")
+inc = b.q("select * from my_friends()")
+ok("b sees incoming", len(inc) == 1 and inc[0]["incoming"] and inc[0]["status"] == "pending", inc)
+out = a.q("select * from my_friends()")
+ok("a sees outgoing", len(out) == 1 and not out[0]["incoming"])
+ok("c sees nothing", c.q("select * from friendships") == [])
+b.q("select respond_friend_request(%s, true)", (a.id,))
+ok("accepted", a.one("select * from my_friends()")["status"] == "accepted")
+ok("already friends", b.one("select send_friend_request('Ali_1', %s) as s", (pa["tag"],))["s"] == "already_friends")
+# reverse request auto-accepts
+c.one("select send_friend_request('Ali_1', %s) as s", (pa["tag"],))
+ok("adding back accepts", a.one("select send_friend_request('Can', %s) as s", (pc["tag"],))["s"] == "accepted")
+lb = a.q("select username from friends_leaderboard()")
+ok("friends leaderboard has me + 2", len(lb) == 3, lb)
+# decline
+d = User(conn); pd = d.one("select * from create_profile('Deniz')")
+d.one("select send_friend_request('Can', %s)", (pc["tag"],))
+c.q("select respond_friend_request(%s, false)", (d.id,))
+ok("declined row gone", d.q("select * from my_friends()") == [])
+# remove
+a.q("select remove_friend(%s)", (b.id,))
+ok("removed", len(a.q("select * from my_friends()")) == 1)
+ok("direct insert refused", a.fails("insert into friendships (requester, addressee) values (auth.uid(), %s)", (b.id,)))
+with conn.cursor() as cur:
+    cur.execute("update profiles set trophies=500 where id=%s", (c.id,))
+ok("my_rank", c.one("select my_rank() as r")["r"] == 1)
+r = a.one("select my_rank() as r")["r"]
+order = [x["id"] for x in a.q("select id::text from profiles order by trophies desc, id")]
+ok("my_rank matches list order", order.index(a.id) + 1 == r, (r, order.index(a.id) + 1))

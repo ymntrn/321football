@@ -3,6 +3,8 @@
     python supabase\bot.py 123456          join that room and play
     python supabase\bot.py --host          create a room, print the code, wait
     python supabase\bot.py 123456 --slow    always answer slowly, so you win
+    python supabase\bot.py --ranked        queue for Hemen Oyna; tap it in
+                                            the app and the two get paired
 
 The emulator cannot be run twice on this machine (one instance is 2.4 GB of
 7.7), and there is no second phone, so this stands in for the opponent. It
@@ -15,53 +17,32 @@ here is always a protocol or timing bug and never the bot being bad at
 football.
 """
 import argparse
-import json
+import os
 import random
 import sqlite3
 import sys
 import time
-import urllib.error
-import urllib.request
-import uuid
 
-URL = "https://yjdcsdikcrdupqmaqoqn.supabase.co"
-KEY = "sb_publishable_gGylTdpJ4aI3KU6u6UNr9Q_ZaUhHthO"
+from sbclient import Player
+
 DB = r"C:\Users\PC\Documents\321-football\app\assets\db\321_football.db"
 
-HEAD = {"apikey": KEY, "Authorization": "Bearer " + KEY,
-        "Content-Type": "application/json"}
-
-
-def call(method, path, body=None, extra=None):
-    headers = dict(HEAD)
-    if extra:
-        headers.update(extra)
-    data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(URL + path, data=data, headers=headers,
-                                 method=method)
-    try:
-        with urllib.request.urlopen(req, timeout=20) as r:
-            raw = r.read().decode()
-            return r.status, (json.loads(raw) if raw.strip() else None)
-    except urllib.error.HTTPError as e:
-        raw = e.read().decode()
-        try:
-            return e.code, json.loads(raw)
-        except ValueError:
-            return e.code, raw
+# Since 006_accounts.sql a room is visible only to its two players, so the bot
+# signs in anonymously exactly like the app and gets its own auth user (and a
+# profile called --name, so match results land on it).
+bot = None
 
 
 def rpc(fn, **params):
-    return call("POST", "/rest/v1/rpc/" + fn, params)
+    return bot.rpc(fn, **params)
 
 
 def get_room(code):
-    status, rows = call("GET", "/rest/v1/rooms?code=eq." + code + "&select=*")
-    return rows[0] if rows else None
+    return bot.get_room(code)
 
 
 def patch(code, body):
-    return call("PATCH", "/rest/v1/rooms?code=eq." + code, body)
+    return bot.patch_room(code, body)
 
 
 # ---------------------------------------------------------------------------
@@ -122,6 +103,8 @@ def play(code, me, seat, slow):
         if phase == "match_over":
             print("  match over: %s wins (%s)" % (room["winner"],
                                                   room["ended_reason"]))
+            # Idempotent (007): harmless if the app already recorded it.
+            rpc("record_match_result", p_code=code)
             return
 
         if phase == "picking" and room[seat + "_club_id"] is None:
@@ -154,11 +137,45 @@ def main():
     ap.add_argument("--host", action="store_true")
     ap.add_argument("--slow", action="store_true")
     ap.add_argument("--name", default="Bot")
+    ap.add_argument("--ranked", action="store_true",
+                    help="queue for ranked (Hemen Oyna) as the guest")
     args = ap.parse_args()
 
-    me = str(uuid.uuid4())
+    global bot
+    # One saved session per bot name (supabase/.bot_<name>.local, gitignored),
+    # so repeated runs are the same player rather than a new account each time.
+    bot = Player(session=os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                      ".bot_%s.local" % args.name.lower()))
+    status, prof = bot.rpc("create_profile", p_username=args.name)
+    if status != 200:
+        sys.exit("could not create the bot's profile: %s" % prof)
+    print("bot is %s#%s" % (prof["username"], prof["tag"]))
+    me = bot.id
 
-    if args.host:
+    if args.ranked:
+        # prefer_guest: the bot cannot drive a match (the host does), so it
+        # asks find_match to make the APP the host whichever side pairs.
+        # A fresh bot has 0 trophies, so it pairs with a player under 100
+        # at once and with anyone after a wait (+100 every 5 s).
+        print("queueing for ranked ...")
+        started = time.time()
+        while True:
+            status, room = rpc("find_match", p_prefer_guest=True)
+            if status != 200:
+                sys.exit("find_match failed: %s" % room)
+            if room and room.get("code"):
+                break
+            if int(time.time() - started) % 10 == 0:
+                print("  still waiting (%d s)" % (time.time() - started))
+            time.sleep(1)
+        code = room["code"]
+        seat = "host" if room["host_id"] == me else "guest"
+        print("paired in room %s with %s" % (code, room["host_name"]
+                                              if seat == "guest"
+                                              else room["guest_name"]))
+        if seat == "host":
+            print("WARNING: the bot ended up host and cannot drive the match")
+    elif args.host:
         status, room = rpc("create_room", p_host_id=me, p_host_name=args.name)
         print("ROOM CODE: %s" % room["code"])
         print("join it from the app, then the bot will start the match")

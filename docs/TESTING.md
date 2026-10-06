@@ -222,3 +222,64 @@ In rough order of how much I would want a second look:
 6. On a short phone, the result screen and GOOOL **scroll** rather than
    squeeze; the layout tests prove no overflow at 360x640, not that it
    looks good there.
+
+
+---
+
+## Results — emulator run, 6 Oct 2026
+
+Run on the Pixel 6 AVD, app as host, `supabase/bot.py` as guest, plus a
+throwaway driver that patched the host's club and typed answers on the
+emulator keyboard so rounds could be won inside ten seconds.
+
+**Verified working:** cold build (the new `MainActivity.kt` compiles, the
+streamed copy runs with no fallback), the progress splash, Practice end to end
+(Doğru card, Cevap → confirm → answer list → DEVAM with the streak kept), the
+Friend Match lobby, Versus, team pick and its 15 s auto-pick, the PvP board
+with the compact matchup strip, GOOOL with career line and answer time,
+Tur Bitti for a dead pair (round replayed with the same number), win and lose
+screens with a correct summary, and a live forfeit (`Rakip ayrıldı`).
+
+**Bugs found and fixed in this run:**
+
+1. **The match froze on an unplayable pair** — found on device, and older than
+   this branch. The host voids a dead pair from `picking`, but
+   `finish_round`'s guard only accepted `answering`/`countdown`, so the call
+   was a silent no-op retried four times a second. Fixed server-side in
+   `supabase/005_void_from_picking.sql` (applied), checked by
+   `smoke_test_005.py` (9/9); the three older smoke tests still pass.
+2. **The summary counted the deciding round twice** ("0/4 doğru" after three
+   rounds) — `finish_round` writes round_over and match_over in one call and
+   Realtime delivers both. `match_screen.dart` now skips match_over when it
+   follows round_over.
+3. **Career lines merged a club's spells** — Staunton showed
+   "Liverpool (1986–2000) → Aston Villa (1991–2003)". `mutualSpells` now
+   returns one entry per spell in career order, joining only back-to-back
+   spells at the same club.
+4. **A stale rejection stayed under the Doğru card** in Practice — cleared on
+   a correct answer now (the PvP board already did this).
+5. **Rematch was offered after a forfeit**, when the other player is gone —
+   now only after a match decided on goals.
+6. **Launch flashed white with the Flutter logo** — Android launch theme and
+   the Android 12+ system splash are now navy (`#0A0D3B`), no icon.
+7. **Supabase init blocked the first frame** — it now runs in parallel with
+   the database open.
+8. **The DB copy spent its time decompressing** — `.db` is stored
+   uncompressed in the APK (`noCompress`). Debug APK 189 → 219 MB; the Play
+   download size is unaffected.
+
+**Cold start on the debug emulator:** about 12 s from tap to ready, of which
+~7 s is the debug build's own engine start-up (absent in release) and ~5 s
+the database copy. Measure again on a release build on a real phone.
+
+**Noticed, not changed (decisions or later work):**
+
+- GÖNDER submits exactly what is typed; it does not take the highlighted
+  suggestion. That follows the exact-match rule, but the top row's ↵ mark
+  suggests otherwise. Decide which you want.
+- The coin count stays at 3 after "spending" 3 — there is no coin balance yet.
+- The VS glyph's SVG filter (its shadow) is ignored by flutter_svg.
+- Jaro's `0` renders as a hollow bar, very visible at timer and score sizes.
+- Data: pre-1990 players with year-less spells (e.g. Bertram Goode for Aston
+  Villa × Liverpool) still count as answers — the 1990 cutoff lets NULL-year
+  spells through.

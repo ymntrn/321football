@@ -92,9 +92,10 @@ nothing needing a paid plan.
 | `002_fix_grants.sql` | the table GRANTs `schema.sql` forgot |
 | `003_match_flow.sql` | `start_match`, `begin_countdown`, `open_answers`, `finish_round`, `next_round`, `forfeit`, `touch_seen` |
 | `004_forfeit_rematch_cleanup.sql` | `claim_forfeit`, `leave_match`, `rematch`, `active_room_for`, `abandon_stale_matches`, pg_cron jobs |
+| `005_void_from_picking.sql` | `finish_round` may void an unplayable pair straight from `picking` (the freeze found 6 Oct) |
 
 Verify with `smoke_test.py` (14), `smoke_test_flow.py` (26 — drives a whole
-match over HTTP), `smoke_test_004.py` (18). `audit.py` reports room counts,
+match over HTTP), `smoke_test_004.py` (18), `smoke_test_005.py` (9). `audit.py` reports room counts,
 cron jobs and anything stuck.
 
 ### Four things that were easy to get wrong

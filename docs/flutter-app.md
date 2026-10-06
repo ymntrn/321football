@@ -3,6 +3,11 @@
 Companion to `project-state.md` (the database) and `figma-to-flutter.md` (how
 the UI gets built). Last updated: 6 October 2026.
 
+> **6 Oct 2026, branch `release-prep`:** sound effects, the rewarded ad,
+> Google linking (off), Gizlilik/Destek, account deletion and release
+> signing/R8 — see `accounts-and-ranked.md` → *Release prep* and
+> `release.md`. Not yet run on the emulator (`TESTING.md` §R).
+
 > **6 Oct 2026 — branch `screens-from-figma`, written in a cloud session and
 > NOT yet run on the emulator.** Practice's three popups are now built from
 > Figma (see *Practice popups* below), the first-launch database copy is
@@ -57,6 +62,7 @@ environment variables — new terminals pick them up, existing ones do not.
 | `answer.py` | Answer key for any club pair, from the shipped asset DB |
 | `fetch_assets.ps1` | Re-downloads the exported Figma assets |
 | `export_name_fixture.py` | Regenerates the name-parity fixture |
+| `make_sfx.py` | Writes the placeholder sound effects into `assets/audio/` (stdlib only; replace a WAV with a real sound of the same name) |
 
 **`adb shell input text` does not work on this app.** The keyboard is a Flutter
 widget, not a system IME, so there is no text field for Android to type into.
@@ -110,7 +116,15 @@ Flutter's Visual Studio probe throws, even for an Android-only project.
                                       + Öneriler panel
         turkish_keyboard.dart         the four-row Klavye
 
+      ads/                            ad_config.dart (every AdMob id, TEST ids
+                                      until release), rewarded_coins_ad.dart
+                                      (consent + the 2X Altın rewarded ad)
+      legal/legal_text.dart           Gizlilik policy + terms (DRAFT), support
+                                      e-mail; docs/privacy-policy.md is
+                                      generated from it
+
     assets/img/                       exported Figma assets (see figma-to-flutter.md)
+    assets/audio/                     placeholder SFX (tools/make_sfx.py)
     android/.../MainActivity.kt       the `football321/asset_copy` channel
     test/match_layout_test.dart       overflow tests for the new screens at
                                       430x932, 411x914 and 360x640

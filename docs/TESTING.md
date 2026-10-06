@@ -1,11 +1,182 @@
 # Testing checklists
 
-- **§A — branch `front-door-and-ranked` (6 Oct 2026): NOT yet run.** Below.
+- **§R — branch `release-prep` (6 Oct 2026): NOT yet run.** Below.
+- §A — branch `front-door-and-ranked`: run on the emulator 6 Oct 2026
+  (results at the end). Its fixed-bugs list still applies.
 - §B onwards — branch `screens-from-figma`, run on the emulator 6 Oct 2026
   (results at the end). Its fixed-bugs list still applies; nothing on the
   new branch touches those code paths' rules (range comparisons, minPrefix
   3, explicit fontFamily on RichText, blur-0 hard shadows, full-width
   buttons).
+
+---
+
+# R. Release prep — branch `release-prep`
+
+Written in a cloud session: no emulator, no Android SDK (Google's Android
+download hosts are blocked there, so **Gradle never ran**), no database
+file, no route to Supabase. What WAS checked there:
+
+- `flutter analyze` — clean; `flutter test` — 95 pass, including
+  `sfx_assets_test` (every Sfx has its file), `release_config_test`
+  (Google flag off, ad ids well-formed and readable by Gradle, no banner /
+  interstitial, signing / R8 / label / version settings), `legal_text_test`
+  (the hosted policy matches the in-app text) and overflow tests for the
+  2X Altın result screen, Gizlilik and Destek at three sizes
+- migrations 010 and 011 applied after 006–009 to a local Postgres 16
+  (`supabase/localpg/`, `check_010.py` 16 checks, `check_011.py` 11
+  checks, 0 failures overall)
+
+Not checked anywhere: any sound, any ad, the Gradle build (signing, R8,
+the AdMob-id placeholder), Google Sign-In, the mail intent, and whether
+Supabase lets `delete_my_account` delete from `auth.users`.
+
+## R0. Supabase — apply 010, THEN 011
+
+011 deletes from 010's `coin_doubles` table, so the order matters.
+
+```
+python supabase\migrate.py supabase\010_double_reward.sql
+python supabase\smoke_test_010.py
+python supabase\migrate.py supabase\011_delete_account.sql
+python supabase\smoke_test_011.py
+python supabase\purge_test_accounts.py          (lists the Smoke* players)
+python supabase\purge_test_accounts.py --apply
+```
+
+Each smoke test ends with `FAILURES: 0`; if PostgREST says the function
+does not exist, wait a few seconds (schema cache) and re-run, as with 006.
+
+- **smoke_test_011's "auth user gone" is the important line.** Locally the
+  function owner is a superuser; on Supabase it is `postgres`, which may
+  or may not be allowed to delete from `auth.users`. If that line fails,
+  paste the output — the fix is a small new migration, not an edit to 011.
+
+## R1. Build
+
+1. `git checkout release-prep`, `flutter pub get` (new packages:
+   `audioplayers`, `google_mobile_ads`, `google_sign_in`, `url_launcher`).
+2. **Cold build** (`app\tools\build_apk.ps1`): four new native plugins,
+   the manifest and `build.gradle.kts` changed. If it fails, the likely
+   places are, in order: the AdMob-id regex near the top of
+   `build.gradle.kts` (error says `admobAppIdAndroid not found`), the
+   `signingConfigs` block, a plugin's minSdk. Paste the error.
+3. Launch. **The app must not crash at start** — the Mobile Ads SDK
+   crashes on launch if the manifest's APPLICATION_ID is missing.
+   `adb logcat | findstr /i "ads"` should show the SDK initialising.
+4. Home screen label and recent-apps title read **321 Football**.
+
+## R2. Sound effects (Ses on)
+
+Placeholder beeps (`tools/make_sfx.py`); judge timing, not quality.
+
+| Moment | Sound |
+|---|---|
+| Any letter / boşluk / ⌫ on the custom keyboard (Practice, PvP board, team picker) | short click (`tap`) — GÖNDER itself does not click |
+| Correct answer (Practice, PvP) | rising two-note (`correct`) |
+| Wrong answer | low buzz (`wrong`) |
+| Countdown 3 · 2 · 1 | one tick per numeral (`tick`) |
+| GOOOL | fanfare + noise (`goal`) |
+| Tur Bitti | two falling notes (`round_over`) |
+| Kazandın / Kaybettin | arpeggio up (`win`) / slide down (`lose`) |
+| Maç Aranıyor → opponent found | two pings (`match_found`) |
+| Ayarlar → Ses switched ON | one click (proof it works) |
+
+- **Ses off → none of the above**, everywhere; kill / relaunch keeps it.
+- Titreşim is independent: Ses off + Titreşim on still vibrates.
+- Play music from another app, then play: the music keeps going under the
+  effects (mixed, not ducked or stopped).
+- Typing fast does not stack clicks into a buzz (each effect restarts).
+
+## R3. 2X Altın — the rewarded ad (Figma 46:352)
+
+Test ads (Google's test ids) — they say "Test Ad".
+
+1. `python supabase\bot.py --ranked --slow`, Hemen Oyna, **win**.
+2. On Kazandın, within a second or two: **Tekrar Oyna and 2X Altın side by
+   side** (170x90 each, the right one yellow with a coin), the coin row
+   reading `+10`. Compare with the frame.
+3. Tap 2X Altın → the test rewarded ad → watch it to the end → close.
+   The coin row now reads **`+20`**, the 2X button is gone (Tekrar Oyna is
+   full-width again), Ana Sayfa's coin chip shows +20 in total for the
+   match.
+4. Dashboard: `coin_doubles` has one row for that room; the profile's
+   coins rose by 10 more.
+5. Again, but **close the ad early** → button gone, coins stay at +10.
+6. Again, but turn on **airplane mode** just before the last goal → no 2X
+   button at all; the screen is otherwise normal.
+7. **Lose** a ranked match → no 2X button. **Friend Match win** → no 2X.
+8. Short phone check: on the Pixel 6 the ranked win with the 2X row still
+   shows Ana Sayfa without scrolling far (fixed bug A-2 in §A results).
+
+Not testable from Turkey without extra setup: the EEA/UK consent form
+(UMP). Optional: AdMob → Privacy & messaging, plus a debug geography.
+
+## R4. Google ile bağla — flag OFF
+
+- Profil: **no Google button**; the Apple button exactly as before
+  (dimmed, not tappable).
+- With the flag on (only after `release.md` Appendix A): Profil → Google
+  ile bağla → picker → "Hesabın Google'a bağlandı" → button reads
+  "Google'a bağlı ✓". Supabase → Auth → Users: same user id, provider
+  google. Then `pm clear`, pick a new username, Profil → Google ile bağla
+  → **BU GOOGLE HESABI KULLANILIYOR** → O HESABA GEÇ → the old name, tag,
+  trophies and coins come back. (The fresh account made in between is left
+  behind on the leaderboard — `purge_test_accounts.py` lists it.)
+
+## R5. Gizlilik & Şartlar (92:270) and Destek & İletişim (92:310)
+
+Ayarlar → each row now opens its screen (no more `Yakında`).
+
+- **Gizlilik:** title, `Son güncelleme: 6 Ekim 2026`, the orange TASLAK
+  card, `GİZLİLİK POLİTİKASI` cards, `KULLANIM ŞARTLARI` cards, the thin
+  scrollbar on the right; scrolls to the end; Undo goes back.
+- **Destek:** the first FAQ open with `−`; tapping another opens it and
+  closes the first. `BİZE ULAŞ` card: tap the e-mail row → "E-posta adresi
+  kopyalandı"; **SORUN BİLDİR** → the mail app with the address, subject
+  "321 Football — Sorun bildirimi" and a body ending with `Kimlik:
+  Name#TAG` and the version. (No mail app on the emulator → it copies the
+  address instead.) The `Kimlik · Sürüm · Veri` line shows your real
+  `Name#TAG`.
+- Compare both with their frames; the deliberate differences are listed
+  in each screen's class comment.
+
+## R6. Hesabımı sil — on a THROWAWAY account
+
+**Not on your real account.** `adb shell pm clear com.yamanturan.football321`
+first, pick a username like `SilTest`, play nothing or one Practice Cevap.
+
+1. Optionally add the bot as a friend (§A7) so the friendship row exists.
+2. Ayarlar → Destek → scroll down → `HESAP` → **Hesabımı sil** (red) →
+   popup **HESABINI SİL** naming `SilTest#XXXX` → VAZGEÇ → nothing happens.
+3. Again → **KALICI OLARAK SİL** → the username screen (first launch).
+4. Dashboard: no `profiles` row for that id, no `friendships` rows, no
+   `match_queue` row, and Authentication → Users no longer lists the user.
+5. Pick a new username → Ana Sayfa; a **new tag**, 30 coins, 0 trophies.
+6. Airplane mode → Hesabımı sil → KALICI OLARAK SİL → "Bağlantı
+   kurulamadı", still on Destek, nothing deleted.
+
+## R7. Release build (R8) — before any Play upload
+
+1. Without `key.properties`: `flutter build apk --release` (signed with the
+   debug key) → `adb install -r build\app\outputs\flutter-apk\app-release.apk`.
+2. Play it as a player would: cold start (database copy), Practice, a
+   ranked match against the bot with a win and **2X Altın** (proves R8 kept
+   the ads SDK), sounds, Destek's SORUN BİLDİR, a Friend Match.
+3. Any crash: `adb logcat` — `ClassNotFoundException` /
+   `NoSuchMethodException` mean a missing keep rule in
+   `android/app/proguard-rules.pro`; paste it.
+4. With `key.properties` (release.md step 1):
+   `flutter build appbundle --release` succeeds and the `.aab` is signed
+   with the upload key (`keytool -printcert -jarfile app-release.aab`).
+
+## R8. Regressions
+
+Nothing on this branch touches the rules in §A/§B's fixed-bug lists, but
+re-check the ones near changed code: ranked coins/trophies refresh after a
+match (§A results 1), the ranked result screen fits the Pixel 6 (§A
+results 2 — now with the 2X row), Practice's three popups (keyboard now
+clicks), the team picker's tick haptic.
 
 ---
 
@@ -69,7 +240,7 @@ output. (009 assumes nobody else is queueing for ranked at that moment.)
 
 1. `adb shell pm clear com.yamanturan.football321`, launch.
 2. **Splash:** `Yükleniyor` / `Veritabanı hazırlanıyor… %NN` over the
-   purple-to-blue bar on a dark track, `V 1.0.2026` at the foot.
+   purple-to-blue bar on a dark track, `V 1.0.0` at the foot.
 3. **Username screen** appears (only on a first launch). Tap the field — the
    SYSTEM keyboard opens (deliberate: digits and `_` are allowed).
    - Type `ab` → DEVAM ET stays dim, the hint turns red.

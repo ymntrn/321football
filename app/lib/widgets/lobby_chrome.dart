@@ -193,7 +193,9 @@ class LobbyAvatar extends StatelessWidget {
 ///
 /// The violet [LobbyButtonTone.mor] is the result screens' `Tekrar Oyna`
 /// (48:559, 341x90, type/40) and `Ana Sayfa` (48:562, 247x62, type/24) —
-/// same construction, the Friend Match violet fill.
+/// same construction, the Friend Match violet fill. [LobbyButtonTone.altin]
+/// is the ranked win's `2X Altın` (46:516), which carries a coin as its
+/// [trailing] widget.
 class LobbyButton extends StatelessWidget {
   const LobbyButton({
     super.key,
@@ -202,9 +204,13 @@ class LobbyButton extends StatelessWidget {
     this.tone = LobbyButtonTone.go,
     this.height = 90,
     this.fontSize = T.t40,
+    this.trailing,
   });
 
   final String label;
+
+  /// Drawn after the label (the coin on `2X Altın`).
+  final Widget? trailing;
   final VoidCallback? onTap;
   final LobbyButtonTone tone;
   final double height;
@@ -228,6 +234,7 @@ class LobbyButton extends StatelessWidget {
               LobbyButtonTone.go => T.yesilGradient,
               LobbyButtonTone.waiting => T.turuncuGradient,
               LobbyButtonTone.mor => T.morGradient(0.82),
+              LobbyButtonTone.altin => T.altinGradient,
             },
           ),
           child: Stack(
@@ -238,13 +245,22 @@ class LobbyButton extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: T.sLg),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      fontFamily: T.fontUi,
-                      fontSize: fontSize,
-                      color: T.beyaz100,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontFamily: T.fontUi,
+                          fontSize: fontSize,
+                          color: T.beyaz100,
+                        ),
+                      ),
+                      if (trailing != null) ...[
+                        const SizedBox(width: T.sXs),
+                        trailing!,
+                      ],
+                    ],
                   ),
                 ),
               ),
@@ -256,4 +272,4 @@ class LobbyButton extends StatelessWidget {
   }
 }
 
-enum LobbyButtonTone { go, waiting, mor }
+enum LobbyButtonTone { go, waiting, mor, altin }

@@ -602,9 +602,12 @@ class MatchSummary {
 /// +10 / +2 coins — the frame's +20 coins predates the decided economy). A
 /// Friend Match awards neither, so it has no row.
 ///
-/// Left out on purpose: the `2X Altın` button (ads, out of scope). With it
-/// gone, `Tekrar Oyna` takes the full-width 341x90 form the Kaybetme frame
-/// already uses, on both screens. In a ranked match it queues again.
+/// `2X Altın` (46:516): on a RANKED WIN, once a rewarded ad is loaded,
+/// [onDoubleCoins] is set and the frame's pair of 170x90 buttons appears —
+/// violet `Tekrar Oyna` beside the yellow `2X Altın` with its coin. With no
+/// ad (none loaded, failed, already used, a loss, a Friend Match) the button
+/// is simply absent and `Tekrar Oyna` takes the full-width 341x90 form the
+/// Kaybetme frame uses. In a ranked match Tekrar Oyna queues again.
 class MatchResultScreen extends StatelessWidget {
   const MatchResultScreen({
     super.key,
@@ -620,7 +623,11 @@ class MatchResultScreen extends StatelessWidget {
     this.ranked = false,
     this.trophyDelta,
     this.coinDelta,
+    this.onDoubleCoins,
   });
+
+  /// Shows `2X Altın`; null hides it (see the class doc).
+  final VoidCallback? onDoubleCoins;
 
   /// A Hemen Oyna match: show the economy row.
   final bool ranked;
@@ -713,7 +720,12 @@ class MatchResultScreen extends StatelessWidget {
                         SizedBox(height: gap(40)),
                       // A rematch keeps the same room and the same code, so
                       // nobody has to share a new one to play again.
-                      if (onRematch != null)
+                      if (onDoubleCoins != null)
+                        _RematchAndDouble(
+                          onRematch: onRematch,
+                          onDoubleCoins: onDoubleCoins!,
+                        )
+                      else if (onRematch != null)
                         SizedBox(
                           width: 341,
                           child: LobbyButton(
@@ -742,6 +754,51 @@ class MatchResultScreen extends StatelessWidget {
             },
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// 46:514 + 46:516: the two 170x90 buttons, 10pt apart on a 350 row,
+/// type/24 — `Tekrar Oyna` (violet) and `2X Altın` with a 37x35 coin
+/// (yellow).
+class _RematchAndDouble extends StatelessWidget {
+  const _RematchAndDouble({
+    required this.onRematch,
+    required this.onDoubleCoins,
+  });
+
+  final VoidCallback? onRematch;
+  final VoidCallback onDoubleCoins;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 350,
+      child: Row(
+        children: [
+          if (onRematch != null) ...[
+            Expanded(
+              child: LobbyButton(
+                label: 'Tekrar Oyna',
+                tone: LobbyButtonTone.mor,
+                fontSize: T.t24,
+                onTap: onRematch,
+              ),
+            ),
+            const SizedBox(width: T.sMd),
+          ],
+          Expanded(
+            child: LobbyButton(
+              key: const ValueKey('double-coins'),
+              label: '2X Altın',
+              tone: LobbyButtonTone.altin,
+              fontSize: T.t24,
+              trailing: const CoinIcon(size: 36),
+              onTap: onDoubleCoins,
+            ),
+          ),
+        ],
       ),
     );
   }

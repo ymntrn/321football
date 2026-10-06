@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'ads/rewarded_coins_ad.dart';
 import 'data/app_database.dart';
 import 'net/account.dart';
 import 'net/identity.dart';
@@ -28,6 +31,10 @@ Future<void> main() async {
   supabaseReady = _initSupabase();
 
   runApp(const App());
+
+  // Ad consent (EEA/UK only, when required) and the Mobile Ads SDK, in the
+  // background. Only "2X Altın" on a ranked win uses them.
+  unawaited(RewardedCoinsAd.initialize());
 }
 
 /// Completes once Supabase.initialize has finished (or failed). Never throws.
@@ -56,7 +63,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '321 Football Challenge',
+      // Android's recent-apps label; matches android:label.
+      title: '321 Football',
       debugShowCheckedModeBanner: false,
       theme: T.theme(),
       home: const _Boot(),

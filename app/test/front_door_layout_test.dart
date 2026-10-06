@@ -9,11 +9,14 @@ import 'package:football321/screens/home_screen.dart';
 import 'package:football321/screens/leaderboard_screen.dart';
 import 'package:football321/screens/match_end_screens.dart';
 import 'package:football321/screens/matchmaking_screen.dart';
+import 'package:football321/screens/privacy_screen.dart';
 import 'package:football321/screens/profile_screen.dart';
 import 'package:football321/screens/settings_screen.dart';
+import 'package:football321/screens/support_screen.dart';
 import 'package:football321/screens/username_screen.dart';
 import 'package:football321/settings/app_settings.dart';
 import 'package:football321/theme/tokens.dart';
+import 'package:football321/widgets/screen_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Overflow tests for the front-door screens, at the design frame, the
@@ -62,6 +65,8 @@ void main() {
     'profile': () => const ProfileScreen(),
     'settings': () => const SettingsScreen(),
     'friends': () => const FriendsScreen(),
+    'privacy': () => const PrivacyScreen(),
+    'support': () => const SupportScreen(),
     'matchmaking': () => const MatchmakingScreen(),
     'ranked win': () => MatchResultScreen(
           won: true,
@@ -119,5 +124,63 @@ void main() {
     await tester.tap(find.text('Titreşim'));
     await tester.pump();
     expect(AppSettings.instance.haptics.value, isTrue);
+  });
+
+  testWidgets('settings opens Gizlilik and Destek (no more Yakında)',
+      (tester) async {
+    await _pumpAt(tester, _sizes[1], const SettingsScreen());
+    await tester.tap(find.text('Gizlilik & Kullanım Şartları'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PrivacyScreen), findsOneWidget);
+    expect(find.textContaining('TASLAK'), findsOneWidget);
+    await tester.tap(find.byType(UndoButton));
+    await tester.pumpAndSettle();
+    expect(find.byType(PrivacyScreen), findsNothing);
+    await tester.tap(find.text('Destek & İletişim'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SupportScreen), findsOneWidget);
+    expect(find.text('Yakında'), findsNothing);
+  });
+
+  testWidgets('Destek: one FAQ answer open at a time', (tester) async {
+    await _pumpAt(tester, _sizes[0], const SupportScreen());
+    final first = SupportScreen.faq.first;
+    final second = SupportScreen.faq[1];
+    expect(find.text(first.body), findsOneWidget);
+    expect(find.text(second.body), findsNothing);
+    await tester.tap(find.text(second.title));
+    await tester.pump();
+    expect(find.text(first.body), findsNothing);
+    expect(find.text(second.body), findsOneWidget);
+    expect(find.textContaining('Yaman#7K2M'), findsOneWidget);
+  });
+
+  testWidgets('Hesabımı sil asks first; VAZGEÇ deletes nothing',
+      (tester) async {
+    await _pumpAt(tester, _sizes[1], const SupportScreen());
+    await tester.ensureVisible(find.text('Hesabımı sil'));
+    await tester.pump();
+    await tester.tap(find.text('Hesabımı sil'));
+    await tester.pumpAndSettle();
+    expect(find.text('HESABINI SİL'), findsOneWidget);
+    expect(find.text('KALICI OLARAK SİL'), findsOneWidget);
+    await tester.tap(find.text('VAZGEÇ'));
+    await tester.pumpAndSettle();
+    expect(find.text('HESABINI SİL'), findsNothing);
+    expect(Identity.instance.hasUsername, isTrue);
+  });
+
+  testWidgets('Hesabımı sil offline: refuses and keeps the account',
+      (tester) async {
+    await _pumpAt(tester, _sizes[1], const SupportScreen());
+    await tester.ensureVisible(find.text('Hesabımı sil'));
+    await tester.pump();
+    await tester.tap(find.text('Hesabımı sil'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('KALICI OLARAK SİL'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bağlantı kurulamadı'), findsOneWidget);
+    expect(find.byType(SupportScreen), findsOneWidget);
+    expect(Identity.instance.hasUsername, isTrue);
   });
 }

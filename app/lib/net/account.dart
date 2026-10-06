@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/profile.dart';
+import 'auth_config.dart';
 import 'identity.dart';
 
 /// Why an account call failed, in terms a screen can show.
@@ -175,6 +177,140 @@ class Account {
     }
   }
 
+  // -------------------------------------------------------------------------
+  // Google account linking (behind AuthConfig.googleLinkingEnabled)
+  // -------------------------------------------------------------------------
+  /// Whether this account already has a Google identity attached.
+  bool get googleLinked =>
+      _client?.auth.currentUser?.identities
+          ?.any((i) => i.provider == 'google') ??
+      false;
+
+  static bool _googleReady = false;
+
+  /// Asks Google for an ID token (the native account picker). Null when the
+  /// player cancels.
+  Future<String?> _googleIdToken() async {
+    final google = GoogleSignIn.instance;
+    if (!_googleReady) {
+      await google.initialize(serverClientId: AuthConfig.googleWebClientId);
+      _googleReady = true;
+    }
+    try {
+      final account = await google.authenticate();
+      return account.authentication.idToken;
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled ||
+          e.code == GoogleSignInExceptionCode.interrupted) {
+        return null;
+      }
+      throw AccountException('Google girişi başarısız (${e.code.name})');
+    }
+  }
+
+  /// Profil's "Google ile bağla": attaches a Google identity to the CURRENT
+  /// anonymous user (Supabase identity linking). The user id does not change,
+  /// so the profile, tag, trophies, coins, friends and stats all stay; what
+  /// changes is that a later install can get back to them by signing in
+  /// with the same Google account ([switchToGoogleAccount]).
+  ///
+  /// Returns [GoogleLink.linked], [GoogleLink.cancelled], or
+  /// [GoogleLink.belongsToAnother] when that Google account is already
+  /// attached to a different player (typically: this is a reinstall and the
+  /// old progress lives there). Throws [AccountException] otherwise.
+  Future<GoogleLink> linkGoogle() async {
+    if (!AuthConfig.googleLinkingAvailable) {
+      throw const AccountException('Google bağlama henüz açık değil');
+    }
+    if (!await ensureOnline()) {
+      throw const AccountException('Bağlantı kurulamadı');
+    }
+    final idToken = await _googleIdToken();
+    if (idToken == null) return GoogleLink.cancelled;
+    _pendingIdToken = idToken;
+    try {
+      await _client!.auth.linkIdentityWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+      );
+      _pendingIdToken = null;
+      await _client!.auth.refreshSession();
+      return GoogleLink.linked;
+    } on AuthException catch (e) {
+      if (e.code == 'identity_already_exists') {
+        return GoogleLink.belongsToAnother;
+      }
+      if (e.code == 'manual_linking_disabled') {
+        throw const AccountException('Supabase: manual linking kapalı');
+      }
+      throw AccountException(e.message);
+    }
+  }
+
+  /// The ID token from the last [linkGoogle] that found the Google account
+  /// already in use, so switching does not open the picker twice.
+  String? _pendingIdToken;
+
+  /// After [GoogleLink.belongsToAnother], with the player's confirmation:
+  /// signs in AS the player that Google account belongs to. The anonymous
+  /// account on this device is left behind (its progress is not merged).
+  Future<void> switchToGoogleAccount() async {
+    final client = _client;
+    if (client == null) throw const AccountException('Bağlantı kurulamadı');
+    final idToken = _pendingIdToken ?? await _googleIdToken();
+    if (idToken == null) return;
+    try {
+      final res = await client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+      );
+      _pendingIdToken = null;
+      final user = res.user;
+      if (user == null) throw const AccountException('Giriş başarısız');
+      Identity.instance.bindAuth(user.id);
+      profile.value = null;
+      await _loadOrCreate(user.id);
+    } on AuthException catch (e) {
+      throw AccountException(e.message);
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Account deletion (011)
+  // -------------------------------------------------------------------------
+  /// Destek's "Hesabımı sil", after the player confirmed. Deletes the
+  /// profile, friendships, queue entry and auth user on the server
+  /// (delete_my_account), then signs this device out and forgets the name,
+  /// so the app starts over at the username screen. Throws
+  /// [AccountException] if the server cannot be reached — nothing is
+  /// deleted locally in that case.
+  Future<void> deleteAccount() async {
+    if (!await ensureOnline()) {
+      throw const AccountException('Bağlantı kurulamadı');
+    }
+    final client = _client!;
+    try {
+      await client.rpc('delete_my_account');
+    } on PostgrestException catch (e) {
+      throw AccountException(e.message);
+    }
+    // The server user is gone, so only the local session can be dropped.
+    try {
+      await client.auth.signOut(scope: SignOutScope.local);
+    } catch (e) {
+      debugPrint('local sign-out after deletion: $e');
+    }
+    if (_googleReady) {
+      try {
+        await GoogleSignIn.instance.signOut();
+      } catch (e) {
+        debugPrint('google sign-out after deletion: $e');
+      }
+    }
+    profile.value = null;
+    await Identity.instance.forget();
+  }
+
   static Map<String, dynamic> _toRow(Profile p) => {
         'id': p.id,
         'username': p.username,
@@ -188,3 +324,6 @@ class Account {
         'fastest_answer_ms': p.fastestAnswerMs,
       };
 }
+
+/// What [Account.linkGoogle] did.
+enum GoogleLink { linked, cancelled, belongsToAnother }

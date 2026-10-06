@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../settings/app_settings.dart';
 import '../theme/tokens.dart';
 
 /// The shared `Klavye` component (Figma 77:338).
@@ -43,6 +44,13 @@ class TurkishKeyboard extends StatelessWidget {
   static const bottomHeight = 50.0;
   static const gap = T.sXxs; // 4
   static const trayPad = 5.0;
+
+  /// Letters, space and backspace click. GÖNDER does not: the correct /
+  /// wrong sound that follows it is its feedback.
+  static void _tap(VoidCallback action) {
+    Sounds.play(Sfx.tap);
+    action();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +99,7 @@ class TurkishKeyboard extends StatelessWidget {
             width: unit,
             height: keyHeight,
             label: letters[i],
-            onTap: () => onKey(letters[i]),
+            onTap: () => _tap(() => onKey(letters[i])),
           ),
         ],
       ],
@@ -108,7 +116,7 @@ class TurkishKeyboard extends StatelessWidget {
             width: unit,
             height: keyHeight,
             label: row3[i],
-            onTap: () => onKey(row3[i]),
+            onTap: () => _tap(() => onKey(row3[i])),
           ),
         ],
         const SizedBox(width: gap),
@@ -118,7 +126,7 @@ class TurkishKeyboard extends StatelessWidget {
           label: '⌫',
           dark: true,
           fontSize: T.t17,
-          onTap: onBackspace,
+          onTap: () => _tap(onBackspace),
         ),
       ],
     );
@@ -138,7 +146,7 @@ class TurkishKeyboard extends StatelessWidget {
           dark: true,
           radius: T.rSm,
           fontSize: T.t17,
-          onTap: onSpace,
+          onTap: () => _tap(onSpace),
         ),
         const SizedBox(width: T.sXs),
         _Key(

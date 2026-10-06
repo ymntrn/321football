@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/tokens.dart';
 import 'match_chrome.dart' show playerInitials;
+import 'screen_background.dart' show UndoButton;
 
 /// The furniture shared by the front-door screens: Ana Sayfa (4:4), the
 /// leaderboards (51:567, 51:860), Profil (53:469), Ayarlar (51:1088),
@@ -943,6 +944,57 @@ class ScreenTitle extends StatelessWidget {
           color: T.beyaz100,
         ),
       ),
+    );
+  }
+}
+
+/// The top of the sub-pages Gizlilik (92:270) and Destek (92:310): Undo
+/// at the top-left, a centred type/34 title, and an optional type/13 line
+/// under it in beyaz/038.
+class SubPageHeader extends StatelessWidget {
+  const SubPageHeader({super.key, required this.title, this.subtitle});
+
+  final String title;
+  final String? subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        const Positioned(left: 5, top: -9, child: UndoButton()),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(60, 18, 60, 0),
+          child: Center(
+            child: Column(
+              children: [
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontFamily: T.fontUi,
+                      fontSize: T.t34,
+                      color: T.beyaz100,
+                    ),
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: T.sXs),
+                  Text(
+                    subtitle!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: T.fontUi,
+                      fontSize: T.t13,
+                      color: T.beyaz038,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

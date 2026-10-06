@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../models/profile.dart';
 import '../net/account.dart';
+import '../net/auth_config.dart';
 import '../net/identity.dart';
 import '../theme/tokens.dart';
 import '../widgets/app_chrome.dart';
@@ -22,6 +23,10 @@ import 'nav.dart';
 ///    avatar art lands.
 ///  * `Apple ile Giriş Yap` is Apple's own button asset, shown exactly as
 ///    exported and DISABLED (real sign-in comes later). Never restyle it.
+///  * `Google ile bağla` (no frame) sits under it, only while
+///    [AuthConfig.googleLinkingEnabled] is on — off by default. It is a
+///    GlassPanel the Apple button's size, the neighbouring screens' style,
+///    with no Google logo (no exported asset to use).
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -75,6 +80,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _Header(profile: p, onEdit: p == null ? null : () => _edit(p)),
                         const SizedBox(height: 46),
                         const _AppleButton(),
+                        if (AuthConfig.googleLinkingEnabled) ...[
+                          const SizedBox(height: T.sLg),
+                          const _GoogleLinkButton(),
+                        ],
                         const SizedBox(height: 38),
                         _Stats(profile: p),
                       ],
@@ -271,6 +280,110 @@ class _AppleButton extends StatelessWidget {
               // rather than showing an imitation of Apple's button.
               errorBuilder: (_, __, ___) =>
                   const SizedBox(width: 385, height: 56),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// "Google ile bağla": links this anonymous account to Google so it can be
+/// recovered after a reinstall. Reads "Google'a bağlı ✓" once linked.
+class _GoogleLinkButton extends StatefulWidget {
+  const _GoogleLinkButton();
+
+  @override
+  State<_GoogleLinkButton> createState() => _GoogleLinkButtonState();
+}
+
+class _GoogleLinkButtonState extends State<_GoogleLinkButton> {
+  bool _busy = false;
+
+  Future<void> _link() async {
+    setState(() => _busy = true);
+    try {
+      final result = await Account.instance.linkGoogle();
+      if (!mounted) return;
+      switch (result) {
+        case GoogleLink.linked:
+          showToast(context, 'Hesabın Google\'a bağlandı');
+        case GoogleLink.cancelled:
+          break;
+        case GoogleLink.belongsToAnother:
+          await _offerSwitch();
+      }
+    } on AccountException catch (e) {
+      if (mounted) showToast(context, e.message);
+    } catch (e) {
+      if (mounted) showToast(context, 'Bağlantı kurulamadı');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// The Google account already belongs to another player — after a
+  /// reinstall, the player's own old account. Offer to switch to it.
+  Future<void> _offerSwitch() async {
+    final yes = await AppPopup.show<bool>(
+      context,
+      AppPopup(
+        title: 'BU GOOGLE HESABI KULLANILIYOR',
+        children: [
+          const Text(
+            'Bu Google hesabı başka bir oyuncu hesabına bağlı. O hesaba '
+            'geçersen bu cihazdaki şimdiki hesabın ilerlemesi kaybolur.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: T.fontUi,
+              fontSize: T.t15,
+              color: T.beyaz065,
+            ),
+          ),
+          Builder(
+            builder: (context) => WideButton(
+              label: 'O HESABA GEÇ',
+              tone: WideButtonTone.orange,
+              fontSize: T.t22,
+              onTap: () => Navigator.of(context).pop(true),
+            ),
+          ),
+          Builder(
+            builder: (context) => QuietButton(
+              label: 'VAZGEÇ',
+              onTap: () => Navigator.of(context).pop(false),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (yes != true) return;
+    await Account.instance.switchToGoogleAccount();
+    if (mounted) showToast(context, 'Google hesabına geçildi');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final linked = Account.instance.googleLinked;
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 385),
+        child: SizedBox(
+          height: 56,
+          child: Opacity(
+            opacity: _busy ? 0.45 : 1,
+            child: GlassPanel(
+              onTap: linked || _busy ? null : _link,
+              child: Center(
+                child: Text(
+                  linked ? 'Google\'a bağlı ✓' : 'Google ile bağla',
+                  style: TextStyle(
+                    fontFamily: T.fontUi,
+                    fontSize: T.t19,
+                    color: linked ? T.yesil : T.beyaz100,
+                  ),
+                ),
+              ),
             ),
           ),
         ),

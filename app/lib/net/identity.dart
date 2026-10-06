@@ -82,6 +82,18 @@ class Identity {
     if (tag != null) await prefs.setString(_tagKey, tag);
   }
 
+  /// After "Hesabımı sil": forgets the name, tag and auth binding, so the
+  /// next screen is the first-launch username screen and the next sign-in
+  /// creates a brand-new anonymous player.
+  Future<void> forget() async {
+    _authId = null;
+    _username = null;
+    _tag = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_usernameKey);
+    await prefs.remove(_tagKey);
+  }
+
   /// A random v4 UUID, in the shape Postgres expects for a `uuid` column.
   static String _uuidV4() {
     final rng = Random.secure();

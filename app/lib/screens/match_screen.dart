@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../ads/rewarded_coins_ad.dart';
 import '../data/app_database.dart';
 import '../data/game_queries.dart';
 import '../models/models.dart';
@@ -106,6 +107,10 @@ class _MatchScreenState extends State<MatchScreen> {
   /// hiccup, short enough that nobody stares at a frozen round.
   static const _opponentSilence = 20;
 
+  /// The 3-2-1 numeral last ticked for, so each beat sounds once although
+  /// the loop runs four times a second.
+  int? _lastBeat;
+
   /// Claims are rate-limited because the tick runs four times a second and
   /// the answer does not change that fast.
   DateTime? _lastClaim;
@@ -130,6 +135,7 @@ class _MatchScreenState extends State<MatchScreen> {
 
   @override
   void dispose() {
+    _ad?.dispose();
     _sub?.cancel();
     _heartbeat?.cancel();
     _tick?.cancel();
@@ -192,8 +198,15 @@ class _MatchScreenState extends State<MatchScreen> {
       if (_room.phase == MatchPhase.matchOver) {
         Sounds.play(_room.winner == _me ? Sfx.win : Sfx.lose);
         unawaited(_recordResult());
+        // 2X Altın is offered on a ranked win only: start fetching the ad
+        // now, while GOOOL and the result screen are up.
+        if (_room.ranked && _room.winner == _me && _ad == null) {
+          _ad = RewardedCoinsAd()..load();
+        }
       }
     }
+
+    _countdownBeat();
 
     // Either player may claim an abandoned match, not just the host — a host
     // who walks out must not be the only one able to end the match, or the
@@ -265,6 +278,20 @@ class _MatchScreenState extends State<MatchScreen> {
       case MatchPhase.matchOver:
         break;
     }
+  }
+
+  /// One tick per numeral of the countdown, timed by the same unlock_at
+  /// instant MatchCountdownScreen counts down to.
+  void _countdownBeat() {
+    final unlock = _local(_room.unlockAt);
+    if (_room.phase != MatchPhase.countdown || unlock == null) {
+      _lastBeat = null;
+      return;
+    }
+    final ms = unlock.difference(DateTime.now()).inMilliseconds;
+    final n = ms <= 0 ? 0 : (ms / 1000).ceil();
+    if (n > 0 && n != _lastBeat) Sounds.play(Sfx.tick);
+    _lastBeat = n;
   }
 
   /// Has the opponent stopped checking in?
@@ -346,6 +373,37 @@ class _MatchScreenState extends State<MatchScreen> {
       }
     } finally {
       _recording = false;
+    }
+  }
+
+  /// The rewarded ad behind `2X Altın`; null unless this was a ranked win.
+  RewardedCoinsAd? _ad;
+
+  /// Once the ad has been shown (watched or not), the button is gone for
+  /// this match: one ad per match, and a failure leaves the normal reward.
+  bool _adUsed = false;
+
+  /// Plays the ad; only a fully watched one asks the server to double. The
+  /// server (double_match_coins, 010) holds "once per match, own ranked win
+  /// only" — this client just shows the result it returns.
+  Future<void> _doubleCoins() async {
+    final ad = _ad;
+    if (ad == null || _adUsed) return;
+    setState(() => _adUsed = true);
+    final earned = await ad.show();
+    if (!earned) return;
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        final room = await widget.rooms.doubleMatchCoins(_room.code);
+        if (mounted && room.phase == MatchPhase.matchOver) {
+          setState(() => _room = room);
+        }
+        await Account.instance.refresh();
+        return;
+      } catch (e) {
+        debugPrint('double_match_coins failed (attempt ${attempt + 1}): $e');
+        await Future<void>.delayed(const Duration(seconds: 1));
+      }
     }
   }
 
@@ -480,7 +538,24 @@ class _MatchScreenState extends State<MatchScreen> {
       note = null;
     }
 
+    final ad = _ad;
+    if (ad == null) return _resultScreen(note, reason, offerDouble: false);
+    return ValueListenableBuilder<bool>(
+      valueListenable: ad.ready,
+      builder: (context, ready, _) => _resultScreen(
+        note,
+        reason,
+        // Only once the win is recorded (the server refuses before that)
+        // and only while an ad is actually in hand.
+        offerDouble: ready && !_adUsed && _room.resultRecorded,
+      ),
+    );
+  }
+
+  Widget _resultScreen(String? note, String reason,
+      {required bool offerDouble}) {
     return MatchResultScreen(
+      onDoubleCoins: offerDouble ? _doubleCoins : null,
       won: _room.winner == _me,
       playerName: _room.nameOf(_me),
       opponentName: _room.nameOf(_them),

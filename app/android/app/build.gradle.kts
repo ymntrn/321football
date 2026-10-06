@@ -29,6 +29,13 @@ android {
         versionName = flutter.versionName
     }
 
+    // Store the bundled SQLite database uncompressed. Compressed, the first-launch
+    // copy spends most of its ~12 s inflating 62 MB; stored, it is a plain file
+    // copy. Costs install size, not Play download size (Play compresses anyway).
+    androidResources {
+        noCompress += listOf("db")
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

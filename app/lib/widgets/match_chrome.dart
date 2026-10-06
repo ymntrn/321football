@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 import '../theme/tokens.dart';
+import 'club_card.dart';
 import 'club_search_panel.dart';
 
 /// `Skor Şeridi` — the scoreboard across the top of every PvP screen
@@ -35,8 +36,8 @@ class MatchScoreStrip extends StatelessWidget {
   static const height = 43.0;
 
   static const _plateFill = Color(0xFFD9D9D9);
-  static const _playerFill = Color(0xFFFF840A);
-  static const _opponentFill = Color(0xFF39C831);
+  static const _playerFill = playerBlockFill;
+  static const _opponentFill = opponentBlockFill;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +54,10 @@ class MatchScoreStrip extends StatelessWidget {
         child: Row(
           children: [
             const SizedBox(width: 4.5),
-            Expanded(flex: 154, child: _block(playerName, _playerFill)),
+            Expanded(
+              flex: 154,
+              child: MatchNameBlock(name: playerName, fill: _playerFill),
+            ),
             SizedBox(
               width: 58,
               child: Row(
@@ -65,7 +69,10 @@ class MatchScoreStrip extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(flex: 157, child: _block(opponentName, _opponentFill)),
+            Expanded(
+              flex: 157,
+              child: MatchNameBlock(name: opponentName, fill: _opponentFill),
+            ),
             const SizedBox(width: 5.5),
           ],
         ),
@@ -73,13 +80,47 @@ class MatchScoreStrip extends StatelessWidget {
     );
   }
 
-  Widget _block(String name, Color fill) {
+  /// Jaro at type/34, black on the plate. The glyphs are taller than the
+  /// 43pt strip, so they are scaled down rather than clipped.
+  Widget _digit(int value) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(
+        '$value',
+        style: const TextStyle(
+          fontFamily: T.fontNumeral,
+          fontSize: T.t34,
+          color: Colors.black,
+          height: 1,
+        ),
+      ),
+    );
+  }
+}
+
+/// The score strip's block colours, also used for the name blocks on the
+/// result screens (46:362 / 46:363).
+const playerBlockFill = Color(0xFFFF840A);
+const opponentBlockFill = Color(0xFF39C831);
+
+/// One player's name block: 43pt tall, filled orange (this player) or green
+/// (the opponent), 1pt black stroke. Sized by its parent — give it a width
+/// (the strip's Expanded, or a SizedBox) or it fills what it is given.
+class MatchNameBlock extends StatelessWidget {
+  const MatchNameBlock({super.key, required this.name, required this.fill});
+
+  final String name;
+  final Color fill;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      height: height,
+      height: MatchScoreStrip.height,
+      width: double.infinity,
       decoration: BoxDecoration(
         color: fill,
         // Rounded to match the lobby's name strips and the rest of the
-        // system. The exported SVGs for these two blocks are plain
+        // system. The exported SVGs for these blocks are plain
         // square-cornered rects (`M153.5 0.5V42.5H0.5V0.5H153.5Z`), so this
         // is a deliberate departure from the frame, not a transcription of
         // it — worth knowing if the Figma file is ever the arbiter again.
@@ -102,21 +143,85 @@ class MatchScoreStrip extends StatelessWidget {
       ),
     );
   }
+}
 
-  /// Jaro at type/34, black on the plate. The glyphs are taller than the
-  /// 43pt strip, so they are scaled down rather than clipped.
-  Widget _digit(int value) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Text(
-        '$value',
-        style: const TextStyle(
-          fontFamily: T.fontNumeral,
-          fontSize: T.t34,
-          color: Colors.black,
-          height: 1,
+/// The game's display lettering: a vertical gradient fill, a heavy black
+/// outline and a warm #EFD959 glow beneath. Used by the countdown numeral
+/// (38:200), GOOOL (41:783), TUR BİTTİ (109:26) and Kazandın / Kaybettin
+/// (46:381 / 48:552).
+///
+/// Drawn as two stacked Texts because a single Text cannot both stroke and
+/// fill: the lower one paints the outline (and carries the glow), the upper
+/// one the gradient.
+class OutlinedGradientText extends StatelessWidget {
+  const OutlinedGradientText(
+    this.text, {
+    super.key,
+    required this.fontSize,
+    required this.colors,
+    this.stops,
+    this.letterSpacing = 0,
+    this.strokeRatio = 0.055,
+    this.glow = const Shadow(
+      color: Color(0xFFEFD959),
+      blurRadius: 4,
+      offset: Offset(0, 4),
+    ),
+    this.height,
+  });
+
+  final String text;
+  final double fontSize;
+  final List<Color> colors;
+  final List<double>? stops;
+  final double letterSpacing;
+
+  /// Outline width as a fraction of the font size.
+  final double strokeRatio;
+  final Shadow glow;
+  final double? height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Text(
+          text,
+          maxLines: 1,
+          style: TextStyle(
+            fontFamily: T.fontUi,
+            fontSize: fontSize,
+            height: height,
+            letterSpacing: letterSpacing,
+            shadows: [glow],
+            foreground: Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = fontSize * strokeRatio
+              ..strokeJoin = StrokeJoin.round
+              ..color = Colors.black,
+          ),
         ),
-      ),
+        ShaderMask(
+          shaderCallback: (rect) => LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: colors,
+            stops: stops,
+          ).createShader(rect),
+          child: Text(
+            text,
+            maxLines: 1,
+            style: TextStyle(
+              fontFamily: T.fontUi,
+              fontSize: fontSize,
+              height: height,
+              letterSpacing: letterSpacing,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -309,14 +414,6 @@ class OpponentStatusChip extends StatelessWidget {
   final Color avatarColor;
   final bool showDots;
 
-  String get _initials {
-    final clean = name.trim();
-    if (clean.isEmpty) return '?';
-    final digits = RegExp(r'\d').allMatches(clean).map((m) => m[0]).join();
-    if (digits.isNotEmpty) return '${clean[0].toUpperCase()}$digits';
-    return clean.substring(0, clean.length < 2 ? 1 : 2).toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -341,7 +438,7 @@ class OpponentStatusChip extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                _initials,
+                playerInitials(name),
                 style: const TextStyle(
                   fontFamily: T.fontUi,
                   fontSize: T.t13,
@@ -372,6 +469,252 @@ class OpponentStatusChip extends StatelessWidget {
             const _TypingDots(),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// A player's avatar letters: "Oyuncu1" becomes "O1", "Yaman" becomes "YA".
+/// The design's avatars read `O1` / `O2` for exactly that reason.
+String playerInitials(String name) {
+  final clean = name.trim();
+  if (clean.isEmpty) return '?';
+  final digits = RegExp(r'\d').allMatches(clean).map((m) => m[0]).join();
+  if (digits.isNotEmpty) return '${clean[0].toUpperCase()}$digits';
+  return clean.substring(0, clean.length < 2 ? 1 : 2).toUpperCase();
+}
+
+/// The player's colour (orange) and the opponent's (green), matching the two
+/// blocks of [MatchScoreStrip]. Avatar fills in `Canlı Durum` (85:526 /
+/// 85:535) and on the result screens.
+const playerAvatarFill = Color(0xFFF08717);
+const opponentAvatarFill = Color(0xFF3DD136);
+
+/// The 34pt round avatar from `Canlı Durum` (85:526): a solid fill, a 1.5pt
+/// beyaz/050 ring and the initials at type/13.
+class MatchAvatar extends StatelessWidget {
+  const MatchAvatar({
+    super.key,
+    required this.name,
+    required this.fill,
+    this.size = 34,
+  });
+
+  final String name;
+  final Color fill;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: fill,
+        shape: BoxShape.circle,
+        border: Border.all(color: T.beyaz050, width: 1.5),
+      ),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(T.sXxs),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          playerInitials(name),
+          style: TextStyle(
+            fontFamily: T.fontUi,
+            fontSize: T.t13 * size / 34,
+            color: T.beyaz100,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// `Canlı Durum` (Figma 85:524) — the full-width strip under the matchup on
+/// the PvP board: this player on the left ("Sen"), the opponent on the right
+/// with what they are doing and the `Nokta` dots.
+///
+/// The protocol has no "typing" signal — the room row only learns about an
+/// opponent's answer once it is CORRECT — so [opponentLabel] is a state the
+/// caller derives from the row ("yazıyor" while the round is open, "buldu!"
+/// once their time is in), not a live keystroke indicator.
+class LiveStatusStrip extends StatelessWidget {
+  const LiveStatusStrip({
+    super.key,
+    required this.playerName,
+    required this.opponentName,
+    required this.opponentLabel,
+    this.playerLabel = 'Sen',
+    this.showDots = true,
+  });
+
+  final String playerName;
+  final String opponentName;
+  final String playerLabel;
+  final String opponentLabel;
+  final bool showDots;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // Full width, explicitly: a Container with no width would shrink to
+      // its Row and lose the space-between that pins the opponent right.
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: T.beyaz006,
+        borderRadius: BorderRadius.circular(T.rXl),
+        border: Border.all(color: T.beyaz016),
+      ),
+      child: Row(
+        children: [
+          MatchAvatar(name: playerName, fill: playerAvatarFill),
+          const SizedBox(width: T.sSm),
+          Flexible(
+            child: Text(
+              playerLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t15,
+                color: T.beyaz080,
+              ),
+            ),
+          ),
+          const Spacer(),
+          Flexible(
+            flex: 2,
+            child: Text(
+              opponentLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
+              // M PLUS 1p Medium in the design, not bundled — see the same
+              // note on OpponentStatusChip.
+              style: const TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t13,
+                color: T.beyaz050,
+              ),
+            ),
+          ),
+          if (showDots) ...[
+            const SizedBox(width: T.sSm),
+            const _TypingDots(),
+          ],
+          const SizedBox(width: T.sSm),
+          MatchAvatar(name: opponentName, fill: opponentAvatarFill),
+        ],
+      ),
+    );
+  }
+}
+
+/// `Eşleşme (Kompakt)` (Figma 87:190) — the one-line matchup that replaces
+/// the two big club cards while the player is typing, so the suggestion
+/// panel never has to cover the clubs during a ten-second round.
+///
+/// 390 wide at radius/xl, beyaz/006 over a 1.2pt beyaz/022 border, 14/8
+/// padding, a 38pt crest each side and PoetsenOne "VS" at type/20 in red.
+/// The crest is the same initials badge as [ClubCard]'s, scaled down.
+class CompactMatchupStrip extends StatelessWidget {
+  const CompactMatchupStrip({
+    super.key,
+    required this.clubA,
+    required this.clubB,
+  });
+
+  final String clubA;
+  final String clubB;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: T.sSm),
+      decoration: BoxDecoration(
+        color: T.beyaz006,
+        borderRadius: BorderRadius.circular(T.rXl),
+        border: Border.all(color: T.beyaz022, width: 1.2),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                _MiniCrest(name: clubA),
+                const SizedBox(width: T.sSm),
+                Flexible(child: _name(clubA, TextAlign.left)),
+              ],
+            ),
+          ),
+          const SizedBox(width: T.sLg),
+          const Text(
+            'VS',
+            style: TextStyle(
+              fontFamily: T.fontUi,
+              fontSize: T.t20,
+              color: T.kirmizi,
+            ),
+          ),
+          const SizedBox(width: T.sLg),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(child: _name(clubB, TextAlign.right)),
+                const SizedBox(width: T.sSm),
+                _MiniCrest(name: clubB),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _name(String name, TextAlign align) {
+    return Text(
+      name,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: align,
+      style: const TextStyle(
+        fontFamily: T.fontUi,
+        fontSize: T.t17,
+        color: T.beyaz100,
+      ),
+    );
+  }
+}
+
+/// `Arma` at 38pt (87:192): beyaz/012 fill, 1.5pt beyaz/038 ring, initials
+/// at type/11.
+class _MiniCrest extends StatelessWidget {
+  const _MiniCrest({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: T.beyaz012,
+        shape: BoxShape.circle,
+        border: Border.all(color: T.beyaz038, width: 1.5),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        clubInitials(name),
+        style: TextStyle(
+          fontFamily: T.fontUi,
+          fontSize: T.t11,
+          color: clubTint(name),
+        ),
       ),
     );
   }

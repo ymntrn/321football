@@ -190,17 +190,25 @@ class LobbyAvatar extends StatelessWidget {
 /// something, orange when it is only reporting a state — which is how the
 /// design distinguishes the host's `Başlat` from the guest's
 /// `Başlatma Bekleniyor`.
+///
+/// The violet [LobbyButtonTone.mor] is the result screens' `Tekrar Oyna`
+/// (48:559, 341x90, type/40) and `Ana Sayfa` (48:562, 247x62, type/24) —
+/// same construction, the Friend Match violet fill.
 class LobbyButton extends StatelessWidget {
   const LobbyButton({
     super.key,
     required this.label,
     this.onTap,
     this.tone = LobbyButtonTone.go,
+    this.height = 90,
+    this.fontSize = T.t40,
   });
 
   final String label;
   final VoidCallback? onTap;
   final LobbyButtonTone tone;
+  final double height;
+  final double fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -211,14 +219,16 @@ class LobbyButton extends StatelessWidget {
       child: Opacity(
         opacity: enabled || tone == LobbyButtonTone.waiting ? 1 : 0.45,
         child: Container(
-          height: 90,
+          height: height,
           width: double.infinity, // see the note on LobbyTabButton
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(T.rLg),
             border: Border.all(color: T.beyaz030),
-            gradient: tone == LobbyButtonTone.go
-                ? T.yesilGradient
-                : T.turuncuGradient,
+            gradient: switch (tone) {
+              LobbyButtonTone.go => T.yesilGradient,
+              LobbyButtonTone.waiting => T.turuncuGradient,
+              LobbyButtonTone.mor => T.morGradient(0.82),
+            },
           ),
           child: Stack(
             alignment: Alignment.center,
@@ -230,9 +240,9 @@ class LobbyButton extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   child: Text(
                     label,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: T.fontUi,
-                      fontSize: T.t40,
+                      fontSize: fontSize,
                       color: T.beyaz100,
                     ),
                   ),
@@ -246,4 +256,4 @@ class LobbyButton extends StatelessWidget {
   }
 }
 
-enum LobbyButtonTone { go, waiting }
+enum LobbyButtonTone { go, waiting, mor }

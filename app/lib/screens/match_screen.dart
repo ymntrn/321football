@@ -10,9 +10,12 @@ import '../net/room_repository.dart';
 import '../net/server_clock.dart';
 import '../theme/tokens.dart';
 import '../widgets/screen_background.dart';
+import 'match_board_screen.dart';
 import 'match_countdown_screen.dart';
+import 'match_end_screens.dart';
 import 'match_screen_buttons.dart';
 import 'match_team_select_screen.dart';
+import 'match_versus_screen.dart';
 
 /// The match loop.
 ///
@@ -64,6 +67,20 @@ class _MatchScreenState extends State<MatchScreen> {
   /// pauses — how long GOOOL stays on screen before the next round.
   DateTime _phaseSince = DateTime.now();
   MatchPhase? _phaseSeen;
+
+  /// Whether this match has already moved past its first pick. Versus plays
+  /// once per match (and again after a rematch), never on a re-pick — and a
+  /// voided first round re-picks with the round number and score unchanged,
+  /// so those alone cannot tell the two apart.
+  bool _versusDone = false;
+
+  /// How long Versus holds. The Figma prototype advances it on a 2 s timeout.
+  static const _versusHold = Duration(seconds: 2);
+
+  /// Every round this device saw end, for the result screen's MAÇ ÖZETİ.
+  /// The room row is wiped by next_round, so the history has to be kept
+  /// here; a client that reconnected mid-match only knows the rounds since.
+  final List<_RoundRecord> _rounds = [];
 
   /// When the first correct answer of the round landed in the row.
   ///
@@ -139,9 +156,35 @@ class _MatchScreenState extends State<MatchScreen> {
 
   void _drive() {
     if (_phaseSeen != _room.phase) {
+      final leaving = _phaseSeen;
       _phaseSeen = _room.phase;
       _phaseSince = DateTime.now();
       _firstAnswerAt = null;
+      if (_room.phase == MatchPhase.lobby) {
+        _versusDone = false;
+        _rounds.clear();
+      } else if (_room.phase != MatchPhase.picking) {
+        _versusDone = true;
+      }
+      // A round ends in round_over — except the deciding goal, which
+      // finish_round takes straight to match_over with the round's verdict
+      // and answers still in the row.
+      final roundEnded = _room.phase == MatchPhase.roundOver ||
+          (_room.phase == MatchPhase.matchOver &&
+              _room.endedReason == 'goals' &&
+              _room.roundReason != null);
+      // finish_round writes the deciding goal as round_over and then, in the
+      // same call, match_over - Realtime delivers BOTH updates. Count that
+      // round once, or the summary reads 0/4 after a three-round match.
+      final alreadyCounted = _room.phase == MatchPhase.matchOver &&
+          leaving == MatchPhase.roundOver;
+      if (roundEnded && !alreadyCounted) {
+        _rounds.add(_RoundRecord(
+          reason: _room.roundReason,
+          winner: _room.roundWinner,
+          myElapsedMs: _room.elapsedOf(_me),
+        ));
+      }
     }
 
     // Either player may claim an abandoned match, not just the host — a host
@@ -285,6 +328,28 @@ class _MatchScreenState extends State<MatchScreen> {
   // -------------------------------------------------------------------------
   // This player's own writes
   // -------------------------------------------------------------------------
+  /// A correct answer and the time the board stamped on it.
+  ///
+  /// Retried once: a dropped write here silently loses a round this player
+  /// won. The `elapsed_ms is null` filter in submitAnswer makes the retry
+  /// harmless if the first attempt did land.
+  Future<void> _answer(String answer, int elapsedMs) async {
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        await widget.rooms.submitAnswer(
+          code: _room.code,
+          seat: _me,
+          answer: answer,
+          elapsedMs: elapsedMs,
+        );
+        return;
+      } catch (e) {
+        debugPrint('submitAnswer failed (attempt ${attempt + 1}): $e');
+        await Future<void>.delayed(const Duration(milliseconds: 400));
+      }
+    }
+  }
+
   Future<void> _pick(Club club) =>
       widget.rooms.pickClub(code: _room.code, seat: _me, club: club);
 
@@ -300,6 +365,141 @@ class _MatchScreenState extends State<MatchScreen> {
       excludeClubId: _room.clubIdOf(_them),
     );
     if (club != null) await _pick(club);
+  }
+
+  /// Versus (27:42) sits between "the match is on" and the first team pick,
+  /// as in the prototype. There is no phase for it — adding one would change
+  /// the backend protocol — so it is drawn over the first two seconds of the
+  /// first pick window. Both players lose the same two seconds of the 15,
+  /// and the window is timed against the room's pick_deadline, so a client
+  /// that reconnects later in the window skips straight to the picker.
+  bool _showVersus(DateTime? pickDeadline) {
+    if (_versusDone || pickDeadline == null) return false;
+    if (_room.round != 1 || _room.hostScore + _room.guestScore != 0) {
+      return false;
+    }
+    final sinceOpen = Duration(seconds: _room.pickSeconds) -
+        pickDeadline.difference(DateTime.now());
+    if (sinceOpen < _versusHold) return true;
+    _versusDone = true;
+    return false;
+  }
+
+  /// GOOOL (41:685) for a round somebody won, Tur Bitti (109:8) for one
+  /// nobody did — the clock ran out, or the pair was unplayable.
+  Widget _roundEnd() {
+    final scorer = _room.roundWinner;
+    if (_room.roundReason == RoundReason.correct && scorer != null) {
+      return MatchGoalScreen(
+        key: ValueKey('goal-${_room.round}'),
+        playerName: _room.nameOf(_me),
+        opponentName: _room.nameOf(_them),
+        playerScore: _room.scoreOf(_me),
+        opponentScore: _room.scoreOf(_them),
+        scorerName: _room.nameOf(scorer),
+        scorerIsMe: scorer == _me,
+        answer: _room.answerOf(scorer),
+        elapsedMs: _room.elapsedOf(scorer),
+        clubs: {
+          if (_room.hostClubId != null)
+            _room.hostClubId!: _room.hostClubName ?? '',
+          if (_room.guestClubId != null)
+            _room.guestClubId!: _room.guestClubName ?? '',
+        },
+        since: _phaseSince,
+        hold: _roundEndPause,
+      );
+    }
+    return MatchRoundVoidScreen(
+      key: ValueKey('void-${_room.round}'),
+      playerName: _room.nameOf(_me),
+      opponentName: _room.nameOf(_them),
+      playerScore: _room.scoreOf(_me),
+      opponentScore: _room.scoreOf(_them),
+      unplayable: _room.roundReason == RoundReason.unplayable,
+      clubAId: _room.clubIdOf(_me),
+      clubBId: _room.clubIdOf(_them),
+      since: _phaseSince,
+      hold: _roundEndPause,
+    );
+  }
+
+  /// Kazanma (46:352) / Kaybetme (48:534).
+  Widget _result() {
+    final reason = _room.endedReason ?? '';
+    final String? note;
+    if (reason == 'abandoned') {
+      note = 'Maç yarıda kaldı';
+    } else if (reason == 'forfeit_${_them.dbValue}') {
+      note = 'Rakip ayrıldı';
+    } else if (reason == 'forfeit_${_me.dbValue}') {
+      note = 'Bağlantın koptu';
+    } else {
+      note = null;
+    }
+
+    return MatchResultScreen(
+      won: _room.winner == _me,
+      playerName: _room.nameOf(_me),
+      opponentName: _room.nameOf(_them),
+      playerScore: _room.scoreOf(_me),
+      opponentScore: _room.scoreOf(_them),
+      summary: _summary(),
+      note: note,
+      // A rematch needs both players still here: only a match decided on goals.
+      // After a forfeit or an abandoned match the other seat is gone.
+      onRematch: reason == 'goals' ? _rematch : null,
+      onHome: () => Navigator.of(context).popUntil((route) => route.isFirst),
+    );
+  }
+
+  MatchSummary _summary() {
+    int? fastest;
+    var correct = 0;
+    var played = 0;
+    var streak = 0;
+    var best = 0;
+    for (final r in _rounds) {
+      // A voided round could not be answered, so it counts for nothing —
+      // not as played, and not as a break in a streak.
+      if (r.reason == RoundReason.unplayable) continue;
+      played++;
+      final ms = r.myElapsedMs;
+      if (ms != null) {
+        correct++;
+        fastest = fastest == null || ms < fastest ? ms : fastest;
+      }
+      streak = r.winner == _me ? streak + 1 : 0;
+      if (streak > best) best = streak;
+    }
+    return MatchSummary(
+      fastestMs: fastest,
+      correct: correct,
+      rounds: played,
+      bestStreak: best,
+    );
+  }
+
+  /// The PvP board for the round in progress (`Maç - Oyuncu Arama`).
+  Widget _board(DateTime unlock) {
+    final deadline = _local(_room.answerDeadline) ??
+        unlock.add(Duration(seconds: _room.answerSeconds));
+    return MatchBoardScreen(
+      key: ValueKey('board-${_room.round}'),
+      playerName: _room.nameOf(_me),
+      opponentName: _room.nameOf(_them),
+      playerScore: _room.scoreOf(_me),
+      opponentScore: _room.scoreOf(_them),
+      clubAId: _room.clubIdOf(_me)!,
+      clubAName: _room.clubNameOf(_me) ?? '',
+      clubBId: _room.clubIdOf(_them)!,
+      clubBName: _room.clubNameOf(_them) ?? '',
+      unlockAt: unlock,
+      deadline: deadline,
+      answerSeconds: _room.answerSeconds,
+      opponentFound: _room.elapsedOf(_them) != null,
+      onCorrect: _answer,
+    );
   }
 
   @override
@@ -341,6 +541,13 @@ class _MatchScreenState extends State<MatchScreen> {
 
       case MatchPhase.picking:
         final deadline = _local(_room.pickDeadline);
+        if (_showVersus(deadline)) {
+          return MatchVersusScreen(
+            playerName: _room.nameOf(_me),
+            opponentName: _room.nameOf(_them),
+            targetGoals: _room.targetGoals,
+          );
+        }
         return MatchTeamSelectScreen(
           key: ValueKey('pick-${_room.round}'),
           playerName: _room.nameOf(_me),
@@ -355,17 +562,42 @@ class _MatchScreenState extends State<MatchScreen> {
 
       case MatchPhase.countdown:
       case MatchPhase.answering:
+        // Input opens when THIS device's clock reaches unlock_at, not when
+        // the host's open_answers marker arrives — that is the protocol
+        // (003_match_flow.sql), and it is what keeps latency out of the
+        // elapsed times. Both phases share one board, under one key, so the
+        // countdown -> answering flip lands on the SAME board and its
+        // stopwatch keeps running.
+        final unlock = _local(_room.unlockAt);
+        if (unlock != null &&
+            _room.bothPicked &&
+            !DateTime.now().isBefore(unlock)) {
+          return _board(unlock);
+        }
         return MatchCountdownScreen(
           room: _room,
           seat: _me,
-          unlockAt: _local(_room.unlockAt),
+          unlockAt: unlock,
         );
 
       case MatchPhase.roundOver:
-        return _RoundEnd(room: _room, seat: _me);
+        return _roundEnd();
 
       case MatchPhase.matchOver:
-        return _MatchEnd(room: _room, seat: _me, onRematch: _rematch);
+        // The deciding goal skips round_over (see _drive), so it gets its
+        // GOOOL here, for the same 2.5 s, before the result — the order the
+        // prototype plays them in. Only when the match JUST ended: reopening
+        // a finished match goes straight to the result.
+        final justEnded = DateTime.now().difference(_phaseSince) <
+                _roundEndPause &&
+            widget.clock.nowOnServer().difference(_room.updatedAt) <
+                _roundEndPause + const Duration(seconds: 1);
+        if (_room.endedReason == 'goals' &&
+            _room.roundWinner != null &&
+            justEnded) {
+          return _roundEnd();
+        }
+        return _result();
     }
   }
 }
@@ -406,143 +638,18 @@ class _Waiting extends StatelessWidget {
   }
 }
 
-/// Placeholder for `Tur Sonu (GOOOL)` (41:685) and `Tur Bitti` (109:8).
-/// Built properly from Figma next; this exists so the loop can be driven end
-/// to end and the transitions verified.
-class _RoundEnd extends StatelessWidget {
-  const _RoundEnd({required this.room, required this.seat});
-
-  final Room room;
-  final Seat seat;
-
-  @override
-  Widget build(BuildContext context) {
-    final reason = room.roundReason;
-    final winner = room.roundWinner;
-    final String headline;
-    if (reason == RoundReason.unplayable) {
-      headline = 'TUR BİTTİ';
-    } else if (reason == RoundReason.noAnswer) {
-      headline = 'SÜRE DOLDU';
-    } else {
-      headline = winner == seat ? 'GOOOL' : 'RAKİP BULDU';
-    }
-
-    final answer = winner == null ? null : room.answerOf(winner);
-
-    return Scaffold(
-      body: ScreenBackground(
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                headline,
-                style: TextStyle(
-                  fontFamily: T.fontUi,
-                  fontSize: T.t40,
-                  color: winner == seat ? T.yesil : T.beyaz100,
-                ),
-              ),
-              const SizedBox(height: T.sLg),
-              Text(
-                reason == RoundReason.unplayable
-                    ? 'Bu iki takımda oynamış oyuncu yok'
-                    : (answer ?? 'Kimse bulamadı'),
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: T.t17, color: T.beyaz065),
-              ),
-              const SizedBox(height: T.s2xl),
-              Text(
-                '${room.scoreOf(seat)} - ${room.scoreOf(seat.other)}',
-                style: const TextStyle(
-                  fontFamily: T.fontNumeral,
-                  fontSize: T.t40,
-                  color: T.beyaz080,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Placeholder for `Maç Sonu Kazanma` (46:352) / `Kaybetme` (48:534).
-class _MatchEnd extends StatelessWidget {
-  const _MatchEnd({
-    required this.room,
-    required this.seat,
-    required this.onRematch,
+/// One finished round, as this device saw it.
+class _RoundRecord {
+  const _RoundRecord({
+    required this.reason,
+    required this.winner,
+    required this.myElapsedMs,
   });
 
-  final Room room;
-  final Seat seat;
-  final Future<void> Function() onRematch;
+  final RoundReason? reason;
+  final Seat? winner;
 
-  @override
-  Widget build(BuildContext context) {
-    final won = room.winner == seat;
-    final reason = room.endedReason ?? '';
-    final forfeit = reason.startsWith('forfeit');
-    final abandoned = reason == 'abandoned';
-
-    return Scaffold(
-      body: ScreenBackground(
-        child: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  won ? 'KAZANDIN' : 'KAYBETTİN',
-                  style: TextStyle(
-                    fontFamily: T.fontUi,
-                    fontSize: T.t40,
-                    color: won ? T.yesil : T.kirmizi,
-                  ),
-                ),
-                const SizedBox(height: T.sLg),
-                Text(
-                  '${room.scoreOf(seat)} - ${room.scoreOf(seat.other)}',
-                  style: const TextStyle(
-                    fontFamily: T.fontNumeral,
-                    fontSize: T.t96,
-                    color: T.beyaz100,
-                  ),
-                ),
-                if (forfeit || abandoned) ...[
-                  const SizedBox(height: T.sLg),
-                  Text(
-                    abandoned ? 'Maç yarıda kaldı' : 'Rakip ayrıldı',
-                    style: const TextStyle(
-                      fontSize: T.t15,
-                      color: T.beyaz050,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 40),
-                // A rematch keeps the same room and the same code, so nobody
-                // has to share a new one to play again.
-                if (!abandoned)
-                  EndButton(
-                    label: 'TEKRAR OYNA',
-                    filled: true,
-                    onTap: onRematch,
-                  ),
-                const SizedBox(height: T.sLg),
-                EndButton(
-                  label: 'ANA MENÜ',
-                  filled: false,
-                  onTap: () async => Navigator.of(context)
-                      .popUntil((route) => route.isFirst),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  /// This player's correct-answer time, if they found one — whether or not
+  /// it won the round.
+  final int? myElapsedMs;
 }

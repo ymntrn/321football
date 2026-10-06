@@ -1,7 +1,15 @@
 # The Flutter app — state and architecture
 
 Companion to `project-state.md` (the database) and `figma-to-flutter.md` (how
-the UI gets built). Last updated: 11 September 2026.
+the UI gets built). Last updated: 6 October 2026.
+
+> **6 Oct 2026 — branch `screens-from-figma`, written in a cloud session and
+> NOT yet run on the emulator.** Practice's three popups are now built from
+> Figma (see *Practice popups* below), the first-launch database copy is
+> streamed with real progress on the splash, and `game_queries.py` has the
+> namesake fix. `flutter analyze` is clean and `flutter test` passes
+> (including new layout tests), but none of it has been looked at on a
+> device. `docs/TESTING.md` is the checklist.
 
 **Status: Practice mode is BUILT, RUNNING and VERIFIED on the emulator, and the
 UI is now rebuilt from the Figma file rather than the written spec.** The full
@@ -80,29 +88,47 @@ Flutter's Visual Studio probe throws, even for an Android-only project.
 ## Architecture
 
     lib/
-      main.dart                       boot: opens the DB, then Practice
+      main.dart                       boot: opens the DB (splash with copy
+                                      progress), then the dev menu
       theme/tokens.dart               the `321 Tokens` collection + gradients
       models/models.dart              Club, Player, PracticePair, AnswerResult
       data/
         name_normalizer.dart          port of names.py
-        app_database.dart             asset copy + sqflite open
+        app_database.dart             streamed asset copy + sqflite open
         game_queries.dart             port of game_queries.py
       screens/
         practice_difficulty_screen.dart   Seviye Seç
-        practice_board_screen.dart        the board + typing state
+        practice_board_screen.dart        the board + typing state + popups
       widgets/
         screen_background.dart        rings + glow backdrop, Undo, HomeIndicator
         club_card.dart                Kulüp Kartı (the Arma slot lives here)
         practice_chrome.dart          top bar, matchup, badges, PAS GEÇ,
-                                      rejection banner, answer sheet, celebration
-        search_bar_panel.dart         Arama Çubuğu + Öneriler panel
+                                      rejection banner, Doğru / Cevap Onayı /
+                                      Cevabı Göster popups
+        career_line.dart              "Club (2009–13) → Club (2013–17)"
+        search_bar_panel.dart         Arama Çubuğu (+ its green Doğru state)
+                                      + Öneriler panel
         turkish_keyboard.dart         the four-row Klavye
 
     assets/img/                       exported Figma assets (see figma-to-flutter.md)
+    android/.../MainActivity.kt       the `football321/asset_copy` channel
+    test/match_layout_test.dart       overflow tests for the new screens at
+                                      430x932, 411x914 and 360x640
 
 `assets/db/321_football.db` is a copy of `321_football_slim.db` (62 MB). sqflite
 needs a real file, so `AppDatabase.open()` copies it out of the bundle on first
-launch and opens it read-only. **Bump `AppDatabase.assetVersion` whenever a new
+launch and opens it read-only.
+
+**The copy is streamed (6 Oct 2026).** `rootBundle.load()` held all 62 MB in
+memory before writing a byte. On Android, `MainActivity.kt` now exposes a
+`football321/asset_copy` MethodChannel: it reads the asset through
+`AssetManager` in 1 MB chunks on a background thread, reports progress every
+2 MB, writes `<db>.part` and renames it when done. The total comes from
+`AssetInputStream.available()`, which is the *uncompressed* length, so the APK
+keeps the database compressed (no `noCompress` needed). The splash shows a
+determinate bar and "Veritabanı hazırlanıyor… %NN" while it runs. Any channel
+failure falls back to the old `rootBundle.load()`. The version stamp is still
+written only after the copy lands. **Bump `AppDatabase.assetVersion` whenever a new
 database is dropped in**, or the stale copy wins and the new data never appears.
 
 (Since 6 Oct 2026 the `.db` files are gitignored. After a fresh clone, copy
@@ -185,10 +211,10 @@ Typing "messi" against Bayern × Napoli reported *"Georges Parfait Mbida Messi
 never played for both"*. The fallback that picks a name to blame used `LIMIT 1`
 with **no ORDER BY**, so SQLite returned an arbitrary namesake.
 
-`game_queries.py` has the same flaw. The Dart version now orders by
-`fame_score DESC`. **This affects only which name is DISPLAYED on a rejection;
-the accept/reject decision is unchanged, so correctness parity holds.** Worth
-fixing in `game_queries.py` too.
+The Dart version orders by `fame_score DESC`, and since 6 Oct 2026 so does
+`game_queries.py`. **This affects only which name is DISPLAYED on a
+rejection; the accept/reject decision is unchanged, so correctness parity
+holds.**
 
 ### 5. Highlighting only matched a leading prefix
 
@@ -231,10 +257,9 @@ That is the intended behaviour, not a bug.
 | Incremental build + install + relaunch | 60–120 s |
 | Suggestion query, 3+ char prefix (laptop) | 0.2–12 ms |
 
-**Cold start is the number to improve.** 12 s is the one-time asset copy;
-`rootBundle.load()` also pulls all 62 MB into memory as a single `Uint8List`
-before writing it. Streaming the copy, and showing progress rather than a bare
-splash, would both help. Treat emulator timings as a lower bound on a real
+**Cold start was the number to improve.** 12 s is the one-time asset copy.
+It is now streamed with real progress (see *Where it lives*), **not yet
+re-measured** — `pm clear` and time it again. Treat emulator timings as a lower bound on a real
 phone — there is no Android phone available, so the emulator is the only target.
 
 ---
@@ -253,6 +278,38 @@ phone — there is no Android phone available, so the emulator is the only targe
   Chelsea × Inter → both correctly rejected, naming the famous namesake.
 - Spot-checked data: Aston Villa × AC Milan gives Laursen, Reina, Walker,
   Senderos, Abraham. Bayern × Leverkusen gives Kroos, Ballack, Emre Can.
+
+---
+
+## Practice popups — built from Figma (6 Oct 2026)
+
+The invented full-screen celebration and the AlertDialog + bottom-sheet
+answer list are gone. Three frames replace them, drawn as overlays on the
+board over their `Karartma` scrims:
+
+| Frame | What |
+|---|---|
+| `78:610` Doğru Cevap | green `Doğru Popup` (name, career line, `SIRADAKİ EŞLEŞME` bar, 2.5 s, tap to skip) + the search bar's confirmed state (✓, name, `+1 SERİ`) |
+| `82:338` Cevap Onayı | `CEVABI GÖSTER?` — VAZGEÇ / `3 ALTIN HARCA` |
+| `78:483` Cevabı Göster | `OLASI CEVAPLAR` — numbered rows with career lines, `-3 altın harcandı`, DEVAM |
+
+Deliberate differences, all worth a look:
+
+- **The streak is no longer reset by revealing the answer.** The design's own
+  copy says *"Seri sayacın sıfırlanmaz"*; the reset belonged to the invented
+  sheet. **DEVAM moves to a new pair**, otherwise the answer just shown would
+  be one keystroke from a free streak point. *Yaman to confirm the rule.*
+- **No `Bakiyen 120` chip** on the confirmation: there is no coin balance yet.
+  Nothing is debited either; `-3 altın harcandı` is the price, as the chip in
+  the top bar already shows.
+- The **lightbulb badge** (`Ampul Rozeti`) disc and glow are painted — the
+  export's glow is an SVG blur filter, which flutter_svg does not draw. The
+  bulb is the existing `lightbulb.png`. Colours are approximate.
+- The answer list **scrolls inside the card** — the frame shows four rows,
+  real pairs can have dozens.
+- The career line is new data on screen: `GameQueries.mutualSpells` reads the
+  spells for the two clubs (min start / max end per club, open end shown as
+  `2018–`).
 
 ---
 
@@ -285,15 +342,12 @@ land.
 
 ## Next steps
 
-1. Build `Doğru Cevap` (78:610) and `Cevap Onayı` (82:338) from Figma — the
-   current celebration overlay and answer sheet predate reading the file and
-   are invented.
-2. Cold start: stream the asset copy instead of `rootBundle.load()`, and give
-   the splash a real progress indicator.
-3. Build the team picker (`searchClubs` is already ported and unused).
-4. The PvP loop — and with it, settle the no-answer rule still open in
-   `project-state.md`. `checkPairIsPlayable` is ported and ready.
-5. Before PvP goes near a clock, profile `validateAnswer` on device the way
+1. **Run `docs/TESTING.md` on the emulator** — everything from 6 Oct 2026 is
+   unverified on a device (popups, streamed copy, the Kotlin channel).
+2. Re-measure cold start after `pm clear`.
+3. Before PvP goes near a clock, profile `validateAnswer` on device the way
    `suggestPlayers` was profiled here.
 
-(Items 3 and 4 have since been done or decided — see `friend-match.md`.)
+Done since the last version of this list: Doğru Cevap / Cevap Onayı (and
+Cevabı Göster) from Figma, the streamed copy with progress, the team picker
+and the PvP loop (see `friend-match.md`).

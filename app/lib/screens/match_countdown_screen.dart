@@ -81,10 +81,8 @@ class MatchCountdownScreen extends StatelessWidget {
 /// orange-to-red gradient, outlined in black, and given the design's warm
 /// glow.
 ///
-/// Drawn as two stacked Texts because a single Text cannot both stroke and
-/// fill: the lower one paints the outline, the upper one the gradient. The
-/// size scales with the viewport — 400pt hard-coded would be clipped on a
-/// 411pt screen.
+/// Drawn by the shared [OutlinedGradientText]. The size scales with the
+/// viewport — 400pt hard-coded would be clipped on a 411pt screen.
 class _Numeral extends StatelessWidget {
   const _Numeral({required this.value, required this.width});
 
@@ -109,42 +107,16 @@ class _Numeral extends StatelessWidget {
       curve: Curves.easeOutBack,
       builder: (context, scale, child) =>
           Transform.scale(scale: scale, child: child),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Text(
-            text,
-            style: TextStyle(
-              fontFamily: T.fontUi,
-              fontSize: size,
-              height: 1,
-              shadows: const [
-                Shadow(color: _glow, blurRadius: 28, offset: Offset(0, 4)),
-              ],
-              foreground: Paint()
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = size * 0.055
-                ..strokeJoin = StrokeJoin.round
-                ..color = Colors.black,
-            ),
-          ),
-          ShaderMask(
-            shaderCallback: (rect) => const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [_fillTop, _fillBottom],
-            ).createShader(rect),
-            child: Text(
-              text,
-              style: TextStyle(
-                fontFamily: T.fontUi,
-                fontSize: size,
-                height: 1,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ],
+      child: OutlinedGradientText(
+        text,
+        fontSize: size,
+        height: 1,
+        colors: const [_fillTop, _fillBottom],
+        glow: const Shadow(
+          color: _glow,
+          blurRadius: 28,
+          offset: Offset(0, 4),
+        ),
       ),
     );
   }

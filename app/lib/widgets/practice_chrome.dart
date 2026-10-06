@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 import '../theme/tokens.dart';
+import 'career_line.dart';
 import 'club_card.dart';
 import 'screen_background.dart';
 
@@ -267,82 +268,48 @@ class RejectionBanner extends StatelessWidget {
   }
 }
 
-/// The answer list behind the Cevap chip.
-class AnswerSheet extends StatelessWidget {
-  const AnswerSheet({super.key, required this.players});
+// ===========================================================================
+// Practice popups: Doğru Cevap (78:610), Cevap Onayı (82:338),
+// Cevabı Göster (78:483)
+// ===========================================================================
 
-  final List<Player> players;
+/// `Karartma` — the scrim the three practice popups sit on: rgba(3,3,20) at
+/// 60% under Doğru, 72% under the two answer popups. Swallows taps so the
+/// keyboard underneath cannot be typed on; [onTap] lets the caller dismiss.
+class PopupScrim extends StatelessWidget {
+  const PopupScrim({super.key, required this.opacity, this.onTap});
+
+  final double opacity;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(T.s2xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${players.length} ORTAK OYUNCU',
-              style: const TextStyle(
-                fontFamily: T.fontUi,
-                fontSize: T.t19,
-                color: T.altin,
-              ),
-            ),
-            const SizedBox(height: T.sLg),
-            Flexible(
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: players.length,
-                separatorBuilder: (_, __) =>
-                    const Divider(height: 1, color: T.beyaz012),
-                itemBuilder: (_, i) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: T.sMd),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          players[i].displayName,
-                          style: const TextStyle(
-                            fontFamily: T.fontUi,
-                            fontSize: T.t17,
-                            color: T.beyaz100,
-                          ),
-                        ),
-                      ),
-                      if (players[i].nationality != null)
-                        Text(
-                          players[i].nationality!,
-                          style: const TextStyle(
-                            fontSize: T.t11,
-                            color: T.beyaz050,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: ColoredBox(color: Color.fromRGBO(3, 3, 20, opacity)),
     );
   }
 }
 
-/// Full-screen correct-answer celebration with the auto-advance bar the
-/// prototype drives on a 2.5 s timeout.
+/// `Doğru Popup` (84:349) — the correct-answer card, on its scrim, over the
+/// board. Holds 2.5 s (the prototype's timeout) with the `SIRADAKİ EŞLEŞME`
+/// bar running down, then [onDone]; a tap anywhere skips the wait.
+///
+/// The streak lives in the search bar's `+1 SERİ` pill underneath
+/// (ConfirmedSearchBar), not on this card.
 class CorrectAnswerOverlay extends StatefulWidget {
   const CorrectAnswerOverlay({
     super.key,
     required this.player,
-    required this.streak,
+    required this.clubs,
     required this.onDone,
   });
 
   final Player player;
-  final int streak;
+
+  /// The pair, for the career line.
+  final Map<int, String> clubs;
   final VoidCallback onDone;
 
   @override
@@ -374,6 +341,7 @@ class _CorrectAnswerOverlayState extends State<CorrectAnswerOverlay>
   }
 
   void _advanceNow() {
+    if (!(_timer?.isActive ?? false)) return;
     _timer?.cancel();
     widget.onDone();
   }
@@ -382,62 +350,551 @@ class _CorrectAnswerOverlayState extends State<CorrectAnswerOverlay>
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _advanceNow,
-      child: Container(
-        color: T.zeminDerin.withValues(alpha: 0.97),
-        child: SafeArea(
-          child: Column(
-            children: [
-              const Spacer(),
-              const Text(
-                'DOĞRU',
-                style: TextStyle(
-                  fontFamily: T.fontNumeral,
-                  fontSize: T.t96,
-                  color: T.yesil,
-                  height: 1,
+      behavior: HitTestBehavior.opaque,
+      child: Stack(
+        children: [
+          const Positioned.fill(child: PopupScrim(opacity: 0.6)),
+          Align(
+            alignment: const Alignment(0, -0.3),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: T.s2xl),
+              child: Container(
+                width: 344,
+                padding: const EdgeInsets.fromLTRB(20, 26, 20, 20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xFF218C1C), Color(0xFF0B210D)],
+                  ),
+                  borderRadius: BorderRadius.circular(T.r2xl),
+                  border: Border.all(
+                    color: T.yesil.withValues(alpha: 0.9),
+                    width: 2.5,
+                  ),
+                  boxShadow: [
+                    const BoxShadow(color: Color(0x664DFF45), blurRadius: 34),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.55),
+                      offset: const Offset(0, 16),
+                      blurRadius: 40,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'DOĞRU!',
+                      style: TextStyle(
+                        fontFamily: T.fontUi,
+                        fontSize: T.t40,
+                        color: T.yesil,
+                      ),
+                    ),
+                    const SizedBox(height: T.sMd),
+                    Text(
+                      widget.player.displayName,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: T.fontUi,
+                        fontSize: T.t24,
+                        color: T.beyaz100,
+                      ),
+                    ),
+                    const SizedBox(height: T.sMd),
+                    CareerLine(
+                      playerName: widget.player.displayName,
+                      clubs: widget.clubs,
+                      style: const TextStyle(
+                        fontFamily: T.fontUi,
+                        fontSize: T.t13,
+                        color: T.beyaz065,
+                      ),
+                    ),
+                    const SizedBox(height: T.sMd),
+                    const Divider(height: 1, thickness: 1, color: T.beyaz016),
+                    const SizedBox(height: T.sMd),
+                    const Text(
+                      'SIRADAKİ EŞLEŞME',
+                      style: TextStyle(
+                        fontFamily: T.fontUi,
+                        fontSize: T.t13,
+                        color: T.beyaz065,
+                        letterSpacing: 1.04,
+                      ),
+                    ),
+                    const SizedBox(height: T.sMd),
+                    AnimatedBuilder(
+                      animation: _bar,
+                      builder: (_, __) => ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: _bar.value,
+                          minHeight: 8,
+                          backgroundColor: T.beyaz016,
+                          valueColor: const AlwaysStoppedAnimation(T.yesil),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: T.s2xl),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: T.s2xl),
-                child: Text(
-                  widget.player.displayName,
-                  textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The blue card both answer popups share (82:466 / 80:339): #1C26B8 to
+/// #0B0E57 top to bottom, a 2pt beyaz/038 border at radius/2xl, a deep soft
+/// drop, and the `Ampul Rozeti` lightbulb badge sitting on its top edge.
+class _BulbPopup extends StatelessWidget {
+  const _BulbPopup({
+    required this.width,
+    required this.padding,
+    required this.gap,
+    required this.children,
+  });
+
+  final double width;
+  final EdgeInsets padding;
+  final double gap;
+  final List<Widget> children;
+
+  static const _badge = 74.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.topCenter,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: _badge / 2),
+          child: Container(
+            width: width,
+            padding: padding,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF1C26B8), Color(0xFF0B0E57)],
+              ),
+              borderRadius: BorderRadius.circular(T.r2xl),
+              border: Border.all(color: T.beyaz038, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.55),
+                  offset: const Offset(0, 16),
+                  blurRadius: 40,
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var i = 0; i < children.length; i++) ...[
+                  if (i > 0) SizedBox(height: gap),
+                  children[i],
+                ],
+              ],
+            ),
+          ),
+        ),
+        const _BulbBadge(size: _badge),
+      ],
+    );
+  }
+}
+
+/// `Ampul Rozeti` (82:478) with the lightbulb (82:479) inside.
+///
+/// The badge's export is an SVG whose glow is a blur filter, which
+/// flutter_svg does not draw — so the disc and its glow are painted, in the
+/// popup's own blue with the same 2pt beyaz/038 ring. The lightbulb is the
+/// already-exported assets/img/lightbulb.png.
+class _BulbBadge extends StatelessWidget {
+  const _BulbBadge({required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF2632D0), Color(0xFF1C26B8)],
+        ),
+        border: Border.all(color: T.beyaz038, width: 2),
+        boxShadow: [
+          BoxShadow(color: T.altin.withValues(alpha: 0.35), blurRadius: 24),
+        ],
+      ),
+      alignment: Alignment.center,
+      child: Image.asset(
+        'assets/img/lightbulb.png',
+        width: 40,
+        height: 41,
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+}
+
+/// `Onay Popup` (82:466) — "CEVABI GÖSTER?" with VAZGEÇ and the price
+/// button.
+///
+/// The frame also shows a `Bakiyen 120` balance chip. There is no coin
+/// balance yet (it belongs to the profile), so the chip is left out rather
+/// than showing an invented number.
+class RevealConfirmPopup extends StatelessWidget {
+  const RevealConfirmPopup({
+    super.key,
+    required this.cost,
+    required this.onCancel,
+    required this.onConfirm,
+  });
+
+  final int cost;
+  final VoidCallback onCancel;
+  final VoidCallback onConfirm;
+
+  @override
+  Widget build(BuildContext context) {
+    return _BulbPopup(
+      width: 340,
+      padding: const EdgeInsets.fromLTRB(20, 34, 20, 20),
+      gap: T.sXl,
+      children: [
+        const Text(
+          'CEVABI GÖSTER?',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: T.fontUi,
+            fontSize: T.t24,
+            color: T.beyaz100,
+          ),
+        ),
+        Text(
+          'Olası cevapları görmek $cost altına mal olur. '
+          'Seri sayacın sıfırlanmaz.',
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontFamily: T.fontUi,
+            fontSize: T.t13,
+            height: 20 / 13,
+            color: T.beyaz065,
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: _PopupButton(
+                label: 'VAZGEÇ',
+                onTap: onCancel,
+                color: T.beyaz012,
+                border: T.beyaz030,
+                shadow: const Color(0xFF05082E),
+                shadowOffset: 4,
+              ),
+            ),
+            const SizedBox(width: T.sMd),
+            Expanded(
+              child: _PopupButton(
+                label: '$cost ALTIN HARCA',
+                onTap: onConfirm,
+                gradient: const RadialGradient(
+                  radius: 0.5,
+                  transform: T.wideRadial,
+                  colors: [
+                    Color(0xFFFFB82B),
+                    Color(0xFFF29A1C),
+                    Color(0xFFE57D0D),
+                  ],
+                  stops: [0, 0.5, 1],
+                ),
+                border: T.beyaz038,
+                shadow: const Color(0xFF8C4705),
+                shadowOffset: 5,
+                highlight: true,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// `Cevap Popup` (80:339) — OLASI CEVAPLAR: every mutual player, numbered,
+/// each with its career line, then the spend note and DEVAM.
+///
+/// The frame shows four rows. A pair can have dozens of answers, so the
+/// list scrolls inside the card once it runs out of screen.
+class RevealAnswersPopup extends StatelessWidget {
+  const RevealAnswersPopup({
+    super.key,
+    required this.players,
+    required this.clubs,
+    required this.cost,
+    required this.onContinue,
+  });
+
+  final List<Player> players;
+  final Map<int, String> clubs;
+  final int cost;
+  final VoidCallback onContinue;
+
+  @override
+  Widget build(BuildContext context) {
+    final maxList = MediaQuery.sizeOf(context).height * 0.42;
+    return _BulbPopup(
+      width: 376,
+      padding: const EdgeInsets.fromLTRB(18, 30, 18, 22),
+      gap: T.sXl,
+      children: [
+        const Text(
+          'OLASI CEVAPLAR',
+          style: TextStyle(
+            fontFamily: T.fontUi,
+            fontSize: T.t24,
+            color: T.beyaz100,
+          ),
+        ),
+        const Text(
+          'İki takımda da forma giyen futbolcular',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: T.fontUi,
+            fontSize: T.t13,
+            color: T.beyaz050,
+          ),
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: maxList),
+          child: ListView.separated(
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            itemCount: players.length,
+            separatorBuilder: (_, __) => const SizedBox(height: T.sSm),
+            itemBuilder: (_, i) =>
+                _AnswerRow(index: i + 1, player: players[i], clubs: clubs),
+          ),
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '-$cost',
+              style: const TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t15,
+                color: T.beyaz080,
+              ),
+            ),
+            const SizedBox(width: T.sXs),
+            Image.asset('assets/img/coin.png', width: 20, height: 20),
+            const SizedBox(width: T.sXs),
+            const Text(
+              'altın harcandı',
+              style: TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t13,
+                color: T.beyaz050,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          width: double.infinity,
+          child: _PopupButton(
+            label: 'DEVAM',
+            onTap: onContinue,
+            gradient: T.yesilGradient,
+            border: T.beyaz038,
+            shadow: T.golgeGonder,
+            shadowOffset: 5,
+            highlight: true,
+            fontSize: T.t22,
+            verticalPadding: 14,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// `Cevap/<name>` (80:343) — beyaz/012 row, the green 30pt rank disc, name at
+/// type/17 over its career line at type/11.
+class _AnswerRow extends StatelessWidget {
+  const _AnswerRow({
+    required this.index,
+    required this.player,
+    required this.clubs,
+  });
+
+  final int index;
+  final Player player;
+  final Map<int, String> clubs;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 9, 12, 9),
+      decoration: BoxDecoration(
+        color: T.beyaz012,
+        borderRadius: BorderRadius.circular(T.rMd),
+        border: Border.all(color: T.beyaz016),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: T.yesil.withValues(alpha: 0.85),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '$index',
+              style: const TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t13,
+                color: T.yesilMurekkep,
+              ),
+            ),
+          ),
+          const SizedBox(width: T.sLg),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  player.displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontFamily: T.fontUi,
-                    fontSize: T.t24,
+                    fontSize: T.t17,
                     color: T.beyaz100,
                   ),
                 ),
-              ),
-              const SizedBox(height: T.sMd),
-              Text(
-                'SERİ ${widget.streak}',
-                style: const TextStyle(
-                  fontFamily: T.fontUi,
-                  fontSize: T.t15,
-                  color: T.turuncu,
+                const SizedBox(height: T.sHairline),
+                CareerLine(
+                  playerName: player.displayName,
+                  clubs: clubs,
+                  textAlign: TextAlign.left,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontFamily: T.fontUi,
+                    fontSize: T.t11,
+                    color: T.beyaz050,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: T.s2xl),
-                child: AnimatedBuilder(
-                  animation: _bar,
-                  builder: (_, __) => ClipRRect(
-                    borderRadius: BorderRadius.circular(T.sHairline),
-                    child: LinearProgressIndicator(
-                      value: 1 - _bar.value,
-                      minHeight: 4,
-                      backgroundColor: T.beyaz012,
-                      valueColor: const AlwaysStoppedAnimation(T.yesil),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The popups' buttons: a fill (flat or radial), a 1.5pt border at
+/// radius/lg, a HARD drop shadow (zero blur), and optionally the white
+/// inset highlight along the top that the green and orange buttons carry.
+class _PopupButton extends StatelessWidget {
+  const _PopupButton({
+    required this.label,
+    required this.onTap,
+    required this.border,
+    required this.shadow,
+    required this.shadowOffset,
+    this.color,
+    this.gradient,
+    this.highlight = false,
+    this.fontSize = T.t17,
+    this.verticalPadding = 13,
+  });
+
+  final String label;
+  final VoidCallback onTap;
+  final Color? color;
+  final Gradient? gradient;
+  final Color border;
+  final Color shadow;
+  final double shadowOffset;
+  final bool highlight;
+  final double fontSize;
+  final double verticalPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(T.rLg),
+          border: Border.all(color: border, width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: shadow,
+              offset: Offset(0, shadowOffset),
+              blurRadius: 0,
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            if (highlight)
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(T.rLg),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.35),
+                        Colors.transparent,
+                      ],
+                      stops: const [0, 0.18],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: T.s2xl),
-            ],
-          ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: verticalPadding,
+                horizontal: T.sSm,
+              ),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontFamily: T.fontUi,
+                    fontSize: fontSize,
+                    color: T.beyaz100,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

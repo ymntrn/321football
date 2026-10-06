@@ -97,14 +97,12 @@ needs. **It is now ported to Dart** in `lib/data/game_queries.dart`, and
     random_practice_pair(difficulty)       a guaranteed-answerable question
     check_pair_is_playable(club_a, club_b) the PvP guard (ported, unused)
 
-### Two known divergences in the Dart port
+### Known divergences in the Dart port
 
-1. **The rejection fallback orders by fame.** `game_queries.py` picks the name
-   to blame with `LIMIT 1` and no `ORDER BY`, so SQLite returns an arbitrary
-   namesake — typing "messi" reported *"Georges Parfait Mbida Messi never
-   played for both"*. The Dart version orders by `fame_score DESC`. This
-   affects only the DISPLAYED name, not accept/reject. **Worth fixing in the
-   Python too.**
+1. ~~**The rejection fallback orders by fame.**~~ No longer a divergence:
+   since 6 Oct 2026 `game_queries.py` also orders the name-to-blame fallback
+   by `fame_score DESC` (it used to return an arbitrary namesake — "Georges
+   Parfait Mbida Messi" for "messi"). Display only; accept/reject unchanged.
 2. **Suggestions need 3 characters, not 2.** Short prefixes materialise a huge
    candidate set before `LIMIT` applies. See `flutter-app.md` for the numbers.
 
@@ -336,7 +334,7 @@ checked against Unicode character names.
 1. **PvP** — see `pvp-handoff.md`. Settle the no-answer rule, choose a backend,
    build the team picker, then Friend Match before ranked matchmaking.
    *(Superseded — see `friend-match.md` → Next.)*
-2. Build `Doğru Cevap` and `Cevap Onayı` from Figma (the current celebration
-   and answer sheet predate reading the file).
-3. Cold start: stream the 62 MB asset copy instead of loading it whole.
+2. ~~Build `Doğru Cevap` and `Cevap Onayı` from Figma~~ — done 6 Oct 2026
+   (branch `screens-from-figma`, awaiting emulator check).
+3. ~~Cold start: stream the 62 MB asset copy~~ — done 6 Oct 2026, same branch.
 4. Shop assets, audio/haptics, ads/IAP, release builds.

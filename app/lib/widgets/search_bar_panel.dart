@@ -104,6 +104,86 @@ class PracticeSearchBar extends StatelessWidget {
   }
 }
 
+/// The search bar in the practice `Doğru Cevap` state (Figma 78:638): the
+/// accepted name on a green left-to-right gradient, a white ✓ disc on the
+/// left and the white `+1 SERİ` pill on the right. A 2.5pt yesil border, a
+/// soft green glow and a HARD 4pt #0D4D0A drop.
+class ConfirmedSearchBar extends StatelessWidget {
+  const ConfirmedSearchBar({super.key, required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 58,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF3DD136), Color(0xFF21991C)],
+        ),
+        borderRadius: BorderRadius.circular(T.r2xl),
+        border: Border.all(color: T.yesil, width: 2.5),
+        boxShadow: const [
+          BoxShadow(color: Color(0x734DFF45), blurRadius: 26),
+          BoxShadow(
+            color: Color(0xFF0D4D0A),
+            offset: Offset(0, 4),
+            blurRadius: 0,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 13),
+      child: Row(
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            decoration: const BoxDecoration(
+              color: T.beyaz100,
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: const Text(
+              '✓',
+              style: TextStyle(fontSize: T.t19, color: Color(0xFF25991F)),
+            ),
+          ),
+          const SizedBox(width: T.sLg),
+          Expanded(
+            child: Text(
+              name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t22,
+                color: T.beyaz100,
+              ),
+            ),
+          ),
+          const SizedBox(width: T.sSm),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              color: T.beyaz100,
+              borderRadius: BorderRadius.circular(T.rMd),
+              border: Border.all(color: const Color(0x66176B0F), width: 1.5),
+            ),
+            child: const Text(
+              '+1 SERİ',
+              style: TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t15,
+                color: Color(0xFF14660F),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _Caret extends StatefulWidget {
   const _Caret();
 

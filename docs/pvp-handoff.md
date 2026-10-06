@@ -202,13 +202,11 @@ it is the mode two people in the same room can actually test.
 
 ## Loose ends inherited from Practice
 
-- `Doğru Cevap` (Figma 78:610) and `Cevap Onayı` (82:338) are **not** built from
-  Figma — the current celebration overlay and answer sheet were written before
-  the Figma file was read. PvP has its own GOOOL screen, so do these properly.
-- Cold start is ~12 s, all of it copying the 62 MB database out of the bundle on
-  first launch. Stream the copy and show real progress.
-- `game_queries.py` still has the unordered `LIMIT 1` namesake bug the Dart side
-  fixed (it named an obscure "Georges Parfait Mbida Messi" instead of Lionel).
+- ~~`Doğru Cevap` (78:610) and `Cevap Onayı` (82:338) not built from Figma~~ —
+  built 6 Oct 2026, with `Cevabı Göster` (78:483); see `flutter-app.md`.
+- ~~Cold start copies the 62 MB database whole~~ — streamed with real progress
+  since 6 Oct 2026; not yet re-measured.
+- ~~`game_queries.py` unordered `LIMIT 1` namesake bug~~ — fixed 6 Oct 2026.
 - No position column in the database, so suggestion sub-lines show nationality
   where the design shows `Forvet`.
 - Nationality labels are raw Wikidata ("Kingdom of the Netherlands").

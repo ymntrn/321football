@@ -188,8 +188,14 @@ def validate_answer(conn: sqlite3.Connection, typed: str,
     if row:
         return {"correct": True, "reason": "correct", "player": dict(row)}
 
+    # Name the MOST FAMOUS namesake, matching the Dart port. Without the
+    # ORDER BY, SQLite returns an arbitrary one: "messi" against Bayern x
+    # Napoli reported "Georges Parfait Mbida Messi never played for both".
+    # Only the displayed name changes; whether the answer is accepted is
+    # decided by the query above.
     known = conn.execute(
-        f"SELECT player_id, display_name FROM players WHERE player_id IN ({placeholders}) LIMIT 1",
+        f"SELECT player_id, display_name FROM players WHERE player_id IN ({placeholders}) "
+        "ORDER BY fame_score DESC LIMIT 1",
         candidates,
     ).fetchone()
     return {

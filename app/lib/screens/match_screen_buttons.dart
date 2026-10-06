@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../theme/tokens.dart';
 
-/// The two buttons on the match-end screen. Placeholder styling, like the
-/// screen itself — `Maç Sonu Kazanma` (46:352) and `Kaybetme` (48:534) still
-/// want building from Figma.
+/// The host's BAŞLAT on the post-rematch waiting screen — the one match
+/// screen with no Figma frame (a rematch returns the room to the lobby
+/// phase, which the design never draws inside a match). The result screens
+/// themselves use the violet LobbyButton from 46:352 / 48:534.
 class EndButton extends StatelessWidget {
   const EndButton({
     super.key,

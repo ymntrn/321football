@@ -57,38 +57,6 @@ class _ArmaSlot extends StatelessWidget {
 
   final String name;
 
-  /// Two letters that stay stable for a club: the first letters of its two
-  /// most meaningful words, skipping the noise that German, Spanish and
-  /// Brazilian club names are full of.
-  String get _initials {
-    const noise = {
-      'fc', 'sc', 'sv', 'ac', 'as', 'af', 'cf', 'sk', 'bk', 'if', 'vfl',
-      'vfb', 'tsg', 'spvgg', 'kfc', 'rfc', 'club', 'clube', 'de', 'do',
-      'da', 'the', '1', 'i',
-    };
-    final words = name
-        .replaceAll(RegExp(r'[^\w\s]'), ' ')
-        .split(RegExp(r'\s+'))
-        .where((w) => w.isNotEmpty)
-        .toList();
-    final meaty = words.where((w) => !noise.contains(w.toLowerCase())).toList();
-    final source = meaty.isEmpty ? words : meaty;
-    if (source.isEmpty) return '?';
-    if (source.length == 1) {
-      final w = source.first;
-      return (w.length >= 2 ? w.substring(0, 2) : w).toUpperCase();
-    }
-    return (source[0][0] + source[1][0]).toUpperCase();
-  }
-
-  Color get _tint {
-    var hash = 0;
-    for (final unit in name.codeUnits) {
-      hash = (hash * 31 + unit) & 0x7FFFFFFF;
-    }
-    return HSLColor.fromAHSL(1, (hash % 360).toDouble(), 0.6, 0.6).toColor();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -101,13 +69,50 @@ class _ArmaSlot extends StatelessWidget {
       ),
       alignment: Alignment.center,
       child: Text(
-        _initials,
+        clubInitials(name),
         style: TextStyle(
           fontFamily: T.fontUi,
           fontSize: 30,
-          color: _tint,
+          color: clubTint(name),
         ),
       ),
     );
   }
+}
+
+/// Two letters that stay stable for a club: the first letters of its two
+/// most meaningful words, skipping the noise that German, Spanish and
+/// Brazilian club names are full of.
+///
+/// Shared by [ClubCard] and the compact matchup strip on the PvP board, so a
+/// club wears the same badge in both.
+String clubInitials(String name) {
+  const noise = {
+    'fc', 'sc', 'sv', 'ac', 'as', 'af', 'cf', 'sk', 'bk', 'if', 'vfl',
+    'vfb', 'tsg', 'spvgg', 'kfc', 'rfc', 'club', 'clube', 'de', 'do',
+    'da', 'the', '1', 'i',
+  };
+  final words = name
+      .replaceAll(RegExp(r'[^\w\s]'), ' ')
+      .split(RegExp(r'\s+'))
+      .where((w) => w.isNotEmpty)
+      .toList();
+  final meaty = words.where((w) => !noise.contains(w.toLowerCase())).toList();
+  final source = meaty.isEmpty ? words : meaty;
+  if (source.isEmpty) return '?';
+  if (source.length == 1) {
+    final w = source.first;
+    return (w.length >= 2 ? w.substring(0, 2) : w).toUpperCase();
+  }
+  return (source[0][0] + source[1][0]).toUpperCase();
+}
+
+/// A colour derived from the club's name, so a given club stays visually
+/// stable everywhere its badge appears.
+Color clubTint(String name) {
+  var hash = 0;
+  for (final unit in name.codeUnits) {
+    hash = (hash * 31 + unit) & 0x7FFFFFFF;
+  }
+  return HSLColor.fromAHSL(1, (hash % 360).toDouble(), 0.6, 0.6).toColor();
 }

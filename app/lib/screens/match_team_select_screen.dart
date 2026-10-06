@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import '../settings/app_settings.dart';
 
 import '../data/app_database.dart';
 import '../data/game_queries.dart';
@@ -155,7 +155,7 @@ class _MatchTeamSelectScreenState extends State<MatchTeamSelectScreen> {
 
   void _pick(Club club) {
     if (_picked != null) return;
-    HapticFeedback.selectionClick();
+    Haptics.selection();
     setState(() {
       _picked = club;
       _typed = '';

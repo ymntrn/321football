@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import '../settings/app_settings.dart';
 
 import '../data/app_database.dart';
 import '../data/game_queries.dart';
@@ -225,7 +225,8 @@ class _MatchBoardScreenState extends State<MatchBoardScreen> {
       if (!mounted) return;
 
       if (result.correct) {
-        HapticFeedback.mediumImpact();
+        Haptics.medium();
+        Sounds.play(Sfx.correct);
         setState(() {
           _found = result.player;
           _suggestions = const [];
@@ -235,7 +236,8 @@ class _MatchBoardScreenState extends State<MatchBoardScreen> {
         // what moves the match on, not this call returning.
         unawaited(widget.onCorrect(result.player!.displayName, elapsed));
       } else {
-        HapticFeedback.heavyImpact();
+        Haptics.heavy();
+        Sounds.play(Sfx.wrong);
         setState(() => _rejection = result);
       }
     } finally {

@@ -8,6 +8,14 @@ Supabase"). Reconcile those when this piece lands.
 
 Scope: **Friend Match only.** No matchmaking, no ELO, no trophies.
 
+> **6 Oct 2026, branch `front-door-and-ranked`:** accounts, ranked
+> matchmaking, stats, trophies and coins are built on top of this engine —
+> see `accounts-and-ranked.md`. What changed HERE: rooms now carry auth user
+> ids and RLS is `auth.uid() in (host_id, guest_id)` (006, the upgrade the
+> *RLS — honestly* section below describes); rooms gained `ranked` and the
+> recorded-result columns (007); both seats call `record_match_result` at
+> `match_over`; `bot.py` signs in anonymously.
+
 ---
 
 ## Status
@@ -141,7 +149,9 @@ Before this existed, one afternoon of testing left three rooms frozen in
 
 ### RLS — honestly
 
-Any holder of the publishable key can read and write any room. That matches
+*(Superseded by 006_accounts.sql: rooms are now readable and writable only
+by their two signed-in players.)* Before 006: any holder of the publishable
+key could read and write any room. That matches
 the no-anti-cheat decision: two friends sharing a code, no economy to exploit.
 It is **not** protection against someone guessing six digits. The upgrade, if
 it ever matters, is anonymous sign-ins plus

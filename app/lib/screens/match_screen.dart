@@ -323,7 +323,12 @@ class _MatchScreenState extends State<MatchScreen> {
   bool _recording = false;
 
   Future<void> _recordResult() async {
-    if (_recording || _room.resultRecorded) return;
+    // Not skipped when the room is already recorded: the opponent often
+    // records first, and this call is also what refreshes OUR coins and
+    // trophies (Ana Sayfa's own refresh fires when matchmaking is replaced
+    // by the match, i.e. at the START). The RPC is idempotent, so calling
+    // it after the other seat costs nothing and returns the deltas.
+    if (_recording) return;
     _recording = true;
     try {
       for (var attempt = 0; attempt < 3; attempt++) {

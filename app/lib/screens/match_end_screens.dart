@@ -650,7 +650,13 @@ class MatchResultScreen extends StatelessWidget {
       body: ScreenBackground(
         child: SafeArea(
           child: LayoutBuilder(
-            builder: (context, box) => SingleChildScrollView(
+            builder: (context, box) {
+              // The frame is 932 pt tall. On a real phone (~860 pt under the
+              // status bar) the ranked trophy/coin row pushed Ana Sayfa off
+              // the bottom, so the fixed gaps shrink when height is short.
+              final tight = box.maxHeight < 900;
+              double gap(double full) => tight ? full * 0.55 : full;
+              return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: box.maxHeight),
@@ -673,7 +679,7 @@ class MatchResultScreen extends StatelessWidget {
                                 stops: [0, 0.40865],
                               ),
                       ),
-                      const SizedBox(height: 30),
+                      SizedBox(height: gap(30)),
                       _Sides(
                         playerName: playerName,
                         opponentName: opponentName,
@@ -681,12 +687,12 @@ class MatchResultScreen extends StatelessWidget {
                         opponentScore: opponentScore,
                         won: won,
                       ),
-                      const SizedBox(height: 37),
+                      SizedBox(height: gap(37)),
                       const _Caption('MAÇ ÖZETİ', color: T.beyaz038),
                       const SizedBox(height: 11),
                       _SummaryRow(summary: summary),
                       if (ranked) ...[
-                        const SizedBox(height: 26),
+                        SizedBox(height: gap(26)),
                         _EconomyRow(trophies: trophyDelta, coins: coinDelta),
                       ],
                       const Spacer(),
@@ -704,7 +710,7 @@ class MatchResultScreen extends StatelessWidget {
                           ),
                         )
                       else
-                        const SizedBox(height: 40),
+                        SizedBox(height: gap(40)),
                       // A rematch keeps the same room and the same code, so
                       // nobody has to share a new one to play again.
                       if (onRematch != null)
@@ -716,7 +722,7 @@ class MatchResultScreen extends StatelessWidget {
                             onTap: onRematch,
                           ),
                         ),
-                      const SizedBox(height: 44),
+                      SizedBox(height: gap(44)),
                       SizedBox(
                         width: 247,
                         child: LobbyButton(
@@ -732,7 +738,8 @@ class MatchResultScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
+            );
+            },
           ),
         ),
       ),

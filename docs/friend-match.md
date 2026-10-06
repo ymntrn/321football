@@ -21,12 +21,17 @@ Scope: **Friend Match only.** No matchmaking, no ELO, no trophies.
 | Countdown | **Done, from Figma** |
 | Match state machine | **Done — full match verified against the bot** |
 | Bot second player | **Done** |
-| **PvP board (the answering phase)** | **NOT BUILT — this is the gap** |
-| Versus, GOOOL, Tur Bitti, win/lose screens | **Placeholders, not from Figma** |
+| PvP board (the answering phase) | **Built from Figma 6 Oct — not yet run on a device** |
+| Versus | **Built from Figma 6 Oct — not yet run; SVGs need `fetch_assets.ps1`** |
+| GOOOL, Tur Bitti, Kazanma / Kaybetme | **Built from Figma 6 Oct — not yet run on a device** |
 
-**The honest summary: the backend is finished and the loop runs end to end,
-but four screens are still mine rather than Yaman's design, and there is no
-board to type an answer into.**
+**The honest summary (6 Oct 2026):** every match screen now exists and is
+built from the Figma frames, on branch `screens-from-figma`. It was written
+in a cloud session with no emulator: `flutter analyze` is clean and
+`flutter test` passes (layout tests pump each new screen at three phone sizes
+and fail on overflow), but **nothing from that branch has been seen on a
+device yet.** `docs/TESTING.md` is the checklist. The backend protocol is
+unchanged — no migration, no new column.
 
 ---
 
@@ -167,14 +172,47 @@ lib/net/
 lib/models/room.dart     the row, MatchPhase, Seat, RoundReason, decideRoundWinner()
 lib/screens/
   friend_match_screen.dart      Oda Kur + Odaya Katıl (51:471, 51:524)
-  match_screen.dart             THE STATE MACHINE + placeholder round/match ends
+  match_screen.dart             THE STATE MACHINE (+ local round history)
+  match_versus_screen.dart      Versus (27:42)
   match_countdown_screen.dart   Maç - Geri Sayım (38:200)
   match_team_select_screen.dart Maç - Takım Seçme (33:85, 86:190)
+  match_board_screen.dart       Maç - Oyuncu Arama (41:584, 86:334)
+  match_end_screens.dart        GOOOL (41:685), Tur Bitti (109:8),
+                                Kazanma / Kaybetme (46:352, 48:534)
 lib/widgets/
   lobby_chrome.dart      tab buttons, room panel, name strips, avatars, action button
   club_search_panel.dart TAKIMLAR panel + ClubBadge
-  match_chrome.dart      score strip, round timer, crest slot, opponent pill
+  match_chrome.dart      score strip, name block, round timer, crest slot,
+                         opponent pill, Canlı Durum strip, compact matchup,
+                         avatars, OutlinedGradientText (GOOOL / TUR BİTTİ /
+                         Kazandın / countdown numeral)
+  career_line.dart       "Club (2009–13) → Club (2013–17)"
 ```
+
+### The board and the clock (6 Oct 2026)
+
+The board appears when **this device's clock reaches `unlock_at`** — the
+rule `003_match_flow.sql` already states — in both the `countdown` and
+`answering` phases, under one widget key, so the host's `open_answers` flip
+does not rebuild it. A `Stopwatch` starts when the board mounts and is
+**read the instant GÖNDER (or a suggestion) is pressed, before
+`validateAnswer` runs**. The board can mount up to 250 ms after the unlock
+(the loop's tick) or much later after a reconnect, so the gap between the
+unlock and the mount is measured once and added to every reading — otherwise
+a late mount would be free time. Only correct answers are written, through
+the existing `submitAnswer` (retried once; its `elapsed_ms is null` filter
+makes the retry harmless). Input closes after a correct answer and when the
+local clock passes the deadline; the host's timeout and 900 ms grace window
+are untouched.
+
+The deciding goal never passes through `round_over` — `finish_round` goes
+straight to `match_over` — so the loop shows that goal's GOOOL for the same
+2.5 s before the result, but only when the match has *just* ended (a
+reopened finished match goes straight to the result).
+
+`MAÇ ÖZETİ` (fastest answer, correct/played, best run of round wins) is kept
+**locally** round by round, because `next_round` wipes the row. A player who
+reconnected mid-match only sees the rounds since.
 
 `watch()` subscribes to the room row **and polls every 2 seconds as a
 backstop**, de-duplicating by `updated_at`. A dropped realtime message and a
@@ -201,6 +239,48 @@ leaving actually loses it.
 - The suggestion sub-line shows nationality; the database has no position.
 - The lobby panel does not exist until a mode is chosen (added 13 Sep, and
   drawn into Figma as `Arkadaş Maçı - Başlangıç`).
+
+Added 6 Oct 2026, with the screens built that day:
+
+- **Board: no clock ring.** The written spec (`pvp-handoff.md`,
+  `game-screens-ui.md`) asks for a red Jaro numeral "in a 158 px ring"; the
+  Figma frames 41:584 / 86:334 draw only the numeral over the backdrop glow.
+  The frame won. Add the ring to the frame first if it is wanted.
+- **Board: `Canlı Durum` says "yazıyor" while the round is open, not while the
+  opponent is actually typing.** The protocol carries no typing signal (the
+  row only learns of a CORRECT answer), so it reads `yazıyor` → `buldu!` →
+  `süre doldu`. "Sen" becomes "Sen · buldun!" after this player's answer.
+- **Board: a `✓ name` line** replaces the rejection line after a correct
+  answer — not in the frames, but otherwise nothing visible happens for the
+  up-to-900 ms before the host settles.
+- **Board: the compact strip's crests are the tinted initials badge** used by
+  the big club cards, not the frame's grey `T1` / `T2` text.
+- **Versus has no phase of its own** — adding one would change the protocol.
+  It is drawn over the **first 2 s of round 1's 15 s pick window** (the
+  prototype's 2 s timeout), so both players pick in 13 s that round. Timed
+  against `pick_deadline`, so a reconnect later in the window skips it; never
+  shown on a voided round 1 re-pick; shown again after a rematch.
+- **Versus: player names on the blank white `Oyuncu Kartı` banners** (the
+  frame leaves them empty pending card art) and the caption reads
+  `ARKADAŞ MAÇI · İLK N GOL` instead of the ranked `SIRALI MAÇ`.
+- **Versus vectors are not committed yet.** The cloud session could not reach
+  figma.com; the three export URLs are in `tools/fetch_assets.ps1` (Figma
+  asset URLs expire after ~7 days — run it soon). Missing files fall back to
+  a plain Jaro `VS` and the names, so the match still runs.
+- **GOOOL's scorer ring is painted**, not the exported SVG (a blur-filter
+  glow flutter_svg cannot draw — the same reason as Ellipse 5).
+- **Tur Bitti also covers the unplayable pair**, with its own subtitle ("Bu
+  iki takımın ortak oyuncusu yok", "Takımlar yeniden seçilecek") and no
+  answer panel. The frame only draws the time-out case.
+- **Result screens: no trophy/coin row and no `2X Altın` button** — that is
+  the ranked economy, out of scope for Friend Match. `Tekrar Oyna` takes the
+  full-width 341x90 form the Kaybetme frame already uses, on both screens.
+- **Result screens: the end reason** sits where the trophy row was:
+  `Rakip ayrıldı` (opponent forfeited), `Bağlantın koptu` (this player was
+  claimed against), `Maç yarıda kaldı` (abandoned; no Tekrar Oyna).
+- **`MAÇ ÖZETİ` → `seri` is the longest run of rounds won in this match.**
+  The frame's `8` looks like a profile-wide streak, which does not exist.
+- Everything set in M PLUS 1p in the frames uses PoetsenOne (not bundled).
 
 ### Bugs worth remembering
 
@@ -260,11 +340,14 @@ them. **The duplicates still want a proper `merge_duplicates.py` pass.**
 | `141:41` | Arkadaş Maçı - Başlangıç (added 13 Sep) | yes |
 | `33:85` / `86:190` | Maç - Takım Seçme (+ typing) | yes |
 | `38:200` | Maç - Geri Sayım | yes |
-| `27:42` | Versus | **no — skipped** |
-| `41:584` / `86:334` | Maç - Oyuncu Arama (+ typing) | **no — the gap** |
-| `41:685` | Maç - Tur Sonu (GOOOL) | **placeholder** |
-| `109:8` | Maç - Tur Bitti (Beraberlik) | **placeholder** |
-| `46:352` / `48:534` | Maç Sonu Kazanma / Kaybetme | **placeholder** |
+| `27:42` | Versus | yes, 6 Oct (assets via `fetch_assets.ps1`) |
+| `41:584` / `86:334` | Maç - Oyuncu Arama (+ typing) | yes, 6 Oct |
+| `41:685` | Maç - Tur Sonu (GOOOL) | yes, 6 Oct |
+| `109:8` | Maç - Tur Bitti (Beraberlik) | yes, 6 Oct |
+| `46:352` / `48:534` | Maç Sonu Kazanma / Kaybetme | yes, 6 Oct (no economy row) |
+
+"Yes, 6 Oct" = built from `get_design_context`, analyzer- and layout-test
+clean, **not yet screenshotted on the emulator**.
 
 `get_metadata` on page `0:1` is 288k characters and must be saved and grepped.
 
@@ -299,10 +382,10 @@ Supabase was checked on 6 October after a three-week break: not paused,
 
 ## Next
 
-1. **The PvP board** (`41:584` / `86:334`) — the practice board plus the clock
-   ring, three suggestions, the compact matchup strip, `Stopwatch` stamped at
-   the GÖNDER press. Without it there is no way to answer.
-2. Versus (`27:42`).
-3. Real GOOOL / Tur Bitti / win-loss screens.
-4. Profile `validateAnswer` on device — it now sits between the keypress and
-   the timestamp that decides the round, and has never been measured on a phone.
+1. **Run `docs/TESTING.md`** — the board, Versus and the four end screens
+   against the bot, on the emulator. Run `tools\fetch_assets.ps1` first.
+2. Profile `validateAnswer` on device. It no longer sits between the keypress
+   and the timestamp (the stopwatch is read first), but it still decides how
+   long a player waits to see "✓".
+3. Decide the open questions the build raised: the clock ring (spec vs
+   frame), Versus eating 2 s of the first pick, and what `seri` should mean.

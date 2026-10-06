@@ -2,7 +2,9 @@
 
 Mobile football trivia game: two clubs, type a player who played for both.
 Practice mode (offline) is done; Friend Match (online, Supabase) runs end to
-end but has no board to type an answer into yet.
+end. As of 6 Oct 2026 every match screen (board, Versus, GOOOL, Tur Bitti,
+win/lose) and Practice's popups are built from Figma on branch
+`screens-from-figma` — **not yet checked on the emulator** (`docs/TESTING.md`).
 
 ## Read before doing anything
 
@@ -13,6 +15,7 @@ end but has no board to type an answer into yet.
 3. `docs/flutter-app.md` — app architecture, tools/ scripts, this machine's limits.
 4. `docs/project-state.md` — the database and the data rules.
 5. `docs/pvp-handoff.md`, `docs/game-screens-ui.md` — background.
+6. `docs/TESTING.md` — the emulator checklist for the unverified screens.
 
 ## Layout
 

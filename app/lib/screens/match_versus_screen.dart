@@ -20,19 +20,21 @@ import '../widgets/screen_background.dart';
 ///  * the banners are blank white placeholders in Figma (player card art is
 ///    still to come, per game-screens-ui.md); each carries its player's name
 ///    here, since an empty white card says nothing in a real match;
-///  * the caption reads `ARKADAŞ MAÇI · İLK N GOL` — the frame's
-///    `SIRALI MAÇ` is the ranked mode, which this is not.
+///  * the caption reads `ARKADAŞ MAÇI · İLK N GOL` for a Friend Match and
+///    the frame's `SIRALI MAÇ` only for a ranked (Hemen Oyna) room.
 class MatchVersusScreen extends StatelessWidget {
   const MatchVersusScreen({
     super.key,
     required this.playerName,
     required this.opponentName,
     required this.targetGoals,
+    this.ranked = false,
   });
 
   final String playerName;
   final String opponentName;
   final int targetGoals;
+  final bool ranked;
 
   static const bannerTop = 'assets/img/versus_banner_top.svg';
   static const bannerBottom = 'assets/img/versus_banner_bottom.svg';
@@ -111,7 +113,7 @@ class MatchVersusScreen extends StatelessWidget {
                   right: 0,
                   top: y(_captionY) - 9 * s,
                   child: Text(
-                    'ARKADAŞ MAÇI · İLK $targetGoals GOL',
+                    '${ranked ? 'SIRALI MAÇ' : 'ARKADAŞ MAÇI'} · İLK $targetGoals GOL',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: T.fontUi,

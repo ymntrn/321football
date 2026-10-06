@@ -319,6 +319,12 @@ class RoomRepository {
   Future<Room> recordResult(String code) =>
       _flow('record_match_result', {'p_code': code});
 
+  /// "2X Altın" (010): pays this player's ranked win coins a second time.
+  /// The server allows it once per match, for the caller's own ranked win
+  /// only; a repeat call returns the row unchanged.
+  Future<Room> doubleMatchCoins(String code) =>
+      _flow('double_match_coins', {'p_code': code});
+
   // -------------------------------------------------------------------------
   // Ranked matchmaking (009)
   // -------------------------------------------------------------------------

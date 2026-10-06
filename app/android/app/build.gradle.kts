@@ -4,6 +4,15 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// The AdMob APP id lives in lib/ads/ad_config.dart, the one file that holds
+// every ad id; it is read from there into the manifest placeholder below so
+// nobody has to keep two copies in step.
+val admobAppId: String = run {
+    val config = rootProject.file("../lib/ads/ad_config.dart").readText()
+    Regex("admobAppIdAndroid\\s*=\\s*'([^']+)'").find(config)?.groupValues?.get(1)
+        ?: throw GradleException("admobAppIdAndroid not found in lib/ads/ad_config.dart")
+}
+
 android {
     namespace = "com.yamanturan.football321"
     compileSdk = flutter.compileSdkVersion
@@ -27,6 +36,7 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["admobAppId"] = admobAppId
     }
 
     // Store the bundled SQLite database uncompressed. Compressed, the first-launch

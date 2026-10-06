@@ -155,6 +155,22 @@ class T {
         stops: morStopPositions,
       );
 
+  /// The yellow-green fill of the result screen's `2X Altın` (46:517), at
+  /// the buttons' 0.82 opacity. Read off the frame, like [morStops].
+  static final altinGradient = RadialGradient(
+    radius: 0.5,
+    transform: wideRadial,
+    colors: [
+      for (final c in const [
+        Color(0xFFDCF900),
+        Color(0xFFD2DD0A),
+        Color(0xFFC8C213),
+      ])
+        c.withValues(alpha: 0.82),
+    ],
+    stops: const [0.0, 0.5, 1.0],
+  );
+
   /// The orange fill on the guest's disabled `Başlatma Bekleniyor` button.
   static const turuncuGradient = RadialGradient(
     radius: 0.5,

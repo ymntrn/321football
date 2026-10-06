@@ -216,6 +216,75 @@ void main() {
         },
       );
     }
+
+    testWidgets(
+      'ranked win with 2X Altın lays out at ${size.width}x${size.height}',
+      (tester) async {
+        var doubled = 0;
+        await _pumpAt(
+          tester,
+          size,
+          MatchResultScreen(
+            won: true,
+            playerName: 'Oyuncuadı1',
+            opponentName: 'Oyuncuadı2',
+            playerScore: 3,
+            opponentScore: 0,
+            summary: const MatchSummary(
+              fastestMs: 1400,
+              correct: 3,
+              rounds: 4,
+              bestStreak: 2,
+            ),
+            ranked: true,
+            trophyDelta: 30,
+            coinDelta: 10,
+            onRematch: () {},
+            onDoubleCoins: () => doubled++,
+            onHome: () {},
+          ),
+        );
+        expect(tester.takeException(), isNull);
+        expect(find.text('Tekrar Oyna'), findsOneWidget);
+        expect(find.text('2X Altın'), findsOneWidget);
+        final rematch = tester.getSize(find.ancestor(
+          of: find.text('Tekrar Oyna'),
+          matching: find.byType(GestureDetector),
+        ).first);
+        // The frame's 170 where the 350 row fits; narrower phones shrink it.
+        if (size.width >= 390) expect(rematch.width, closeTo(170, 0.5));
+        // Short phones scroll the result screen rather than squeeze it.
+        await tester.ensureVisible(find.text('2X Altın'));
+        await tester.pump();
+        await tester.tap(find.text('2X Altın'));
+        expect(doubled, 1);
+      },
+    );
+
+    testWidgets(
+      'ranked win without an ad has no 2X Altın at ${size.width}x${size.height}',
+      (tester) async {
+        await _pumpAt(
+          tester,
+          size,
+          MatchResultScreen(
+            won: true,
+            playerName: 'Oyuncuadı1',
+            opponentName: 'Oyuncuadı2',
+            playerScore: 3,
+            opponentScore: 0,
+            summary: MatchSummary.empty,
+            ranked: true,
+            trophyDelta: 30,
+            coinDelta: 10,
+            onRematch: () {},
+            onHome: () {},
+          ),
+        );
+        expect(tester.takeException(), isNull);
+        expect(find.text('2X Altın'), findsNothing);
+      },
+    );
   }
 
   // ---- Practice popups ------------------------------------------------

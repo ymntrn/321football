@@ -165,13 +165,20 @@ def compute_club_fame(conn) -> int:
 
 def compute_player_fame(conn) -> int:
     """
-    A player's fame follows the company he kept: the single most famous club
-    he played for matters more than the average (one Real Madrid spell makes
-    you famous even if the other four clubs were small), but the average still
-    counts so a one-cap wonder doesn't outrank a career top-flight player.
+    A player's fame leads with HIS OWN recognition: the number of Wikipedia
+    languages with a page about him (players.sitelink_count, fetched by
+    enrich_players.py) - the same signal the clubs use.
+
+    Until 6 Oct 2026 this was the clubs alone (0.6 x best club + 0.4 x average
+    club), so anyone with two famous clubs scored ~99: a 1910s Real Madrid
+    amateur level with Zidane, Bertram Goode top of Villa x Liverpool. The
+    club signal stays at 30% so that, among players nobody wrote about, the
+    one who played for bigger clubs still ranks first.
     """
+    db.ensure_column(conn, "players", "sitelink_count", "INTEGER NOT NULL DEFAULT 0")
     rows = conn.execute("""
         SELECT p.player_id,
+               p.sitelink_count,
                MAX(c.fame_score) AS max_fame,
                AVG(c.fame_score) AS avg_fame
         FROM players p
@@ -184,7 +191,9 @@ def compute_player_fame(conn) -> int:
     if not rows:
         return 0
 
-    raw = [0.6 * (r["max_fame"] or 0) + 0.4 * (r["avg_fame"] or 0) for r in rows]
+    own = zscore([math.log1p(r["sitelink_count"] or 0) for r in rows])
+    club = zscore([0.6 * (r["max_fame"] or 0) + 0.4 * (r["avg_fame"] or 0) for r in rows])
+    raw = [0.7 * own[i] + 0.3 * club[i] for i in range(len(rows))]
     scores = to_percentile(raw)
 
     conn.executemany(

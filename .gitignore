@@ -8,6 +8,7 @@ supabase/*.local
 key.properties
 
 # --- Python ---
+321_football_db/.sparql_cache/
 .venv/
 venv/
 __pycache__/

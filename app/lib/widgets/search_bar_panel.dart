@@ -339,7 +339,8 @@ class _SuggestionRow extends StatelessWidget {
         ? '${player.firstYear}–${player.lastYear}'
         : (player.firstYear != null ? '${player.firstYear}–' : null);
     final parts = [
-      if (player.nationality != null) player.nationality!,
+      if (player.nationality != null)
+        countryNamesTr[player.nationality!] ?? player.nationality!,
       if (years != null) years,
     ];
     return parts.join(' · ');

@@ -108,6 +108,14 @@ def build_slim(drop_single_club: bool) -> None:
     conn.execute("DELETE FROM clubs WHERE is_reserve_or_b_team = 1")
     print("  dropped retired/reserve clubs")
 
+    # Per the data rules the game ships nationality and nothing else
+    # biographical. birth_year exists only so enrich_players.py can apply the
+    # era filter on a rebuild; it does not travel.
+    cols = [r[1] for r in conn.execute("PRAGMA table_info(players)")]
+    if "birth_year" in cols:
+        conn.execute("UPDATE players SET birth_year = NULL")
+        print("  blanked birth years")
+
     # A player with no resolved name cannot be typed, so he can never be a
     # correct answer no matter how many clubs he links.
     conn.execute("DELETE FROM players WHERE display_name GLOB 'Q[0-9]*'")

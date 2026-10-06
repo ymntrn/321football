@@ -518,3 +518,39 @@ request, accepted list with trophies and remove button.
 the unit test that fails if any haptic skips the Titreşim setting), the
 offline first launch, incoming friend requests and the badge, rename, and
 cancelling matchmaking.
+
+---
+
+## Data fixes - 6 Oct 2026 (night)
+
+Backups of both databases before any change: `db_backup_2026-10-06/` (gitignored).
+
+1. **Duplicate clubs.** Wikidata has a second, page-less item for many German
+   clubs under the formal name (Q979xxxxx: "FC Bayern München", "BV Borussia
+   09 Dortmund", "SG Dynamo Dresden" ...), splitting a stray player off the
+   real club. 14 are merged by `merge_duplicates.py` (new MANUAL_MERGES list,
+   keyed by QID, keepers checked against the DB); their names became search
+   aliases. Lookalikes that are different clubs were left alone (VfB Leipzig
+   is not RB Leipzig, Fortuna Köln is not 1. FC Köln).
+2. **Club nicknames.** 278 added by the new `curate.py` step. Checked in the
+   team picker: `gs` -> Galatasaray first, `barca` -> FC Barcelona, `spurs`
+   -> Tottenham.
+3. **Nationality labels.** 4,272 players relabelled ("Kingdom of the
+   Netherlands", "United Kingdom of Great Britain and Ireland", "German
+   Reich", a stray genid URL ...). The suggestion sub-line is now Turkish
+   (`İrlanda · 1986-2005`) through an extended `countryNamesTr`.
+4. **Pre-1990 players counting as answers.** New `enrich_players.py` step:
+   own Wikipedia sitelinks for 89,750 players and birth years for 91,321;
+   14,678 open/undated spells of players born before 1955 dropped.
+5. **Player fame (found on the way).** Fame now leads with the player's own
+   sitelinks. Villa x Liverpool's answer key opens with Reina, Coutinho,
+   Keane, Milner; `messi` ranks Lionel first; Bertram Goode is gone.
+
+Verified: `verify.py` 43 passed / 0 failed; `test_offline.py` 71 passed;
+slim sanity check good; practice pairs 27,132 -> 27,109 (easy unchanged at
+216); `flutter test` 62 passed with the regenerated name-parity fixture
+(36,077 pairs). `AppDatabase.assetVersion` is 2 - on the emulator an install
+over the old build replaced the database on first launch (60.4 MB).
+
+Not changed: "Luka Modriç" is stored with ç (a Wikidata label quirk); fix
+with `manual_names.py` if it matters.

@@ -30,7 +30,7 @@ class AppDatabase {
 
   /// Bump this whenever a new database is dropped into assets/, otherwise the
   /// stale copy on disk wins and the new data never appears.
-  static const assetVersion = 1;
+  static const assetVersion = 2;
 
   Database? _db;
 

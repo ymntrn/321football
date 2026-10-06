@@ -10,6 +10,7 @@ import '../net/room_repository.dart';
 import '../net/server_clock.dart';
 import '../theme/tokens.dart';
 import '../widgets/screen_background.dart';
+import 'match_board_screen.dart';
 import 'match_countdown_screen.dart';
 import 'match_screen_buttons.dart';
 import 'match_team_select_screen.dart';
@@ -285,6 +286,28 @@ class _MatchScreenState extends State<MatchScreen> {
   // -------------------------------------------------------------------------
   // This player's own writes
   // -------------------------------------------------------------------------
+  /// A correct answer and the time the board stamped on it.
+  ///
+  /// Retried once: a dropped write here silently loses a round this player
+  /// won. The `elapsed_ms is null` filter in submitAnswer makes the retry
+  /// harmless if the first attempt did land.
+  Future<void> _answer(String answer, int elapsedMs) async {
+    for (var attempt = 0; attempt < 2; attempt++) {
+      try {
+        await widget.rooms.submitAnswer(
+          code: _room.code,
+          seat: _me,
+          answer: answer,
+          elapsedMs: elapsedMs,
+        );
+        return;
+      } catch (e) {
+        debugPrint('submitAnswer failed (attempt ${attempt + 1}): $e');
+        await Future<void>.delayed(const Duration(milliseconds: 400));
+      }
+    }
+  }
+
   Future<void> _pick(Club club) =>
       widget.rooms.pickClub(code: _room.code, seat: _me, club: club);
 
@@ -300,6 +323,28 @@ class _MatchScreenState extends State<MatchScreen> {
       excludeClubId: _room.clubIdOf(_them),
     );
     if (club != null) await _pick(club);
+  }
+
+  /// The PvP board for the round in progress (`Maç - Oyuncu Arama`).
+  Widget _board(DateTime unlock) {
+    final deadline = _local(_room.answerDeadline) ??
+        unlock.add(Duration(seconds: _room.answerSeconds));
+    return MatchBoardScreen(
+      key: ValueKey('board-${_room.round}'),
+      playerName: _room.nameOf(_me),
+      opponentName: _room.nameOf(_them),
+      playerScore: _room.scoreOf(_me),
+      opponentScore: _room.scoreOf(_them),
+      clubAId: _room.clubIdOf(_me)!,
+      clubAName: _room.clubNameOf(_me) ?? '',
+      clubBId: _room.clubIdOf(_them)!,
+      clubBName: _room.clubNameOf(_them) ?? '',
+      unlockAt: unlock,
+      deadline: deadline,
+      answerSeconds: _room.answerSeconds,
+      opponentFound: _room.elapsedOf(_them) != null,
+      onCorrect: _answer,
+    );
   }
 
   @override
@@ -355,10 +400,22 @@ class _MatchScreenState extends State<MatchScreen> {
 
       case MatchPhase.countdown:
       case MatchPhase.answering:
+        // Input opens when THIS device's clock reaches unlock_at, not when
+        // the host's open_answers marker arrives — that is the protocol
+        // (003_match_flow.sql), and it is what keeps latency out of the
+        // elapsed times. Both phases share one board, under one key, so the
+        // countdown -> answering flip lands on the SAME board and its
+        // stopwatch keeps running.
+        final unlock = _local(_room.unlockAt);
+        if (unlock != null &&
+            _room.bothPicked &&
+            !DateTime.now().isBefore(unlock)) {
+          return _board(unlock);
+        }
         return MatchCountdownScreen(
           room: _room,
           seat: _me,
-          unlockAt: _local(_room.unlockAt),
+          unlockAt: unlock,
         );
 
       case MatchPhase.roundOver:

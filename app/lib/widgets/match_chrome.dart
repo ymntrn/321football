@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 import '../theme/tokens.dart';
+import 'club_card.dart';
 import 'club_search_panel.dart';
 
 /// `Skor Şeridi` — the scoreboard across the top of every PvP screen
@@ -309,14 +310,6 @@ class OpponentStatusChip extends StatelessWidget {
   final Color avatarColor;
   final bool showDots;
 
-  String get _initials {
-    final clean = name.trim();
-    if (clean.isEmpty) return '?';
-    final digits = RegExp(r'\d').allMatches(clean).map((m) => m[0]).join();
-    if (digits.isNotEmpty) return '${clean[0].toUpperCase()}$digits';
-    return clean.substring(0, clean.length < 2 ? 1 : 2).toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -341,7 +334,7 @@ class OpponentStatusChip extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
-                _initials,
+                playerInitials(name),
                 style: const TextStyle(
                   fontFamily: T.fontUi,
                   fontSize: T.t13,
@@ -372,6 +365,252 @@ class OpponentStatusChip extends StatelessWidget {
             const _TypingDots(),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// A player's avatar letters: "Oyuncu1" becomes "O1", "Yaman" becomes "YA".
+/// The design's avatars read `O1` / `O2` for exactly that reason.
+String playerInitials(String name) {
+  final clean = name.trim();
+  if (clean.isEmpty) return '?';
+  final digits = RegExp(r'\d').allMatches(clean).map((m) => m[0]).join();
+  if (digits.isNotEmpty) return '${clean[0].toUpperCase()}$digits';
+  return clean.substring(0, clean.length < 2 ? 1 : 2).toUpperCase();
+}
+
+/// The player's colour (orange) and the opponent's (green), matching the two
+/// blocks of [MatchScoreStrip]. Avatar fills in `Canlı Durum` (85:526 /
+/// 85:535) and on the result screens.
+const playerAvatarFill = Color(0xFFF08717);
+const opponentAvatarFill = Color(0xFF3DD136);
+
+/// The 34pt round avatar from `Canlı Durum` (85:526): a solid fill, a 1.5pt
+/// beyaz/050 ring and the initials at type/13.
+class MatchAvatar extends StatelessWidget {
+  const MatchAvatar({
+    super.key,
+    required this.name,
+    required this.fill,
+    this.size = 34,
+  });
+
+  final String name;
+  final Color fill;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: fill,
+        shape: BoxShape.circle,
+        border: Border.all(color: T.beyaz050, width: 1.5),
+      ),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(T.sXxs),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          playerInitials(name),
+          style: TextStyle(
+            fontFamily: T.fontUi,
+            fontSize: T.t13 * size / 34,
+            color: T.beyaz100,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// `Canlı Durum` (Figma 85:524) — the full-width strip under the matchup on
+/// the PvP board: this player on the left ("Sen"), the opponent on the right
+/// with what they are doing and the `Nokta` dots.
+///
+/// The protocol has no "typing" signal — the room row only learns about an
+/// opponent's answer once it is CORRECT — so [opponentLabel] is a state the
+/// caller derives from the row ("yazıyor" while the round is open, "buldu!"
+/// once their time is in), not a live keystroke indicator.
+class LiveStatusStrip extends StatelessWidget {
+  const LiveStatusStrip({
+    super.key,
+    required this.playerName,
+    required this.opponentName,
+    required this.opponentLabel,
+    this.playerLabel = 'Sen',
+    this.showDots = true,
+  });
+
+  final String playerName;
+  final String opponentName;
+  final String playerLabel;
+  final String opponentLabel;
+  final bool showDots;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // Full width, explicitly: a Container with no width would shrink to
+      // its Row and lose the space-between that pins the opponent right.
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: T.beyaz006,
+        borderRadius: BorderRadius.circular(T.rXl),
+        border: Border.all(color: T.beyaz016),
+      ),
+      child: Row(
+        children: [
+          MatchAvatar(name: playerName, fill: playerAvatarFill),
+          const SizedBox(width: T.sSm),
+          Flexible(
+            child: Text(
+              playerLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t15,
+                color: T.beyaz080,
+              ),
+            ),
+          ),
+          const Spacer(),
+          Flexible(
+            flex: 2,
+            child: Text(
+              opponentLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
+              // M PLUS 1p Medium in the design, not bundled — see the same
+              // note on OpponentStatusChip.
+              style: const TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t13,
+                color: T.beyaz050,
+              ),
+            ),
+          ),
+          if (showDots) ...[
+            const SizedBox(width: T.sSm),
+            const _TypingDots(),
+          ],
+          const SizedBox(width: T.sSm),
+          MatchAvatar(name: opponentName, fill: opponentAvatarFill),
+        ],
+      ),
+    );
+  }
+}
+
+/// `Eşleşme (Kompakt)` (Figma 87:190) — the one-line matchup that replaces
+/// the two big club cards while the player is typing, so the suggestion
+/// panel never has to cover the clubs during a ten-second round.
+///
+/// 390 wide at radius/xl, beyaz/006 over a 1.2pt beyaz/022 border, 14/8
+/// padding, a 38pt crest each side and PoetsenOne "VS" at type/20 in red.
+/// The crest is the same initials badge as [ClubCard]'s, scaled down.
+class CompactMatchupStrip extends StatelessWidget {
+  const CompactMatchupStrip({
+    super.key,
+    required this.clubA,
+    required this.clubB,
+  });
+
+  final String clubA;
+  final String clubB;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: T.sSm),
+      decoration: BoxDecoration(
+        color: T.beyaz006,
+        borderRadius: BorderRadius.circular(T.rXl),
+        border: Border.all(color: T.beyaz022, width: 1.2),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                _MiniCrest(name: clubA),
+                const SizedBox(width: T.sSm),
+                Flexible(child: _name(clubA, TextAlign.left)),
+              ],
+            ),
+          ),
+          const SizedBox(width: T.sLg),
+          const Text(
+            'VS',
+            style: TextStyle(
+              fontFamily: T.fontUi,
+              fontSize: T.t20,
+              color: T.kirmizi,
+            ),
+          ),
+          const SizedBox(width: T.sLg),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(child: _name(clubB, TextAlign.right)),
+                const SizedBox(width: T.sSm),
+                _MiniCrest(name: clubB),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _name(String name, TextAlign align) {
+    return Text(
+      name,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: align,
+      style: const TextStyle(
+        fontFamily: T.fontUi,
+        fontSize: T.t17,
+        color: T.beyaz100,
+      ),
+    );
+  }
+}
+
+/// `Arma` at 38pt (87:192): beyaz/012 fill, 1.5pt beyaz/038 ring, initials
+/// at type/11.
+class _MiniCrest extends StatelessWidget {
+  const _MiniCrest({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: T.beyaz012,
+        shape: BoxShape.circle,
+        border: Border.all(color: T.beyaz038, width: 1.5),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        clubInitials(name),
+        style: TextStyle(
+          fontFamily: T.fontUi,
+          fontSize: T.t11,
+          color: clubTint(name),
+        ),
       ),
     );
   }

@@ -1,7 +1,9 @@
 name: football321
 description: "321 Football Challenge — find the player who played for both clubs."
 publish_to: 'none'
-version: 0.1.0+1
+# versionName+versionCode for Android (build.gradle.kts reads both).
+# Bump the +N for every Play upload.
+version: 1.0.0+1
 
 environment:
   sdk: ^3.13.0

@@ -63,7 +63,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '321 Football Challenge',
+      // Android's recent-apps label; matches android:label.
+      title: '321 Football',
       debugShowCheckedModeBanner: false,
       theme: T.theme(),
       home: const _Boot(),

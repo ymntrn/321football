@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -13,6 +16,26 @@ val admobAppId: String = run {
         ?: throw GradleException("admobAppIdAndroid not found in lib/ads/ad_config.dart")
 }
 
+// Release signing comes from android/key.properties (gitignored, never
+// committed; docs/release.md step 1 creates it):
+//
+//   storePassword=...
+//   keyPassword=...
+//   keyAlias=upload
+//   storeFile=C:/keys/321football-upload.jks
+//
+// (Forward slashes: a .properties file treats a backslash as an escape.)
+// Without that file a release build is signed with the DEBUG key, so
+// `flutter run --release` keeps working on any machine — but such a build
+// cannot be uploaded to Play.
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        FileInputStream(keystorePropertiesFile).use { load(it) }
+    }
+}
+val hasReleaseKey = keystorePropertiesFile.exists()
+
 android {
     namespace = "com.yamanturan.football321"
     compileSdk = flutter.compileSdkVersion
@@ -24,16 +47,15 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // The Play Store identity of the app. Never change it after the first
+        // upload: a different id is a different app.
         applicationId = "com.yamanturan.football321"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
+        // 24 = Flutter's floor, and google_mobile_ads' own minimum.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
-        // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
-        // You can force using the value of versionCode by specifying the `-P force-version-code-ignoring-abi=true`
-        // flag during build.
+        // Both come from `version:` in pubspec.yaml — `1.0.0+1` is
+        // versionName 1.0.0, versionCode 1. Bump the +N for EVERY upload to
+        // Play; it refuses a versionCode it has seen before.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         manifestPlaceholders["admobAppId"] = admobAppId
@@ -46,11 +68,35 @@ android {
         noCompress += listOf("db")
     }
 
+    signingConfigs {
+        if (hasReleaseKey) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (hasReleaseKey) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
+            // R8: shrink and obfuscate the JAVA/Kotlin side (plugins, the
+            // Play services ads SDK, MainActivity's channel). The Dart code
+            // — Supabase included — is AOT-compiled into libapp.so and is
+            // not touched by R8. proguard-rules.pro keeps what the plugins
+            // reach by reflection.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }

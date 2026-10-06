@@ -1,0 +1,34 @@
+# --- Secrets: never commit ---
+supabase/.pgpass.local
+.env
+.env.*
+*.jks
+*.keystore
+key.properties
+
+# --- Python ---
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# --- Large databases (GitHub rejects >100 MB, warns >50 MB) ---
+# Rebuild with 321_football_db/build_database.py + finalize.py, or move to Git LFS.
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# --- Flutter / Android build output (app/.gitignore covers the rest) ---
+app/build/
+app/.dart_tool/
+app/android/local.properties
+app/android/.gradle/
+
+# --- Editors / OS ---
+.idea/
+.vscode/
+*.iml
+Thumbs.db
+desktop.ini
+.DS_Store

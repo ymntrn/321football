@@ -1,0 +1,527 @@
+[
+  {
+    "key": "eng_pl",
+    "name": "Premier League",
+    "country": "England",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q21",
+    "qid": "Q9448",
+    "label": "Premier League",
+    "resolved_country": [
+      "United Kingdom"
+    ],
+    "seasons": 36,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 36 seasons, 1992-2026"
+    ]
+  },
+  {
+    "key": "esp_laliga",
+    "name": "La Liga",
+    "country": "Spain",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q29",
+    "qid": "Q324867",
+    "label": "La Liga",
+    "resolved_country": [
+      "Spain"
+    ],
+    "seasons": 98,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 98 seasons, 1929-2026"
+    ]
+  },
+  {
+    "key": "ita_seriea",
+    "name": "Serie A",
+    "country": "Italy",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q38",
+    "qid": "Q15804",
+    "label": "Q15804",
+    "resolved_country": [
+      "Italy"
+    ],
+    "seasons": 125,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 125 seasons, 1898-2026"
+    ]
+  },
+  {
+    "key": "ger_bundesliga",
+    "name": "Bundesliga",
+    "country": "Germany",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q183",
+    "qid": "Q82595",
+    "label": "Q82595",
+    "resolved_country": [
+      "Germany"
+    ],
+    "seasons": 64,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 64 seasons, 1963-2026"
+    ]
+  },
+  {
+    "key": "fra_ligue1",
+    "name": "Ligue 1",
+    "country": "France",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q142",
+    "qid": "Q13394",
+    "label": "Ligue 1",
+    "resolved_country": [
+      "France"
+    ],
+    "seasons": 95,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 95 seasons, 1932-2026"
+    ]
+  },
+  {
+    "key": "tur_superlig",
+    "name": "Süper Lig",
+    "country": "Turkey",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q43",
+    "qid": "Q485568",
+    "label": "Süper Lig",
+    "resolved_country": [
+      "Turkey"
+    ],
+    "seasons": 69,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 69 seasons, 1963-2026"
+    ]
+  },
+  {
+    "key": "ned_eredivisie",
+    "name": "Eredivisie",
+    "country": "Netherlands",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q55",
+    "qid": "Q167541",
+    "label": "Eredivisie",
+    "resolved_country": [
+      "Netherlands"
+    ],
+    "seasons": 138,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 138 seasons, 1954-2026"
+    ]
+  },
+  {
+    "key": "por_primeira",
+    "name": "Primeira Liga",
+    "country": "Portugal",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q45",
+    "qid": "Q182994",
+    "label": "Liga Portugal",
+    "resolved_country": [
+      "Portugal"
+    ],
+    "seasons": 103,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 103 seasons, 1935-2026"
+    ]
+  },
+  {
+    "key": "bel_proleague",
+    "name": "Belgian Pro League",
+    "country": "Belgium",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q31",
+    "qid": "Q216022",
+    "label": "Belgian Pro League",
+    "resolved_country": [
+      "Belgium"
+    ],
+    "seasons": 139,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 139 seasons, 1898-2026"
+    ]
+  },
+  {
+    "key": "sco_premiership",
+    "name": "Scottish Premiership",
+    "country": "Scotland",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q22",
+    "qid": "Q14377162",
+    "label": "Scottish Premiership",
+    "resolved_country": [
+      "United Kingdom"
+    ],
+    "seasons": 14,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 14 seasons, 2013-2026"
+    ]
+  },
+  {
+    "key": "sco_spl",
+    "name": "Scottish Premier League",
+    "country": "Scotland",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q22",
+    "qid": "Q187304",
+    "label": "Scottish Premier League",
+    "resolved_country": [
+      "United Kingdom"
+    ],
+    "seasons": 15,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 15 seasons, 1998-2012"
+    ]
+  },
+  {
+    "key": "sco_premier_div",
+    "name": "Scottish Football League Premier Division",
+    "country": "Scotland",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q22",
+    "qid": "Q843012",
+    "label": "Scottish Football League Premier Division",
+    "resolved_country": [
+      "United Kingdom"
+    ],
+    "seasons": 22,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 22 seasons, 1975-1997"
+    ]
+  },
+  {
+    "key": "rus_premier",
+    "name": "Russian Premier League",
+    "country": "Russia",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q159",
+    "qid": "Q182165",
+    "label": "Russian Premier League",
+    "resolved_country": [
+      "Russia"
+    ],
+    "seasons": 35,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 35 seasons, 1992-2026"
+    ]
+  },
+  {
+    "key": "gre_superleague",
+    "name": "Super League Greece",
+    "country": "Greece",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q41",
+    "qid": "Q235114",
+    "label": "Super League Greece",
+    "resolved_country": [
+      "Greece"
+    ],
+    "seasons": 116,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 116 seasons, 1930-2025"
+    ]
+  },
+  {
+    "key": "aut_bundesliga",
+    "name": "Austrian Football Bundesliga",
+    "country": "Austria",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q40",
+    "qid": "Q219592",
+    "label": "Bundesliga",
+    "resolved_country": [
+      "Austria"
+    ],
+    "seasons": 109,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 109 seasons, 1911-2026"
+    ]
+  },
+  {
+    "key": "sui_superleague",
+    "name": "Swiss Super League",
+    "country": "Switzerland",
+    "tier": 1,
+    "region": "Europe",
+    "country_qid": "Q39",
+    "qid": "Q202699",
+    "label": "Swiss Super League",
+    "resolved_country": [
+      "Liechtenstein",
+      "Switzerland"
+    ],
+    "seasons": 29,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 29 seasons, 2002-2026"
+    ]
+  },
+  {
+    "key": "eng_championship",
+    "name": "EFL Championship",
+    "country": "England",
+    "tier": 2,
+    "region": "Europe",
+    "country_qid": "Q21",
+    "qid": "Q19510",
+    "label": "EFL Championship",
+    "resolved_country": [
+      "United Kingdom"
+    ],
+    "seasons": 23,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 23 seasons, 2004-2026"
+    ]
+  },
+  {
+    "key": "eng_first_div",
+    "name": "Football League First Division",
+    "country": "England",
+    "tier": 2,
+    "region": "Europe",
+    "country_qid": "Q21",
+    "qid": "Q754839",
+    "label": "Football League First Division",
+    "resolved_country": [
+      "United Kingdom"
+    ],
+    "seasons": 102,
+    "score": 90,
+    "runner_up_score": 75,
+    "status": "probable",
+    "reasons": [
+      "owns 102 seasons",
+      "country MISMATCH (United Kingdom)",
+      "exact label match",
+      "typed as a league/competition"
+    ]
+  },
+  {
+    "key": "ita_serieb",
+    "name": "Serie B",
+    "country": "Italy",
+    "tier": 2,
+    "region": "Europe",
+    "country_qid": "Q38",
+    "qid": "Q194052",
+    "label": "Serie B",
+    "resolved_country": [
+      "Italy"
+    ],
+    "seasons": 113,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 113 seasons, 1926-2024"
+    ]
+  },
+  {
+    "key": "ger_2bundesliga",
+    "name": "2. Bundesliga",
+    "country": "Germany",
+    "tier": 2,
+    "region": "Europe",
+    "country_qid": "Q183",
+    "qid": "Q152665",
+    "label": "2. Bundesliga",
+    "resolved_country": [
+      "Germany"
+    ],
+    "seasons": 53,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 53 seasons, 1981-2022"
+    ]
+  },
+  {
+    "key": "esp_segunda",
+    "name": "Segunda División",
+    "country": "Spain",
+    "tier": 2,
+    "region": "Europe",
+    "country_qid": "Q29",
+    "qid": "Q35615",
+    "label": "LaLiga 2",
+    "resolved_country": [
+      "Spain"
+    ],
+    "seasons": 93,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 93 seasons, 1974-2025"
+    ]
+  },
+  {
+    "key": "fra_ligue2",
+    "name": "Ligue 2",
+    "country": "France",
+    "tier": 2,
+    "region": "Europe",
+    "country_qid": "Q142",
+    "qid": "Q217374",
+    "label": "Ligue 2",
+    "resolved_country": [
+      "France"
+    ],
+    "seasons": 88,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 88 seasons, 1993-2026"
+    ]
+  },
+  {
+    "key": "tur_1lig",
+    "name": "TFF First League",
+    "country": "Turkey",
+    "tier": 2,
+    "region": "Europe",
+    "country_qid": "Q43",
+    "qid": "Q1141692",
+    "label": "TFF First League",
+    "resolved_country": [
+      "Turkey"
+    ],
+    "seasons": 32,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 32 seasons, 2011-2022"
+    ]
+  },
+  {
+    "key": "usa_mls",
+    "name": "Major League Soccer",
+    "country": "United States",
+    "tier": 1,
+    "region": "North America",
+    "country_qid": "Q30",
+    "qid": "Q18543",
+    "label": "Major League Soccer",
+    "resolved_country": [
+      "Canada",
+      "United States"
+    ],
+    "seasons": 36,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 36 seasons, 1996-2026"
+    ]
+  },
+  {
+    "key": "bra_seriea",
+    "name": "Campeonato Brasileiro Série A",
+    "country": "Brazil",
+    "tier": 1,
+    "region": "South America",
+    "country_qid": "Q155",
+    "qid": "Q206813",
+    "label": "Campeonato Brasileiro Série A",
+    "resolved_country": [
+      "Brazil"
+    ],
+    "seasons": 69,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 69 seasons, 1959-2023"
+    ]
+  },
+  {
+    "key": "ksa_proleague",
+    "name": "Saudi Pro League",
+    "country": "Saudi Arabia",
+    "tier": 1,
+    "region": "Asia",
+    "country_qid": "Q851",
+    "qid": "Q255633",
+    "label": "Saudi Pro League",
+    "resolved_country": [
+      "Saudi Arabia"
+    ],
+    "seasons": 52,
+    "score": null,
+    "runner_up_score": null,
+    "status": "verified_hint",
+    "reasons": [
+      "pinned by hand, confirmed: owns 52 seasons, 1975-2025"
+    ]
+  }
+]

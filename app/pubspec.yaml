@@ -1,0 +1,39 @@
+name: football321
+description: "321 Football Challenge — find the player who played for both clubs."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sqflite: ^2.4.1
+  path: ^1.9.0
+  path_provider: ^2.1.5
+  unorm_dart: ^0.3.0
+  flutter_svg: ^2.0.16
+  supabase_flutter: ^2.17.2
+  shared_preferences: ^2.5.5
+  share_plus: ^13.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/db/321_football.db
+    - assets/img/
+
+  fonts:
+    - family: PoetsenOne
+      fonts:
+        - asset: assets/fonts/PoetsenOne-Regular.ttf
+    - family: Jaro
+      fonts:
+        - asset: assets/fonts/Jaro-Regular.ttf

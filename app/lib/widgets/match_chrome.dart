@@ -36,8 +36,8 @@ class MatchScoreStrip extends StatelessWidget {
   static const height = 43.0;
 
   static const _plateFill = Color(0xFFD9D9D9);
-  static const _playerFill = Color(0xFFFF840A);
-  static const _opponentFill = Color(0xFF39C831);
+  static const _playerFill = playerBlockFill;
+  static const _opponentFill = opponentBlockFill;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,10 @@ class MatchScoreStrip extends StatelessWidget {
         child: Row(
           children: [
             const SizedBox(width: 4.5),
-            Expanded(flex: 154, child: _block(playerName, _playerFill)),
+            Expanded(
+              flex: 154,
+              child: MatchNameBlock(name: playerName, fill: _playerFill),
+            ),
             SizedBox(
               width: 58,
               child: Row(
@@ -66,7 +69,10 @@ class MatchScoreStrip extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(flex: 157, child: _block(opponentName, _opponentFill)),
+            Expanded(
+              flex: 157,
+              child: MatchNameBlock(name: opponentName, fill: _opponentFill),
+            ),
             const SizedBox(width: 5.5),
           ],
         ),
@@ -74,13 +80,47 @@ class MatchScoreStrip extends StatelessWidget {
     );
   }
 
-  Widget _block(String name, Color fill) {
+  /// Jaro at type/34, black on the plate. The glyphs are taller than the
+  /// 43pt strip, so they are scaled down rather than clipped.
+  Widget _digit(int value) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(
+        '$value',
+        style: const TextStyle(
+          fontFamily: T.fontNumeral,
+          fontSize: T.t34,
+          color: Colors.black,
+          height: 1,
+        ),
+      ),
+    );
+  }
+}
+
+/// The score strip's block colours, also used for the name blocks on the
+/// result screens (46:362 / 46:363).
+const playerBlockFill = Color(0xFFFF840A);
+const opponentBlockFill = Color(0xFF39C831);
+
+/// One player's name block: 43pt tall, filled orange (this player) or green
+/// (the opponent), 1pt black stroke. Sized by its parent — give it a width
+/// (the strip's Expanded, or a SizedBox) or it fills what it is given.
+class MatchNameBlock extends StatelessWidget {
+  const MatchNameBlock({super.key, required this.name, required this.fill});
+
+  final String name;
+  final Color fill;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      height: height,
+      height: MatchScoreStrip.height,
+      width: double.infinity,
       decoration: BoxDecoration(
         color: fill,
         // Rounded to match the lobby's name strips and the rest of the
-        // system. The exported SVGs for these two blocks are plain
+        // system. The exported SVGs for these blocks are plain
         // square-cornered rects (`M153.5 0.5V42.5H0.5V0.5H153.5Z`), so this
         // is a deliberate departure from the frame, not a transcription of
         // it — worth knowing if the Figma file is ever the arbiter again.
@@ -103,21 +143,85 @@ class MatchScoreStrip extends StatelessWidget {
       ),
     );
   }
+}
 
-  /// Jaro at type/34, black on the plate. The glyphs are taller than the
-  /// 43pt strip, so they are scaled down rather than clipped.
-  Widget _digit(int value) {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Text(
-        '$value',
-        style: const TextStyle(
-          fontFamily: T.fontNumeral,
-          fontSize: T.t34,
-          color: Colors.black,
-          height: 1,
+/// The game's display lettering: a vertical gradient fill, a heavy black
+/// outline and a warm #EFD959 glow beneath. Used by the countdown numeral
+/// (38:200), GOOOL (41:783), TUR BİTTİ (109:26) and Kazandın / Kaybettin
+/// (46:381 / 48:552).
+///
+/// Drawn as two stacked Texts because a single Text cannot both stroke and
+/// fill: the lower one paints the outline (and carries the glow), the upper
+/// one the gradient.
+class OutlinedGradientText extends StatelessWidget {
+  const OutlinedGradientText(
+    this.text, {
+    super.key,
+    required this.fontSize,
+    required this.colors,
+    this.stops,
+    this.letterSpacing = 0,
+    this.strokeRatio = 0.055,
+    this.glow = const Shadow(
+      color: Color(0xFFEFD959),
+      blurRadius: 4,
+      offset: Offset(0, 4),
+    ),
+    this.height,
+  });
+
+  final String text;
+  final double fontSize;
+  final List<Color> colors;
+  final List<double>? stops;
+  final double letterSpacing;
+
+  /// Outline width as a fraction of the font size.
+  final double strokeRatio;
+  final Shadow glow;
+  final double? height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Text(
+          text,
+          maxLines: 1,
+          style: TextStyle(
+            fontFamily: T.fontUi,
+            fontSize: fontSize,
+            height: height,
+            letterSpacing: letterSpacing,
+            shadows: [glow],
+            foreground: Paint()
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = fontSize * strokeRatio
+              ..strokeJoin = StrokeJoin.round
+              ..color = Colors.black,
+          ),
         ),
-      ),
+        ShaderMask(
+          shaderCallback: (rect) => LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: colors,
+            stops: stops,
+          ).createShader(rect),
+          child: Text(
+            text,
+            maxLines: 1,
+            style: TextStyle(
+              fontFamily: T.fontUi,
+              fontSize: fontSize,
+              height: height,
+              letterSpacing: letterSpacing,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

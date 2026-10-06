@@ -261,6 +261,51 @@ class GameQueries {
     return rows.map(Player.fromRow).toList();
   }
 
+  /// The years a mutual player spent at each of the two clubs, for the
+  /// GOOOL screen's "Takım 1 (2009–13) → Takım 2 (2013–17)" line.
+  ///
+  /// The room row only carries the scorer's DISPLAY NAME, so the player is
+  /// found among the pair's mutual players by that name (most famous first,
+  /// should two share it). Several spells at one club collapse to the
+  /// earliest start and latest end; an open end (still at the club) stays
+  /// null. Ordered by start year so the line reads as a career.
+  Future<List<({int clubId, int? from, int? to})>> mutualSpells(
+    String displayName,
+    int clubAId,
+    int clubBId,
+  ) async {
+    final rows = await _db.rawQuery('''
+      SELECT s.club_id,
+             MIN(s.start_year) AS from_year,
+             CASE WHEN COUNT(*) > COUNT(s.end_year) THEN NULL
+                  ELSE MAX(s.end_year) END AS to_year
+      FROM player_club_spells s
+      WHERE s.club_id IN (?, ?)
+        AND s.player_id = (
+            SELECT p.player_id FROM players p
+            WHERE p.display_name = ?
+              AND p.player_id IN (
+                  SELECT player_id FROM player_club_spells WHERE club_id = ?
+                  INTERSECT
+                  SELECT player_id FROM player_club_spells WHERE club_id = ?
+              )
+            ORDER BY p.fame_score DESC
+            LIMIT 1
+        )
+      GROUP BY s.club_id
+      ORDER BY from_year IS NULL, from_year
+    ''', [clubAId, clubBId, displayName, clubAId, clubBId]);
+
+    return [
+      for (final r in rows)
+        (
+          clubId: r['club_id'] as int,
+          from: r['from_year'] as int?,
+          to: r['to_year'] as int?,
+        ),
+    ];
+  }
+
   Future<int> countMutualPlayers(int clubAId, int clubBId) async {
     final rows = await _db.rawQuery('''
       SELECT COUNT(*) AS n FROM (

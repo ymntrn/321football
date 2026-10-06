@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:football321/screens/match_board_screen.dart';
+import 'package:football321/screens/match_end_screens.dart';
 import 'package:football321/screens/match_versus_screen.dart';
 import 'package:football321/theme/tokens.dart';
 import 'package:football321/widgets/match_chrome.dart';
@@ -127,5 +128,87 @@ void main() {
       expect(find.text('ARKADAŞ MAÇI · İLK 3 GOL'), findsOneWidget);
       expect(find.text('Oyuncuadı2'), findsOneWidget);
     });
+  }
+
+  for (final size in _sizes) {
+    testWidgets('GOOOL lays out at ${size.width}x${size.height}', (
+      tester,
+    ) async {
+      await _pumpAt(
+        tester,
+        size,
+        MatchGoalScreen(
+          playerName: 'Oyuncuadı1',
+          opponentName: 'Oyuncuadı2',
+          playerScore: 1,
+          opponentScore: 0,
+          scorerName: 'Oyuncuadı1',
+          scorerIsMe: true,
+          answer: 'Wesley Sneijder',
+          elapsedMs: 1400,
+          clubs: const {1: 'Inter', 2: 'Galatasaray'},
+          since: DateTime.now(),
+          hold: const Duration(milliseconds: 2500),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.text('Oyuncuadı1 buldu'), findsOneWidget);
+      expect(find.text('1,4 sn'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 3));
+    });
+
+    testWidgets('Tur Bitti lays out at ${size.width}x${size.height}', (
+      tester,
+    ) async {
+      await _pumpAt(
+        tester,
+        size,
+        MatchRoundVoidScreen(
+          playerName: 'Oyuncuadı1',
+          opponentName: 'Oyuncuadı2',
+          playerScore: 0,
+          opponentScore: 0,
+          unplayable: false,
+          clubAId: 1,
+          clubBId: 2,
+          since: DateTime.now(),
+          hold: const Duration(milliseconds: 2500),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.text('Puan yok'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 3));
+    });
+
+    for (final won in [true, false]) {
+      testWidgets(
+        '${won ? 'win' : 'lose'} lays out at ${size.width}x${size.height}',
+        (tester) async {
+          await _pumpAt(
+            tester,
+            size,
+            MatchResultScreen(
+              won: won,
+              playerName: 'Oyuncuadı1',
+              opponentName: 'Oyuncuadı2',
+              playerScore: won ? 3 : 0,
+              opponentScore: won ? 0 : 3,
+              summary: const MatchSummary(
+                fastestMs: 1400,
+                correct: 3,
+                rounds: 4,
+                bestStreak: 2,
+              ),
+              note: won ? 'Rakip ayrıldı' : null,
+              onRematch: () {},
+              onHome: () {},
+            ),
+          );
+          expect(tester.takeException(), isNull);
+          expect(find.text('Tekrar Oyna'), findsOneWidget);
+          expect(find.text('3/4'), findsOneWidget);
+        },
+      );
+    }
   }
 }

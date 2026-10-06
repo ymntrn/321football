@@ -69,7 +69,10 @@ void main() {
           clubBId: 2,
           clubBName: 'FC Barcelona',
           unlockAt: now,
-          deadline: now.add(const Duration(seconds: 10)),
+          // The numeral is capped at answerSeconds, so 5 s of slack keeps it
+          // reading 10 however slowly a loaded test machine gets here (with
+          // exactly 10 s it flaked to "9" in a parallel run).
+          deadline: now.add(const Duration(seconds: 15)),
           answerSeconds: 10,
           opponentFound: false,
           onCorrect: (_, __) async {},

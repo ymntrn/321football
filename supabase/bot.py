@@ -3,6 +3,8 @@
     python supabase\bot.py 123456          join that room and play
     python supabase\bot.py --host          create a room, print the code, wait
     python supabase\bot.py 123456 --slow    always answer slowly, so you win
+    python supabase\bot.py --ranked        queue for Hemen Oyna; tap it in
+                                            the app and the two get paired
 
 The emulator cannot be run twice on this machine (one instance is 2.4 GB of
 7.7), and there is no second phone, so this stands in for the opponent. It
@@ -100,6 +102,8 @@ def play(code, me, seat, slow):
         if phase == "match_over":
             print("  match over: %s wins (%s)" % (room["winner"],
                                                   room["ended_reason"]))
+            # Idempotent (007): harmless if the app already recorded it.
+            rpc("record_match_result", p_code=code)
             return
 
         if phase == "picking" and room[seat + "_club_id"] is None:
@@ -132,6 +136,8 @@ def main():
     ap.add_argument("--host", action="store_true")
     ap.add_argument("--slow", action="store_true")
     ap.add_argument("--name", default="Bot")
+    ap.add_argument("--ranked", action="store_true",
+                    help="queue for ranked (Hemen Oyna) as the guest")
     args = ap.parse_args()
 
     global bot
@@ -142,7 +148,30 @@ def main():
     print("bot is %s#%s" % (prof["username"], prof["tag"]))
     me = bot.id
 
-    if args.host:
+    if args.ranked:
+        # prefer_guest: the bot cannot drive a match (the host does), so it
+        # asks find_match to make the APP the host whichever side pairs.
+        # A fresh bot has 0 trophies, so it pairs with a player under 100
+        # at once and with anyone after a wait (+100 every 5 s).
+        print("queueing for ranked ...")
+        started = time.time()
+        while True:
+            status, room = rpc("find_match", p_prefer_guest=True)
+            if status != 200:
+                sys.exit("find_match failed: %s" % room)
+            if room and room.get("code"):
+                break
+            if int(time.time() - started) % 10 == 0:
+                print("  still waiting (%d s)" % (time.time() - started))
+            time.sleep(1)
+        code = room["code"]
+        seat = "host" if room["host_id"] == me else "guest"
+        print("paired in room %s with %s" % (code, room["host_name"]
+                                              if seat == "guest"
+                                              else room["guest_name"]))
+        if seat == "host":
+            print("WARNING: the bot ended up host and cannot drive the match")
+    elif args.host:
         status, room = rpc("create_room", p_host_id=me, p_host_name=args.name)
         print("ROOM CODE: %s" % room["code"])
         print("join it from the app, then the bot will start the match")

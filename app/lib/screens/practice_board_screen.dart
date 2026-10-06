@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import '../settings/app_settings.dart';
 
 import '../data/app_database.dart';
 import '../data/game_queries.dart';
 import '../models/models.dart';
+import '../models/profile.dart';
+import '../net/account.dart';
 import '../theme/tokens.dart';
 import '../widgets/practice_chrome.dart';
 import '../widgets/screen_background.dart';
@@ -43,6 +45,8 @@ class _PracticeBoardScreenState extends State<PracticeBoardScreen> {
   /// (82:338), then the `Cevabı Göster` list (78:483).
   _Reveal? _reveal;
   List<Player> _answers = const [];
+  bool _spending = false;
+  String? _spendError;
 
   /// Guards against a slow suggestion query landing after the player has typed
   /// on — without this the panel flickers back to stale names.
@@ -137,7 +141,8 @@ class _PracticeBoardScreenState extends State<PracticeBoardScreen> {
     if (!mounted) return;
 
     if (result.correct) {
-      HapticFeedback.mediumImpact();
+      Haptics.medium();
+      Sounds.play(Sfx.correct);
       setState(() {
         _won = result.player;
         _streak += 1;
@@ -145,7 +150,8 @@ class _PracticeBoardScreenState extends State<PracticeBoardScreen> {
         _rejection = null; // a stale miss must not sit under the Doğru card
       });
     } else {
-      HapticFeedback.heavyImpact();
+      Haptics.heavy();
+      Sounds.play(Sfx.wrong);
       setState(() => _rejection = result);
     }
   }
@@ -160,19 +166,33 @@ class _PracticeBoardScreenState extends State<PracticeBoardScreen> {
   /// The Cevap chip. Opens the confirmation; the list comes after.
   void _showAnswers() {
     if (_pair == null || _won != null) return;
-    setState(() => _reveal = _Reveal.confirm);
+    setState(() {
+      _reveal = _Reveal.confirm;
+      _spendError = null;
+    });
   }
 
-  /// `N ALTIN HARCA`. Loads the answer key and shows it.
-  ///
-  /// The price is a PRICE TAG only — the coin balance lives on the profile,
-  /// which does not exist yet, so nothing is actually debited.
+  /// `N ALTIN HARCA`. Spends the coins on the server (spend_coins, 007),
+  /// then loads the answer key and shows it. Nothing is shown if the spend
+  /// is refused — a short balance or no connection.
   ///
   /// The streak is NOT reset: the design's own copy says "Seri sayacın
   /// sıfırlanmaz". (The invented sheet this replaced reset it.)
   Future<void> _confirmReveal() async {
     final pair = _pair;
-    if (pair == null) return;
+    if (pair == null || _spending) return;
+    setState(() {
+      _spending = true;
+      _spendError = null;
+    });
+    try {
+      await Account.instance.spendCoins(PracticeTopBar.answerCost);
+    } on AccountException catch (e) {
+      if (mounted) setState(() => _spendError = e.message);
+      return;
+    } finally {
+      if (mounted) setState(() => _spending = false);
+    }
     final players = await _q.getMutualPlayers(pair.clubAId, pair.clubBId);
     if (!mounted) return;
     setState(() {
@@ -202,9 +222,17 @@ class _PracticeBoardScreenState extends State<PracticeBoardScreen> {
               bottom: false,
               child: Column(
                 children: [
-                  PracticeTopBar(
-                    onBack: () => Navigator.of(context).maybePop(),
-                    onHint: _showAnswers,
+                  // The Cevap chip is live only with enough coins. Offline the
+                  // balance is unknown and the chip stays dimmed; the rest of
+                  // Practice needs no network at all.
+                  ValueListenableBuilder<Profile?>(
+                    valueListenable: Account.instance.profile,
+                    builder: (context, p, _) => PracticeTopBar(
+                      onBack: () => Navigator.of(context).maybePop(),
+                      onHint: _showAnswers,
+                      hintEnabled:
+                          p != null && p.coins >= PracticeTopBar.answerCost,
+                    ),
                   ),
                   Expanded(
                     child: _loading || pair == null
@@ -259,8 +287,10 @@ class _PracticeBoardScreenState extends State<PracticeBoardScreen> {
                   child: _reveal == _Reveal.confirm
                       ? RevealConfirmPopup(
                           cost: PracticeTopBar.answerCost,
+                          balance: Account.instance.profile.value?.coins,
+                          error: _spendError,
                           onCancel: () => setState(() => _reveal = null),
-                          onConfirm: _confirmReveal,
+                          onConfirm: _spending ? null : _confirmReveal,
                         )
                       : RevealAnswersPopup(
                           players: _answers,

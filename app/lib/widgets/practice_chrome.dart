@@ -17,16 +17,22 @@ class PracticeTopBar extends StatelessWidget {
     this.cost = answerCost,
     required this.onBack,
     required this.onHint,
+    this.hintEnabled = true,
   });
 
   /// What revealing the answer costs, in coins. This is a PRICE TAG and is
-  /// fixed — it does not count down. Buying an answer debits the player's coin
-  /// balance, which lives on the profile and is not wired up yet.
+  /// fixed — it does not count down. Buying an answer debits the player's
+  /// coin balance on the profile (spend_coins, 007_results.sql).
   static const answerCost = 3;
 
   final int cost;
   final VoidCallback onBack;
   final VoidCallback onHint;
+
+  /// False when the balance is under [cost] (or unknown, offline): the chip
+  /// dims to 45% — the opacity the frames use for a disabled control — and
+  /// stops responding.
+  final bool hintEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +43,11 @@ class PracticeTopBar extends StatelessWidget {
           UndoButton(onTap: onBack),
           const Spacer(),
           GestureDetector(
-            onTap: onHint,
+            onTap: hintEnabled ? onHint : null,
             behavior: HitTestBehavior.opaque,
-            child: Container(
+            child: Opacity(
+              opacity: hintEnabled ? 1 : 0.45,
+              child: Container(
               height: 44,
               padding: const EdgeInsets.symmetric(horizontal: 13),
               decoration: BoxDecoration(
@@ -74,6 +82,7 @@ class PracticeTopBar extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
             ),
           ),
         ],
@@ -552,20 +561,27 @@ class _BulbBadge extends StatelessWidget {
 /// `Onay Popup` (82:466) — "CEVABI GÖSTER?" with VAZGEÇ and the price
 /// button.
 ///
-/// The frame also shows a `Bakiyen 120` balance chip. There is no coin
-/// balance yet (it belongs to the profile), so the chip is left out rather
-/// than showing an invented number.
+/// With the `Bakiyen 120` balance chip (82:469) between the copy and the
+/// buttons, now that there is a real balance (007_results.sql).
 class RevealConfirmPopup extends StatelessWidget {
   const RevealConfirmPopup({
     super.key,
     required this.cost,
     required this.onCancel,
     required this.onConfirm,
+    this.balance,
+    this.error,
   });
 
   final int cost;
   final VoidCallback onCancel;
-  final VoidCallback onConfirm;
+  final VoidCallback? onConfirm;
+
+  /// The player's coins; null hides the chip.
+  final int? balance;
+
+  /// Why spending failed, if it did.
+  final String? error;
 
   @override
   Widget build(BuildContext context) {
@@ -594,6 +610,17 @@ class RevealConfirmPopup extends StatelessWidget {
             color: T.beyaz065,
           ),
         ),
+        if (balance != null) _BalanceChip(balance: balance!),
+        if (error != null)
+          Text(
+            error!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: T.fontUi,
+              fontSize: T.t13,
+              color: T.kirmizi,
+            ),
+          ),
         Row(
           children: [
             Expanded(
@@ -630,6 +657,50 @@ class RevealConfirmPopup extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// `Bakiye` (82:469): beyaz/012, beyaz/022 border, radius/lg —
+/// "Bakiyen", a 20pt coin, the balance.
+class _BalanceChip extends StatelessWidget {
+  const _BalanceChip({required this.balance});
+
+  final int balance;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: T.beyaz012,
+        borderRadius: BorderRadius.circular(T.rLg),
+        border: Border.all(color: T.beyaz022),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Bakiyen',
+            style: TextStyle(
+              fontFamily: T.fontUi,
+              fontSize: T.t13,
+              color: T.beyaz050,
+            ),
+          ),
+          const SizedBox(width: T.sXs),
+          Image.asset('assets/img/coin.png', width: 20, height: 20),
+          const SizedBox(width: T.sXs),
+          Text(
+            '$balance',
+            style: const TextStyle(
+              fontFamily: T.fontUi,
+              fontSize: T.t17,
+              color: T.beyaz100,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -827,7 +898,7 @@ class _PopupButton extends StatelessWidget {
   });
 
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final Color? color;
   final Gradient? gradient;
   final Color border;

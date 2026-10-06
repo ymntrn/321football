@@ -313,6 +313,35 @@ class RoomRepository {
     return Room.fromRow(map);
   }
 
+  /// Writes the finished match into both players' profiles (007). Safe to
+  /// call any number of times, from either seat: only the first call on a
+  /// finished match changes anything.
+  Future<Room> recordResult(String code) =>
+      _flow('record_match_result', {'p_code': code});
+
+  // -------------------------------------------------------------------------
+  // Ranked matchmaking (009)
+  // -------------------------------------------------------------------------
+  /// Joins the queue / heartbeats / tries to pair. Null while still waiting.
+  Future<Room?> findMatch() async {
+    final row = await _client.rpc('find_match');
+    return _roomOrNull(row);
+  }
+
+  /// Leaves the queue. Returns a room only if a match was made in the
+  /// instant before the cancel landed — the caller then enters it.
+  Future<Room?> leaveQueue() async {
+    final row = await _client.rpc('leave_queue');
+    return _roomOrNull(row);
+  }
+
+  static Room? _roomOrNull(Object? row) {
+    if (row == null) return null;
+    final map = Map<String, dynamic>.from(row as Map);
+    if (map['code'] == null) return null;
+    return Room.fromRow(map);
+  }
+
   Future<void> touchSeen({required String code, required Seat seat}) async {
     await _client.rpc('touch_seen', params: {
       'p_code': code,

@@ -6,8 +6,10 @@ import '../data/app_database.dart';
 import '../data/game_queries.dart';
 import '../models/models.dart';
 import '../models/room.dart';
+import '../net/account.dart';
 import '../net/room_repository.dart';
 import '../net/server_clock.dart';
+import '../settings/app_settings.dart';
 import '../theme/tokens.dart';
 import '../widgets/screen_background.dart';
 import 'match_board_screen.dart';
@@ -16,6 +18,7 @@ import 'match_end_screens.dart';
 import 'match_screen_buttons.dart';
 import 'match_team_select_screen.dart';
 import 'match_versus_screen.dart';
+import 'matchmaking_screen.dart';
 
 /// The match loop.
 ///
@@ -184,6 +187,11 @@ class _MatchScreenState extends State<MatchScreen> {
           winner: _room.roundWinner,
           myElapsedMs: _room.elapsedOf(_me),
         ));
+        Sounds.play(_room.roundWinner != null ? Sfx.goal : Sfx.roundOver);
+      }
+      if (_room.phase == MatchPhase.matchOver) {
+        Sounds.play(_room.winner == _me ? Sfx.win : Sfx.lose);
+        unawaited(_recordResult());
       }
     }
 
@@ -304,6 +312,35 @@ class _MatchScreenState extends State<MatchScreen> {
       await widget.rooms.leaveMatch(code: _room.code, seat: _me);
     } catch (e) {
       debugPrint('leave failed: $e');
+    }
+  }
+
+  /// Stats, and for a ranked room trophies and coins (007_results.sql).
+  ///
+  /// BOTH seats call it, not just the host: after a forfeit the host may be
+  /// the one who left. The function is idempotent, so the second call is a
+  /// no-op; its returned row carries the deltas the result screen shows.
+  bool _recording = false;
+
+  Future<void> _recordResult() async {
+    if (_recording || _room.resultRecorded) return;
+    _recording = true;
+    try {
+      for (var attempt = 0; attempt < 3; attempt++) {
+        try {
+          final room = await widget.rooms.recordResult(_room.code);
+          if (mounted && room.phase == MatchPhase.matchOver) {
+            setState(() => _room = room);
+          }
+          await Account.instance.refresh();
+          return;
+        } catch (e) {
+          debugPrint('record_match_result failed (attempt ${attempt + 1}): $e');
+          await Future<void>.delayed(const Duration(seconds: 1));
+        }
+      }
+    } finally {
+      _recording = false;
     }
   }
 
@@ -446,9 +483,17 @@ class _MatchScreenState extends State<MatchScreen> {
       opponentScore: _room.scoreOf(_them),
       summary: _summary(),
       note: note,
-      // A rematch needs both players still here: only a match decided on goals.
-      // After a forfeit or an abandoned match the other seat is gone.
-      onRematch: reason == 'goals' ? _rematch : null,
+      ranked: _room.ranked,
+      trophyDelta: _room.trophyDeltaOf(_me),
+      coinDelta: _room.coinDeltaOf(_me),
+      // Ranked: Tekrar Oyna queues again for a new opponent. Friend Match:
+      // a rematch needs both players still here — only a match decided on
+      // goals; after a forfeit or an abandoned match the other seat is gone.
+      onRematch: _room.ranked
+          ? () => Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const MatchmakingScreen()),
+              )
+          : (reason == 'goals' ? _rematch : null),
       onHome: () => Navigator.of(context).popUntil((route) => route.isFirst),
     );
   }
@@ -546,6 +591,7 @@ class _MatchScreenState extends State<MatchScreen> {
             playerName: _room.nameOf(_me),
             opponentName: _room.nameOf(_them),
             targetGoals: _room.targetGoals,
+            ranked: _room.ranked,
           );
         }
         return MatchTeamSelectScreen(

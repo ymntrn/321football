@@ -138,6 +138,12 @@ class Room {
     this.endedReason,
     this.hostSeenAt,
     this.guestSeenAt,
+    this.ranked = false,
+    this.resultRecorded = false,
+    this.hostTrophyDelta,
+    this.guestTrophyDelta,
+    this.hostCoinDelta,
+    this.guestCoinDelta,
   });
 
   final String code;
@@ -183,6 +189,17 @@ class Room {
   final DateTime? hostSeenAt;
   final DateTime? guestSeenAt;
 
+  /// A Hemen Oyna room (009_matchmaking.sql). Ranked rooms move trophies
+  /// and coins; Friend Match rooms only count toward stats.
+  final bool ranked;
+
+  /// record_match_result (007) has run for this match.
+  final bool resultRecorded;
+  final int? hostTrophyDelta;
+  final int? guestTrophyDelta;
+  final int? hostCoinDelta;
+  final int? guestCoinDelta;
+
   bool get hasGuest => guestId != null;
   bool get bothPicked => hostClubId != null && guestClubId != null;
 
@@ -222,6 +239,13 @@ class Room {
         endedReason: row['ended_reason'] as String?,
         hostSeenAt: _time(row['host_seen_at']),
         guestSeenAt: _time(row['guest_seen_at']),
+        // Absent before 007/009 are applied, hence the null-tolerant reads.
+        ranked: (row['ranked'] as bool?) ?? false,
+        resultRecorded: row['result_recorded_at'] != null,
+        hostTrophyDelta: row['host_trophy_delta'] as int?,
+        guestTrophyDelta: row['guest_trophy_delta'] as int?,
+        hostCoinDelta: row['host_coin_delta'] as int?,
+        guestCoinDelta: row['guest_coin_delta'] as int?,
       );
 
   /// Which seat this device is sitting in, or null if it is neither player.
@@ -247,6 +271,12 @@ class Room {
 
   int? elapsedOf(Seat seat) =>
       seat == Seat.host ? hostElapsedMs : guestElapsedMs;
+
+  int? trophyDeltaOf(Seat seat) =>
+      seat == Seat.host ? hostTrophyDelta : guestTrophyDelta;
+
+  int? coinDeltaOf(Seat seat) =>
+      seat == Seat.host ? hostCoinDelta : guestCoinDelta;
 
   DateTime? seenAtOf(Seat seat) =>
       seat == Seat.host ? hostSeenAt : guestSeenAt;

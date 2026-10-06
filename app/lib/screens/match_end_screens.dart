@@ -6,6 +6,7 @@ import '../data/app_database.dart';
 import '../data/game_queries.dart';
 import '../models/models.dart';
 import '../theme/tokens.dart';
+import '../widgets/app_chrome.dart';
 import '../widgets/career_line.dart';
 import '../widgets/lobby_chrome.dart';
 import '../widgets/match_chrome.dart';
@@ -596,11 +597,14 @@ class MatchSummary {
 /// One widget for both — the frames are the same layout with the title,
 /// its colours and the crowned avatar swapped.
 ///
-/// Left out on purpose: the trophy (+30 / -25) and coin (+20 / +0) row and
-/// the `2X Altın` button. Trophies and coins are the ranked economy, which
-/// does not exist and is out of scope; a Friend Match awards neither. With
-/// `2X Altın` gone, `Tekrar Oyna` takes the full-width 341x90 form the
-/// Kaybetme frame already uses, on both screens.
+/// The trophy and coin row (48:533) appears for RANKED rooms only, with the
+/// amounts record_match_result actually applied (+30 / -20 trophies,
+/// +10 / +2 coins — the frame's +20 coins predates the decided economy). A
+/// Friend Match awards neither, so it has no row.
+///
+/// Left out on purpose: the `2X Altın` button (ads, out of scope). With it
+/// gone, `Tekrar Oyna` takes the full-width 341x90 form the Kaybetme frame
+/// already uses, on both screens. In a ranked match it queues again.
 class MatchResultScreen extends StatelessWidget {
   const MatchResultScreen({
     super.key,
@@ -613,7 +617,17 @@ class MatchResultScreen extends StatelessWidget {
     required this.onHome,
     this.note,
     this.onRematch,
+    this.ranked = false,
+    this.trophyDelta,
+    this.coinDelta,
   });
+
+  /// A Hemen Oyna match: show the economy row.
+  final bool ranked;
+
+  /// What this player gained or lost; null until the result is recorded.
+  final int? trophyDelta;
+  final int? coinDelta;
 
   final bool won;
   final String playerName;
@@ -671,6 +685,10 @@ class MatchResultScreen extends StatelessWidget {
                       const _Caption('MAÇ ÖZETİ', color: T.beyaz038),
                       const SizedBox(height: 11),
                       _SummaryRow(summary: summary),
+                      if (ranked) ...[
+                        const SizedBox(height: 26),
+                        _EconomyRow(trophies: trophyDelta, coins: coinDelta),
+                      ],
                       const Spacer(),
                       if (note != null)
                         Padding(
@@ -718,6 +736,60 @@ class MatchResultScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// `48:533`: `+30 🏆` in green (red when trophies were lost) and `+10 🪙`
+/// in #F7FF00, type/34. Dashes until record_match_result has answered.
+class _EconomyRow extends StatelessWidget {
+  const _EconomyRow({required this.trophies, required this.coins});
+
+  final int? trophies;
+  final int? coins;
+
+  static const _coinYellow = Color(0xFFF7FF00);
+
+  static String _signed(int? n) =>
+      n == null ? '…' : (n > 0 ? '+$n' : (n == 0 ? '0' : '$n'));
+
+  @override
+  Widget build(BuildContext context) {
+    final t = trophies;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _signed(t),
+              style: TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t34,
+                color: t != null && t < 0 ? T.kirmizi : T.yesil,
+              ),
+            ),
+            const SizedBox(width: T.sXs),
+            const TrophyIcon(width: 37, height: 45),
+          ],
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _signed(coins),
+              style: const TextStyle(
+                fontFamily: T.fontUi,
+                fontSize: T.t34,
+                color: _coinYellow,
+              ),
+            ),
+            const SizedBox(width: T.sXs),
+            const CoinIcon(size: 38),
+          ],
+        ),
+      ],
     );
   }
 }

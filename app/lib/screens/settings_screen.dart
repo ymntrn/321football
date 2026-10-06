@@ -5,14 +5,16 @@ import '../theme/tokens.dart';
 import '../widgets/app_chrome.dart';
 import '../widgets/screen_background.dart';
 import 'nav.dart';
+import 'privacy_screen.dart';
+import 'support_screen.dart';
 
 /// `Ayarlar` (Figma 51:1088).
 ///
 /// The frame has Müzik, SFX, Titreşim and a separate Bildirimler card. The
 /// decision is sound on/off and haptics on/off, so the first card carries
 /// two switches — `Ses` and `Titreşim` — and Bildirimler is left out (there
-/// are no notifications). Gizlilik and Destek are drawn as in the frame;
-/// their own screens (92:270, 92:310) are not built yet.
+/// are no notifications). Gizlilik and Destek are drawn as in the frame and
+/// open their own screens (92:270, 92:310).
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -74,12 +76,16 @@ class SettingsScreen extends StatelessWidget {
                       const SizedBox(height: 17),
                       _LinkCard(
                         label: 'Gizlilik & Kullanım Şartları',
-                        onTap: () => showToast(context, 'Yakında'),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const PrivacyScreen()),
+                        ),
                       ),
                       const SizedBox(height: 17),
                       _LinkCard(
                         label: 'Destek & İletişim',
-                        onTap: () => showToast(context, 'Yakında'),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const SupportScreen()),
+                        ),
                       ),
                       const SizedBox(height: 30),
                       const Text(

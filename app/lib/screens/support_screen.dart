@@ -4,11 +4,13 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../data/app_database.dart';
 import '../legal/legal_text.dart';
+import '../net/account.dart';
 import '../net/identity.dart';
 import '../theme/tokens.dart';
 import '../widgets/app_chrome.dart';
 import '../widgets/screen_background.dart';
 import 'settings_screen.dart';
+import 'username_screen.dart';
 
 /// `Destek & İletişim` (Figma 92:310).
 ///
@@ -26,12 +28,12 @@ import 'settings_screen.dart';
 ///  * `SORUN BİLDİR` is the shared [WideButton] (radius/xl, 18pt padding)
 ///    rather than a one-off copy at radius/lg, 14pt.
 ///  * `Veri:` shows the bundled database version (AppDatabase.assetVersion).
+///  * `HESAP` → `Hesabımı sil` at the foot is not in the frame (Google Play
+///    requires in-app deletion). Same construction as [QuietButton], in red,
+///    and it asks first.
 ///  * Body text is PoetsenOne; M PLUS 1p is not bundled.
 class SupportScreen extends StatelessWidget {
-  const SupportScreen({super.key, this.footer});
-
-  /// Extra content under the contact card (the account deletion action).
-  final Widget? footer;
+  const SupportScreen({super.key});
 
   static const faq = <LegalSection>[
     LegalSection(
@@ -120,13 +122,16 @@ class SupportScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (footer != null) ...[
-                  const SizedBox(height: 30),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: footer!,
-                  ),
-                ],
+                const SizedBox(height: 30),
+                const Padding(
+                  padding: EdgeInsets.only(left: 24),
+                  child: SectionCaption('HESAP', color: T.beyaz050),
+                ),
+                const SizedBox(height: T.sSm),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: DeleteAccountButton(),
+                ),
               ],
             ),
           ),
@@ -332,6 +337,105 @@ class _ContactCard extends StatelessWidget {
             onTap: () => _report(context),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// "Hesabımı sil": asks, deletes on the server, then starts the app over at
+/// the username screen.
+class DeleteAccountButton extends StatefulWidget {
+  const DeleteAccountButton({super.key});
+
+  @override
+  State<DeleteAccountButton> createState() => _DeleteAccountButtonState();
+}
+
+class _DeleteAccountButtonState extends State<DeleteAccountButton> {
+  bool _busy = false;
+
+  Future<void> _confirmAndDelete() async {
+    final yes = await AppPopup.show<bool>(
+      context,
+      AppPopup(
+        title: 'HESABINI SİL',
+        children: [
+          Text(
+            '${Identity.instance.handle} hesabın, istatistiklerin, kupa ve '
+            'altınların ve arkadaşlıkların kalıcı olarak silinecek. Bu işlem '
+            'geri alınamaz.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: T.fontUi,
+              fontSize: T.t15,
+              color: T.beyaz065,
+            ),
+          ),
+          Builder(
+            builder: (context) => WideButton(
+              label: 'KALICI OLARAK SİL',
+              tone: WideButtonTone.orange,
+              fontSize: T.t22,
+              onTap: () => Navigator.of(context).pop(true),
+            ),
+          ),
+          Builder(
+            builder: (context) => QuietButton(
+              label: 'VAZGEÇ',
+              onTap: () => Navigator.of(context).pop(false),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (yes != true || !mounted) return;
+
+    setState(() => _busy = true);
+    try {
+      await Account.instance.deleteAccount();
+      if (!mounted) return;
+      await Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const UsernameScreen()),
+        (_) => false,
+      );
+    } on AccountException catch (e) {
+      if (mounted) showToast(context, e.message);
+    } catch (e) {
+      if (mounted) showToast(context, 'Hesap silinemedi');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      key: const ValueKey('delete-account'),
+      onTap: _busy ? null : _confirmAndDelete,
+      behavior: HitTestBehavior.opaque,
+      child: Opacity(
+        opacity: _busy ? 0.45 : 1,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: T.kirmizi.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(T.rLg),
+            border: Border.all(
+              color: T.kirmizi.withValues(alpha: 0.6),
+              width: 1.5,
+            ),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            _busy ? 'Siliniyor…' : 'Hesabımı sil',
+            style: const TextStyle(
+              fontFamily: T.fontUi,
+              fontSize: T.t17,
+              color: T.kirmizi,
+            ),
+          ),
+        ),
       ),
     );
   }

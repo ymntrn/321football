@@ -275,6 +275,42 @@ class Account {
     }
   }
 
+  // -------------------------------------------------------------------------
+  // Account deletion (011)
+  // -------------------------------------------------------------------------
+  /// Destek's "Hesabımı sil", after the player confirmed. Deletes the
+  /// profile, friendships, queue entry and auth user on the server
+  /// (delete_my_account), then signs this device out and forgets the name,
+  /// so the app starts over at the username screen. Throws
+  /// [AccountException] if the server cannot be reached — nothing is
+  /// deleted locally in that case.
+  Future<void> deleteAccount() async {
+    if (!await ensureOnline()) {
+      throw const AccountException('Bağlantı kurulamadı');
+    }
+    final client = _client!;
+    try {
+      await client.rpc('delete_my_account');
+    } on PostgrestException catch (e) {
+      throw AccountException(e.message);
+    }
+    // The server user is gone, so only the local session can be dropped.
+    try {
+      await client.auth.signOut(scope: SignOutScope.local);
+    } catch (e) {
+      debugPrint('local sign-out after deletion: $e');
+    }
+    if (_googleReady) {
+      try {
+        await GoogleSignIn.instance.signOut();
+      } catch (e) {
+        debugPrint('google sign-out after deletion: $e');
+      }
+    }
+    profile.value = null;
+    await Identity.instance.forget();
+  }
+
   static Map<String, dynamic> _toRow(Profile p) => {
         'id': p.id,
         'username': p.username,

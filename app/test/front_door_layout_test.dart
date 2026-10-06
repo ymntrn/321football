@@ -154,4 +154,33 @@ void main() {
     expect(find.text(second.body), findsOneWidget);
     expect(find.textContaining('Yaman#7K2M'), findsOneWidget);
   });
+
+  testWidgets('Hesabımı sil asks first; VAZGEÇ deletes nothing',
+      (tester) async {
+    await _pumpAt(tester, _sizes[1], const SupportScreen());
+    await tester.ensureVisible(find.text('Hesabımı sil'));
+    await tester.pump();
+    await tester.tap(find.text('Hesabımı sil'));
+    await tester.pumpAndSettle();
+    expect(find.text('HESABINI SİL'), findsOneWidget);
+    expect(find.text('KALICI OLARAK SİL'), findsOneWidget);
+    await tester.tap(find.text('VAZGEÇ'));
+    await tester.pumpAndSettle();
+    expect(find.text('HESABINI SİL'), findsNothing);
+    expect(Identity.instance.hasUsername, isTrue);
+  });
+
+  testWidgets('Hesabımı sil offline: refuses and keeps the account',
+      (tester) async {
+    await _pumpAt(tester, _sizes[1], const SupportScreen());
+    await tester.ensureVisible(find.text('Hesabımı sil'));
+    await tester.pump();
+    await tester.tap(find.text('Hesabımı sil'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('KALICI OLARAK SİL'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bağlantı kurulamadı'), findsOneWidget);
+    expect(find.byType(SupportScreen), findsOneWidget);
+    expect(Identity.instance.hasUsername, isTrue);
+  });
 }

@@ -25,6 +25,45 @@ import sys
 import db
 
 
+# Duplicates whose names DIFFER, so the name grouping below cannot see them.
+# Found 6 Oct 2026: Wikidata holds a second, page-less item for many German
+# clubs (the Q979xxxxx series) under the club's formal name - "FC Bayern
+# München", "BV Borussia 09 Dortmund" - each holding a stray player or none.
+# Keyed by QID so a rebuild re-applies them. stub QID -> keeper QID.
+MANUAL_MERGES = {
+    "Q97905939": "Q102720",    # Hertha BSC Berlin            -> Hertha BSC
+    "Q97905923": "Q32494",     # FC Schalke 04                -> Schalke 04
+    "Q97905900": "Q101959",    # VfL Borussia Mönchengladbach -> Borussia Mönchengladbach
+    "Q97905919": "Q15789",     # FC Bayern München            -> FC Bayern Munich
+    "Q97905894": "Q41420",     # BV Borussia 09 Dortmund      -> Borussia Dortmund
+    "Q97927357": "Q162251",    # 1. FC Heidenheim             -> 1. FC Heidenheim 1846
+    "Q97905889": "Q105844",    # DSC Arminia Bielefeld        -> Arminia Bielefeld
+    "Q97905887": "Q153535",    # TSV Alemannia Aachen         -> Alemannia Aachen
+    "Q97905983": "Q170105",    # SV Stuttgarter Kickers       -> Stuttgarter Kickers
+    "Q97905881": "Q15786",     # 1. FC Nürnberg (football)    -> 1. FC Nürnberg
+    "Q97905905": "Q141931",    # SG Dynamo Dresden            -> Dynamo Dresden
+    "Q97905972": "Q3163786",   # Blau-Weiß 90 Berlin          -> SpVgg Blau-Weiß 1890 Berlin
+    "Q97905981": "Q14551982",    # SSV Ulm 1846                 -> SSV Ulm 1846 Fußball
+    "Q97905906": "Q154053",    # BTSV Eintracht Braunschweig  -> Eintracht Braunschweig
+}
+
+
+def find_manual_groups(conn) -> list[dict]:
+    """MANUAL_MERGES as groups, skipping pairs already merged or missing."""
+    groups = []
+    for stub_qid, keeper_qid in MANUAL_MERGES.items():
+        rows = {r["wikidata_qid"]: r for r in conn.execute("""
+            SELECT club_id, wikidata_qid, canonical_name, sitelink_count,
+                   distinct_player_count, scrape_status
+            FROM clubs WHERE wikidata_qid IN (?, ?) AND is_reserve_or_b_team = 0
+        """, (stub_qid, keeper_qid)).fetchall()}
+        if stub_qid in rows and keeper_qid in rows:
+            groups.append({"normalized_name": rows[keeper_qid]["canonical_name"],
+                           "keeper": rows[keeper_qid],
+                           "duplicates": [rows[stub_qid]]})
+    return groups
+
+
 def find_duplicate_groups(conn) -> list[dict]:
     """
     Group active clubs by normalized name, keeping only names with more than
@@ -111,7 +150,7 @@ def main() -> int:
     apply_changes = "--apply" in sys.argv
     conn = db.connect()
 
-    groups = find_duplicate_groups(conn)
+    groups = find_duplicate_groups(conn) + find_manual_groups(conn)
     if not groups:
         print("No duplicate clubs found.")
         conn.close()

@@ -19,6 +19,9 @@ enum JoinFailure {
 
   /// Could not reach Supabase at all.
   network,
+
+  /// The code is this player's own room (006 refuses playing yourself).
+  ownRoom,
 }
 
 class JoinException implements Exception {
@@ -39,6 +42,8 @@ class JoinException implements Exception {
         return 'Oda dolu';
       case JoinFailure.network:
         return 'Bağlantı kurulamadı';
+      case JoinFailure.ownRoom:
+        return 'Bu senin odan';
     }
   }
 
@@ -95,6 +100,9 @@ class RoomRepository {
       }
       if (message.contains('room_in_progress')) {
         throw const JoinException(JoinFailure.inProgress);
+      }
+      if (message.contains('own_room')) {
+        throw const JoinException(JoinFailure.ownRoom);
       }
       if (message.contains('room_full')) {
         throw const JoinException(JoinFailure.full);

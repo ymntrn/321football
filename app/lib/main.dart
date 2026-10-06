@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'data/app_database.dart';
+import 'net/account.dart';
 import 'net/identity.dart';
 import 'net/supabase_config.dart';
 import 'screens/dev_menu_screen.dart';
@@ -17,8 +18,8 @@ Future<void> main() async {
   // even for offline Practice. _Boot waits for it alongside the database open,
   // so both run in parallel. A failure is logged and swallowed - only Friend
   // Match needs the network, and it reports its own connection errors.
-  supabaseReady = _initSupabase();
   await Identity.load();
+  supabaseReady = _initSupabase();
 
   runApp(const App());
 }
@@ -32,9 +33,15 @@ Future<void> _initSupabase() async {
       url: SupabaseConfig.url,
       publishableKey: SupabaseConfig.publishableKey,
     );
+    Account.instance.backendAvailable = true;
   } catch (e) {
-    debugPrint('Supabase init failed (Friend Match will be unavailable): $e');
+    debugPrint('Supabase init failed (online modes will be unavailable): $e');
+    return;
   }
+  // The anonymous sign-in (or the restored session) and the profile. Bounded
+  // by a timeout inside boot(), and never throws: offline, Practice runs on
+  // the on-device fallback id.
+  await Account.instance.boot();
 }
 
 class App extends StatelessWidget {

@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/room.dart';
+import '../net/account.dart';
 import '../net/identity.dart';
 import '../net/room_repository.dart';
 import '../net/server_clock.dart';
@@ -66,6 +67,7 @@ class _FriendMatchScreenState extends State<FriendMatchScreen> {
   /// actually forfeits: without this, every crash would be a loss.
   Future<void> _resume() async {
     try {
+      if (!await Account.instance.ensureOnline()) return;
       final room = await _rooms.activeRoomFor(Identity.instance.playerId);
       if (!mounted || room == null) return;
       final seat = room.seatOf(Identity.instance.playerId);
@@ -113,6 +115,9 @@ class _FriendMatchScreenState extends State<FriendMatchScreen> {
       _error = null;
     });
     try {
+      if (!await Account.instance.ensureOnline()) {
+        throw const AccountException('offline');
+      }
       final room = await _rooms.create(
         playerId: Identity.instance.playerId,
         name: Identity.instance.name,
@@ -137,6 +142,9 @@ class _FriendMatchScreenState extends State<FriendMatchScreen> {
       _error = null;
     });
     try {
+      if (!await Account.instance.ensureOnline()) {
+        throw const JoinException(JoinFailure.network);
+      }
       final room = await _rooms.join(
         code: code,
         playerId: Identity.instance.playerId,

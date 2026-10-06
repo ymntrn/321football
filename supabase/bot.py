@@ -15,53 +15,31 @@ here is always a protocol or timing bug and never the bot being bad at
 football.
 """
 import argparse
-import json
 import random
 import sqlite3
 import sys
 import time
-import urllib.error
-import urllib.request
-import uuid
 
-URL = "https://yjdcsdikcrdupqmaqoqn.supabase.co"
-KEY = "sb_publishable_gGylTdpJ4aI3KU6u6UNr9Q_ZaUhHthO"
+from sbclient import Player
+
 DB = r"C:\Users\PC\Documents\321-football\app\assets\db\321_football.db"
 
-HEAD = {"apikey": KEY, "Authorization": "Bearer " + KEY,
-        "Content-Type": "application/json"}
-
-
-def call(method, path, body=None, extra=None):
-    headers = dict(HEAD)
-    if extra:
-        headers.update(extra)
-    data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(URL + path, data=data, headers=headers,
-                                 method=method)
-    try:
-        with urllib.request.urlopen(req, timeout=20) as r:
-            raw = r.read().decode()
-            return r.status, (json.loads(raw) if raw.strip() else None)
-    except urllib.error.HTTPError as e:
-        raw = e.read().decode()
-        try:
-            return e.code, json.loads(raw)
-        except ValueError:
-            return e.code, raw
+# Since 006_accounts.sql a room is visible only to its two players, so the bot
+# signs in anonymously exactly like the app and gets its own auth user (and a
+# profile called --name, so match results land on it).
+bot = None
 
 
 def rpc(fn, **params):
-    return call("POST", "/rest/v1/rpc/" + fn, params)
+    return bot.rpc(fn, **params)
 
 
 def get_room(code):
-    status, rows = call("GET", "/rest/v1/rooms?code=eq." + code + "&select=*")
-    return rows[0] if rows else None
+    return bot.get_room(code)
 
 
 def patch(code, body):
-    return call("PATCH", "/rest/v1/rooms?code=eq." + code, body)
+    return bot.patch_room(code, body)
 
 
 # ---------------------------------------------------------------------------
@@ -156,7 +134,13 @@ def main():
     ap.add_argument("--name", default="Bot")
     args = ap.parse_args()
 
-    me = str(uuid.uuid4())
+    global bot
+    bot = Player()
+    status, prof = bot.rpc("create_profile", p_username=args.name)
+    if status != 200:
+        sys.exit("could not create the bot's profile: %s" % prof)
+    print("bot is %s#%s" % (prof["username"], prof["tag"]))
+    me = bot.id
 
     if args.host:
         status, room = rpc("create_room", p_host_id=me, p_host_name=args.name)

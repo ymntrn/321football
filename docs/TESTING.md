@@ -240,7 +240,7 @@ output. (009 assumes nobody else is queueing for ranked at that moment.)
 
 1. `adb shell pm clear com.yamanturan.football321`, launch.
 2. **Splash:** `Yükleniyor` / `Veritabanı hazırlanıyor… %NN` over the
-   purple-to-blue bar on a dark track, `V 1.0.2026` at the foot.
+   purple-to-blue bar on a dark track, `V 1.0.0` at the foot.
 3. **Username screen** appears (only on a first launch). Tap the field — the
    SYSTEM keyboard opens (deliberate: digits and `_` are allowed).
    - Type `ab` → DEVAM ET stays dim, the hint turns red.

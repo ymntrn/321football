@@ -22,6 +22,13 @@
 -keep class com.google.android.gms.ads.** { *; }
 -keep class com.google.android.ump.** { *; }
 
+# Room databases are created by reflection from their generated *_Impl
+# class. The ads SDK pulls in WorkManager, whose WorkDatabase_Impl R8
+# stripped: the first release build crashed at launch with "Failed to
+# create an instance of androidx.work.impl.WorkDatabase".
+-keep class * extends androidx.room.RoomDatabase { <init>(); }
+-keep class androidx.work.impl.WorkDatabase_Impl { *; }
+
 # google_sign_in 7 goes through Credential Manager; its Play services
 # provider is found by reflection.
 -if class androidx.credentials.CredentialManager

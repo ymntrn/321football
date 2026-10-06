@@ -80,7 +80,7 @@ lost app signing key could not — that is why Google holds it).
 | `app/lib/legal/legal_text.dart` → `SupportConfig.email` | `destek@321football.app` is the address from the Figma frame. Make sure that mailbox exists (it needs the domain), or replace it everywhere it appears: this constant, `docs/store-listing.md` |
 | the whole of `legal_text.dart` | **have the policy and terms reviewed** (KVKK + GDPR). Then delete `draftNotice`'s card (`_DraftCard` in `privacy_screen.dart`), update `lastUpdated`, and regenerate `docs/privacy-policy.md` (see the comment at its top) |
 | launcher icon | still Flutter's default (`android/app/src/main/res/mipmap-*`). Replace it with the real 321 Football icon (adaptive icon recommended) |
-| `lib/screens/settings_screen.dart` → `version` | the `V 1.0.2026` text on Ayarlar / Destek is design copy, not `pubspec.yaml`'s version — keep or change, your call |
+| `lib/screens/settings_screen.dart` → `version` | shown on the splash, Ayarlar and Destek; now `V 1.0.0`. Bump it together with `version:` in `pubspec.yaml` |
 | `assets/audio/*.wav` | placeholder beeps from `tools/make_sfx.py`; drop real sounds in with the same names whenever they exist |
 | Figma exports | run `app\tools\fetch_assets.ps1` if not done (the URLs expire ~13 Oct 2026) — the Apple button and the nav icons |
 

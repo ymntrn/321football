@@ -18,7 +18,9 @@ import 'support_screen.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  static const version = 'V 1.0.2026';
+  /// Keep in step with `version:` in pubspec.yaml (the Figma frame's
+  /// "V 1.0.2026" was placeholder text).
+  static const version = 'V 1.0.0';
 
   @override
   Widget build(BuildContext context) {

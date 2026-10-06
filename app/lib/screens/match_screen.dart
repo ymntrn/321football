@@ -14,6 +14,7 @@ import 'match_board_screen.dart';
 import 'match_countdown_screen.dart';
 import 'match_screen_buttons.dart';
 import 'match_team_select_screen.dart';
+import 'match_versus_screen.dart';
 
 /// The match loop.
 ///
@@ -65,6 +66,15 @@ class _MatchScreenState extends State<MatchScreen> {
   /// pauses — how long GOOOL stays on screen before the next round.
   DateTime _phaseSince = DateTime.now();
   MatchPhase? _phaseSeen;
+
+  /// Whether this match has already moved past its first pick. Versus plays
+  /// once per match (and again after a rematch), never on a re-pick — and a
+  /// voided first round re-picks with the round number and score unchanged,
+  /// so those alone cannot tell the two apart.
+  bool _versusDone = false;
+
+  /// How long Versus holds. The Figma prototype advances it on a 2 s timeout.
+  static const _versusHold = Duration(seconds: 2);
 
   /// When the first correct answer of the round landed in the row.
   ///
@@ -143,6 +153,11 @@ class _MatchScreenState extends State<MatchScreen> {
       _phaseSeen = _room.phase;
       _phaseSince = DateTime.now();
       _firstAnswerAt = null;
+      if (_room.phase == MatchPhase.lobby) {
+        _versusDone = false;
+      } else if (_room.phase != MatchPhase.picking) {
+        _versusDone = true;
+      }
     }
 
     // Either player may claim an abandoned match, not just the host — a host
@@ -325,6 +340,24 @@ class _MatchScreenState extends State<MatchScreen> {
     if (club != null) await _pick(club);
   }
 
+  /// Versus (27:42) sits between "the match is on" and the first team pick,
+  /// as in the prototype. There is no phase for it — adding one would change
+  /// the backend protocol — so it is drawn over the first two seconds of the
+  /// first pick window. Both players lose the same two seconds of the 15,
+  /// and the window is timed against the room's pick_deadline, so a client
+  /// that reconnects later in the window skips straight to the picker.
+  bool _showVersus(DateTime? pickDeadline) {
+    if (_versusDone || pickDeadline == null) return false;
+    if (_room.round != 1 || _room.hostScore + _room.guestScore != 0) {
+      return false;
+    }
+    final sinceOpen = Duration(seconds: _room.pickSeconds) -
+        pickDeadline.difference(DateTime.now());
+    if (sinceOpen < _versusHold) return true;
+    _versusDone = true;
+    return false;
+  }
+
   /// The PvP board for the round in progress (`Maç - Oyuncu Arama`).
   Widget _board(DateTime unlock) {
     final deadline = _local(_room.answerDeadline) ??
@@ -386,6 +419,13 @@ class _MatchScreenState extends State<MatchScreen> {
 
       case MatchPhase.picking:
         final deadline = _local(_room.pickDeadline);
+        if (_showVersus(deadline)) {
+          return MatchVersusScreen(
+            playerName: _room.nameOf(_me),
+            opponentName: _room.nameOf(_them),
+            targetGoals: _room.targetGoals,
+          );
+        }
         return MatchTeamSelectScreen(
           key: ValueKey('pick-${_room.round}'),
           playerName: _room.nameOf(_me),

@@ -12,14 +12,19 @@ $assets = [ordered]@{
   "lightbulb.png" = "https://www.figma.com/api/mcp/asset/a7899aab-8234-4669-b6ff-9c60f0be543d.png"
   "coin.png"      = "https://www.figma.com/api/mcp/asset/71b0c357-3736-4da6-aa36-fc1c8f1315f5.png"
   "search.svg"    = "https://www.figma.com/api/mcp/asset/258a9d8b-2f0b-4806-a434-95c497140e30.svg"
+  # Versus (27:42), exported 6 Oct 2026. The cloud session that built the
+  # screen could not reach figma.com, so these are fetched here, on the PC.
+  "versus_banner_top.svg"    = "https://www.figma.com/api/mcp/asset/d61aa367-1f91-41f2-bd0c-5216980d0aa7.svg"
+  "versus_banner_bottom.svg" = "https://www.figma.com/api/mcp/asset/d10897cf-55dd-48f8-97db-452e3c165083.svg"
+  "versus_vs.svg"            = "https://www.figma.com/api/mcp/asset/c63d5167-3c63-4d29-87a8-4a376b5b63a3.svg"
 }
 
 foreach ($name in $assets.Keys) {
   $out = Join-Path $dir $name
   try {
     Invoke-WebRequest -Uri $assets[$name] -OutFile $out -TimeoutSec 120
-    Write-Output ("  OK   {0,-16} {1} KB" -f $name, [math]::Round((Get-Item $out).Length/1KB,1))
+    Write-Output ("  OK   {0,-26} {1} KB" -f $name, [math]::Round((Get-Item $out).Length/1KB,1))
   } catch {
-    Write-Output ("  FAIL {0,-16} {1}" -f $name, $_.Exception.Message)
+    Write-Output ("  FAIL {0,-26} {1}" -f $name, $_.Exception.Message)
   }
 }

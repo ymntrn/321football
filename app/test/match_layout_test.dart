@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:football321/screens/match_board_screen.dart';
+import 'package:football321/screens/match_versus_screen.dart';
 import 'package:football321/theme/tokens.dart';
 import 'package:football321/widgets/match_chrome.dart';
 
@@ -108,4 +109,23 @@ void main() {
       360 - 2 * T.s2xl,
     );
   });
+
+  for (final size in _sizes) {
+    testWidgets('versus lays out at ${size.width}x${size.height}', (
+      tester,
+    ) async {
+      await _pumpAt(
+        tester,
+        size,
+        const MatchVersusScreen(
+          playerName: 'Oyuncuadı1',
+          opponentName: 'Oyuncuadı2',
+          targetGoals: 3,
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.text('ARKADAŞ MAÇI · İLK 3 GOL'), findsOneWidget);
+      expect(find.text('Oyuncuadı2'), findsOneWidget);
+    });
+  }
 }

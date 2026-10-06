@@ -28,9 +28,11 @@ STEPS = [
     (1, "Discover clubs per league",  "scrape_clubs"),
     (2, "Scrape player spells",       "scrape_players"),
     (3, "Enrich prestige + aliases",  "enrich"),
-    (4, "Compute fame scores",        "compute_fame_scores"),
-    (5, "Build practice pairs",       "build_practice_pairs"),
-    (6, "Verify the database",        "verify"),
+    (4, "Curate nicknames + labels",  "curate"),
+    (5, "Player fame + era filter",   "enrich_players"),
+    (6, "Compute fame scores",        "compute_fame_scores"),
+    (7, "Build practice pairs",       "build_practice_pairs"),
+    (8, "Verify the database",        "verify"),
 ]
 
 

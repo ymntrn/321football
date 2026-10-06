@@ -6,6 +6,7 @@ import '../data/app_database.dart';
 import '../data/game_queries.dart';
 import '../models/models.dart';
 import '../theme/tokens.dart';
+import '../widgets/career_line.dart';
 import '../widgets/lobby_chrome.dart';
 import '../widgets/match_chrome.dart';
 import '../widgets/screen_background.dart';
@@ -246,7 +247,21 @@ class MatchGoalScreen extends StatelessWidget {
               ),
             ),
           const SizedBox(height: T.sLg),
-          if (answer != null) _CareerLine(answer: answer!, clubs: clubs),
+          // 108:193. Height reserved so the pill below does not jump when
+          // the line arrives.
+          if (answer != null)
+            SizedBox(
+              height: 34,
+              child: CareerLine(
+                playerName: answer!,
+                clubs: clubs,
+                style: const TextStyle(
+                  fontFamily: T.fontUi,
+                  fontSize: T.t13,
+                  color: T.beyaz050,
+                ),
+              ),
+            ),
           if (elapsedMs != null) ...[
             const SizedBox(height: 30),
             _AnswerTimePill(elapsedMs: elapsedMs!),
@@ -295,75 +310,6 @@ class _ScorerRing extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// `Takım 1 (2009–13)  →  Takım 2 (2013–17)` (108:193), in career order.
-class _CareerLine extends StatefulWidget {
-  const _CareerLine({required this.answer, required this.clubs});
-
-  final String answer;
-  final Map<int, String> clubs;
-
-  @override
-  State<_CareerLine> createState() => _CareerLineState();
-}
-
-class _CareerLineState extends State<_CareerLine> {
-  late final Future<String?> _line = _load();
-
-  Future<String?> _load() async {
-    if (widget.clubs.length != 2) return null;
-    final ids = widget.clubs.keys.toList();
-    try {
-      final spells = await GameQueries(AppDatabase.instance.db)
-          .mutualSpells(widget.answer, ids[0], ids[1]);
-      if (spells.isEmpty) return null;
-      return spells
-          .map((s) => '${widget.clubs[s.clubId]} (${_years(s.from, s.to)})')
-          .join('  →  ');
-    } catch (e) {
-      debugPrint('career line failed: $e');
-      return null;
-    }
-  }
-
-  /// 2009–13; 2018– for a spell still running; the full end year when the
-  /// century changes (1998–2001).
-  static String _years(int? from, int? to) {
-    final a = from?.toString() ?? '?';
-    if (to == null) return '$a–';
-    if (from != null && from ~/ 100 == to ~/ 100) {
-      return '$a–${(to % 100).toString().padLeft(2, '0')}';
-    }
-    return '$a–$to';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<String?>(
-      future: _line,
-      builder: (context, snap) {
-        final text = snap.data;
-        return SizedBox(
-          // Reserved even while loading so the pill below does not jump.
-          height: 34,
-          child: text == null
-              ? null
-              : Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontFamily: T.fontUi,
-                    fontSize: T.t13,
-                    color: T.beyaz050,
-                  ),
-                ),
-        );
-      },
     );
   }
 }

@@ -6,6 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:football321/screens/match_board_screen.dart';
 import 'package:football321/screens/match_end_screens.dart';
 import 'package:football321/screens/match_versus_screen.dart';
+import 'package:football321/models/models.dart';
+import 'package:football321/widgets/practice_chrome.dart';
+import 'package:football321/widgets/search_bar_panel.dart';
 import 'package:football321/theme/tokens.dart';
 import 'package:football321/widgets/match_chrome.dart';
 
@@ -210,5 +213,95 @@ void main() {
         },
       );
     }
+  }
+
+  // ---- Practice popups ------------------------------------------------
+  const sneijder = Player(id: 1, displayName: 'Wesley Sneijder');
+  const clubs = {1: 'Inter', 2: 'Galatasaray'};
+
+  for (final size in _sizes) {
+    testWidgets('Doğru popup lays out at ${size.width}x${size.height}', (
+      tester,
+    ) async {
+      await _pumpAt(
+        tester,
+        size,
+        Scaffold(
+          body: Stack(
+            children: [
+              const Positioned(
+                left: 20,
+                right: 20,
+                bottom: 260,
+                child: ConfirmedSearchBar(name: 'Wesley Sneijder'),
+              ),
+              Positioned.fill(
+                child: CorrectAnswerOverlay(
+                  player: sneijder,
+                  clubs: clubs,
+                  onDone: () {},
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.text('DOĞRU!'), findsOneWidget);
+      expect(find.text('+1 SERİ'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 3));
+    });
+
+    testWidgets('Cevap Onayı lays out at ${size.width}x${size.height}', (
+      tester,
+    ) async {
+      await _pumpAt(
+        tester,
+        size,
+        Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: T.sLg),
+              child: RevealConfirmPopup(
+                cost: 3,
+                onCancel: () {},
+                onConfirm: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.text('3 ALTIN HARCA'), findsOneWidget);
+    });
+
+    testWidgets('Cevabı Göster lays out at ${size.width}x${size.height}', (
+      tester,
+    ) async {
+      await _pumpAt(
+        tester,
+        size,
+        Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: T.sLg),
+              child: RevealAnswersPopup(
+                // Far more answers than fit: the list must scroll, not
+                // overflow the card.
+                players: [
+                  for (var i = 0; i < 30; i++)
+                    Player(id: i, displayName: 'Oyuncu Numara $i'),
+                ],
+                clubs: clubs,
+                cost: 3,
+                onContinue: () {},
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.text('DEVAM'), findsOneWidget);
+    });
   }
 }

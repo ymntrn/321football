@@ -9,7 +9,7 @@ plugins {
 // nobody has to keep two copies in step.
 val admobAppId: String = run {
     val config = rootProject.file("../lib/ads/ad_config.dart").readText()
-    Regex("admobAppIdAndroid\\s*=\\s*'([^']+)'").find(config)?.groupValues?.get(1)
+    Regex("static const admobAppIdAndroid\\s*=\\s*'([^']+)'").find(config)?.groupValues?.get(1)
         ?: throw GradleException("admobAppIdAndroid not found in lib/ads/ad_config.dart")
 }
 

@@ -12,8 +12,8 @@
 ///
 /// android/app/build.gradle.kts reads [admobAppIdAndroid] out of THIS file
 /// (by name, with a regex) into the manifest's APPLICATION_ID meta-data, so
-/// this stays the only place to edit. Keep the line's shape:
-/// `static const admobAppIdAndroid = '...';`
+/// this stays the only place to edit. Keep that declaration on one line,
+/// single-quoted, exactly as below.
 class AdConfig {
   AdConfig._();
 

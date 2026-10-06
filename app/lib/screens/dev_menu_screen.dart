@@ -9,10 +9,9 @@ import 'practice_difficulty_screen.dart';
 
 /// Scaffolding, not a product screen.
 ///
-/// `Ana Sayfa` (Figma 4:4) is designed but not built, so until it is there is
-/// no way to reach a second mode from inside the app. This stands in so PvP
-/// screens can be driven on a device as they land. Delete it the moment the
-/// real home screen exists.
+/// Off the launch path since Ana Sayfa (4:4) was built. Reachable in DEBUG
+/// builds only, by long-pressing the coin chip on Ana Sayfa — kept for the
+/// standalone team-picker demo.
 class DevMenuScreen extends StatelessWidget {
   const DevMenuScreen({super.key});
 

@@ -19,9 +19,17 @@ import '../theme/tokens.dart';
 /// The geometry and colours below are taken verbatim from those two files,
 /// which are kept in assets/img/ as the reference.
 class ScreenBackground extends StatelessWidget {
-  const ScreenBackground({super.key, required this.child});
+  const ScreenBackground({
+    super.key,
+    required this.child,
+    this.glowCentre = const Offset(213.5, 471.5),
+  });
 
   final Widget child;
+
+  /// Where `Ellipse 5` sits on the 430x932 frame. Every frame puts it in the
+  /// middle except Ana Sayfa (4:4), whose glow is up at (218, 227.5).
+  final Offset glowCentre;
 
   static const designWidth = 430.0;
   static const designHeight = 932.0;
@@ -31,7 +39,7 @@ class ScreenBackground extends StatelessWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: CustomPaint(painter: _BackdropPainter()),
+          child: CustomPaint(painter: _BackdropPainter(glowCentre)),
         ),
         Positioned.fill(child: child),
       ],
@@ -40,6 +48,10 @@ class ScreenBackground extends StatelessWidget {
 }
 
 class _BackdropPainter extends CustomPainter {
+  _BackdropPainter(this.glow);
+
+  final Offset glow;
+
   /// masking > Ellipse 1..4, centred (215, 465.5) on the 430x932 frame.
   /// preserveAspectRatio="none", so x and y scale independently.
   static const _rings = <({double rx, double ry, int argb})>[
@@ -74,7 +86,7 @@ class _BackdropPainter extends CustomPainter {
     // Ellipse 5: #EFD959 at 20%, blurred with stdDeviation 100. Reproduced as
     // a soft radial falloff centred where the blurred ellipse sits — (213.5,
     // 471.5) — spreading roughly the ellipse radius plus twice the blur.
-    final glowCentre = Offset(213.5 * sx, 471.5 * sy);
+    final glowCentre = Offset(glow.dx * sx, glow.dy * sy);
     final glowRect = Rect.fromCenter(
       center: glowCentre,
       width: (124.5 + 200) * 2 * sx,
@@ -94,7 +106,8 @@ class _BackdropPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _BackdropPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _BackdropPainter oldDelegate) =>
+      oldDelegate.glow != glow;
 }
 
 /// The `Undo` control in the top-left of every sub-screen.

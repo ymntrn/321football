@@ -6,8 +6,12 @@ import 'data/app_database.dart';
 import 'net/account.dart';
 import 'net/identity.dart';
 import 'net/supabase_config.dart';
-import 'screens/dev_menu_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/username_screen.dart';
+import 'settings/app_settings.dart';
 import 'theme/tokens.dart';
+import 'widgets/screen_background.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +23,7 @@ Future<void> main() async {
   // so both run in parallel. A failure is logged and swallowed - only Friend
   // Match needs the network, and it reports its own connection errors.
   await Identity.load();
+  await AppSettings.instance.load();
   supabaseReady = _initSupabase();
 
   runApp(const App());
@@ -95,21 +100,25 @@ class _BootState extends State<_Boot> {
         if (snapshot.connectionState != ConnectionState.done) {
           return const _Splash();
         }
-        // Ana Sayfa (Figma 4:4) is not built yet, so this lands on the dev
-        // menu instead of straight into Practice. Swap it for the real home
-        // screen when that exists.
-        return const DevMenuScreen();
+        // First launch asks for a username (92:190); every later launch
+        // goes straight to Ana Sayfa (4:4). The dev menu is reachable only
+        // in debug builds, by long-pressing the coin chip on Ana Sayfa.
+        return Identity.instance.hasUsername
+            ? const HomeScreen()
+            : const UsernameScreen();
       },
     );
   }
 }
 
-/// The boot splash: the Jaro wordmark and a progress bar.
+/// `Yükleme ekranı` (Figma 48:570): the backdrop, `Yükleniyor` over a
+/// 354x14 bar (#0B0D2E track, #5F114C → #000FDA fill), and the version at
+/// the foot.
 ///
 /// The bar is REAL during the first-launch database copy — it follows
-/// AppDatabase.progress, fed by the streamed copy in MainActivity.kt — with
-/// a percentage and a line saying what is happening. On every later launch
-/// the open is near-instant and the bar stays indeterminate.
+/// AppDatabase.progress, fed by the streamed copy in MainActivity.kt — and
+/// the label then reads "Veritabanı hazırlanıyor… %NN". On every later
+/// launch the open is near-instant and the bar just sweeps.
 class _Splash extends StatelessWidget {
   const _Splash();
 
@@ -117,56 +126,129 @@ class _Splash extends StatelessWidget {
   Widget build(BuildContext context) {
     final db = AppDatabase.instance;
     return Scaffold(
-      backgroundColor: T.zeminAna,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              '321',
-              style: TextStyle(
-                fontFamily: T.fontNumeral,
-                fontSize: T.t96,
-                color: T.turuncu,
-              ),
-            ),
-            const SizedBox(height: T.s2xl),
-            ValueListenableBuilder<double?>(
-              valueListenable: db.progress,
-              builder: (context, value, _) => SizedBox(
-                width: 180,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
-                  child: LinearProgressIndicator(
-                    value: value,
-                    minHeight: 4,
-                    backgroundColor: T.beyaz012,
-                    valueColor: const AlwaysStoppedAnimation(T.turuncu),
+      body: ScreenBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              const Spacer(),
+              ValueListenableBuilder<bool>(
+                valueListenable: db.copying,
+                builder: (context, copying, _) =>
+                    ValueListenableBuilder<double?>(
+                  valueListenable: db.progress,
+                  builder: (context, value, _) => Text(
+                    !copying
+                        ? 'Yükleniyor'
+                        : value == null
+                            ? 'Veritabanı hazırlanıyor…'
+                            : 'Veritabanı hazırlanıyor… %${(value * 100).round()}',
+                    style: const TextStyle(
+                      fontFamily: T.fontUi,
+                      fontSize: T.t15,
+                      color: T.beyaz100,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: T.sLg),
-            ValueListenableBuilder<bool>(
-              valueListenable: db.copying,
-              builder: (context, copying, _) => ValueListenableBuilder<double?>(
-                valueListenable: db.progress,
-                builder: (context, value, _) => Text(
-                  !copying
-                      ? ''
-                      : value == null
-                          ? 'Veritabanı hazırlanıyor…'
-                          : 'Veritabanı hazırlanıyor… %${(value * 100).round()}',
-                  style: const TextStyle(
-                    fontFamily: T.fontUi,
-                    fontSize: T.t13,
-                    color: T.beyaz050,
-                  ),
+              const SizedBox(height: 13),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 38),
+                child: ValueListenableBuilder<double?>(
+                  valueListenable: db.progress,
+                  builder: (context, value, _) => _LoadingBar(value: value),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 100),
+              const Text(
+                SettingsScreen.version,
+                style: TextStyle(
+                  fontFamily: T.fontUi,
+                  fontSize: T.t13,
+                  color: T.beyaz050,
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+/// `bar` (48:580). Determinate when [value] is known; otherwise the 105pt
+/// fill the frame draws sweeps across the track.
+class _LoadingBar extends StatefulWidget {
+  const _LoadingBar({required this.value});
+
+  final double? value;
+
+  @override
+  State<_LoadingBar> createState() => _LoadingBarState();
+}
+
+class _LoadingBarState extends State<_LoadingBar>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _sweep = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1200),
+  )..repeat();
+
+  static const _track = Color(0xFF0B0D2E);
+  static const _fill = LinearGradient(
+    colors: [Color(0xFF5F114C), Color(0xFF000FDA)],
+  );
+
+  @override
+  void dispose() {
+    _sweep.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 14,
+      child: LayoutBuilder(
+        builder: (context, box) {
+          final w = box.maxWidth;
+          final value = widget.value;
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: Stack(
+              children: [
+                const Positioned.fill(child: ColoredBox(color: _track)),
+                if (value != null)
+                  Container(
+                    width: (w * value).clamp(14.0, w),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      gradient: _fill,
+                    ),
+                  )
+                else
+                  AnimatedBuilder(
+                    animation: _sweep,
+                    builder: (_, __) {
+                      final seg = w * 105 / 354;
+                      return Positioned(
+                        left: (w + seg) * _sweep.value - seg,
+                        top: 0,
+                        bottom: 0,
+                        width: seg,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            gradient: _fill,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

@@ -358,4 +358,6 @@ checked against Unicode character names.
 2. ~~Build `Doğru Cevap` and `Cevap Onayı` from Figma~~ — done 6 Oct 2026
    (branch `screens-from-figma`, awaiting emulator check).
 3. ~~Cold start: stream the 62 MB asset copy~~ — done 6 Oct 2026, same branch.
-4. Shop assets, audio/haptics, ads/IAP, release builds.
+4. Shop assets, audio/haptics, ads/IAP, release builds. *(6 Oct 2026, branch
+   `release-prep`: placeholder audio, the one rewarded ad and release
+   builds are done; shop/IAP out of scope. See `release.md`.)*

@@ -101,6 +101,7 @@ nothing needing a paid plan.
 | `003_match_flow.sql` | `start_match`, `begin_countdown`, `open_answers`, `finish_round`, `next_round`, `forfeit`, `touch_seen` |
 | `004_forfeit_rematch_cleanup.sql` | `claim_forfeit`, `leave_match`, `rematch`, `active_room_for`, `abandon_stale_matches`, pg_cron jobs |
 | `005_void_from_picking.sql` | `finish_round` may void an unplayable pair straight from `picking` (the freeze found 6 Oct) |
+| `006`–`011` | accounts, results, friends, matchmaking, 2X Altın, account deletion — see `accounts-and-ranked.md` |
 
 Verify with `smoke_test.py` (14), `smoke_test_flow.py` (26 — drives a whole
 match over HTTP), `smoke_test_004.py` (18), `smoke_test_005.py` (9). `audit.py` reports room counts,

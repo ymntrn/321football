@@ -89,18 +89,23 @@ class RewardedCoinsAd {
               return;
             }
             _ad = ad;
-            ready.value = true;
+            _setReady(true);
           },
           onAdFailedToLoad: (error) {
             debugPrint('rewarded ad failed to load: $error');
-            ready.value = false;
+            _setReady(false);
           },
         ),
       );
     } catch (e) {
       debugPrint('rewarded ad unavailable: $e');
-      ready.value = false;
+      _setReady(false);
     }
+  }
+
+  /// Load callbacks can land after the match screen is gone.
+  void _setReady(bool value) {
+    if (!_disposed) ready.value = value;
   }
 
   /// Plays the ad. True when the reward was earned (the player watched it
@@ -109,7 +114,7 @@ class RewardedCoinsAd {
     final ad = _ad;
     if (ad == null) return false;
     _ad = null;
-    ready.value = false;
+    _setReady(false);
 
     final done = Completer<bool>();
     var earned = false;

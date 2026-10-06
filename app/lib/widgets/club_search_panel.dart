@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../models/models.dart';
 import '../theme/tokens.dart';
+import 'club_crest.dart';
 import 'search_bar_panel.dart';
 
 /// `TAKIMLAR` — the team-picker suggestion panel (Figma 86:190).
 ///
 /// The same shape as the player `ÖNERİLER` panel: first row highlighted with
 /// a green border and a ↵ affordance, the rest quiet with a grey ›. What
-/// differs is the content — a three-letter crest badge instead of an avatar,
+/// differs is the content — the club's two-colour crest instead of an avatar,
 /// and a `Türkiye · Süper Lig` sub-line instead of nationality and years.
 ///
 /// Unlike the player panel this one is NOT merely a display aid: tapping a
@@ -151,53 +152,21 @@ class _ClubRow extends StatelessWidget {
   }
 }
 
-/// The circular three-letter crest stand-in (`BAR`, `BAY`, `BAŞ`).
-///
-/// Real crests are deferred and will not be the clubs' actual badges — the
-/// decision was two stripes in the club's colours, to sidestep the trademark
-/// problem. Until then this is the same deterministic device `club_card.dart`
-/// uses on the board: initials on a colour hashed from the club name, so a
-/// club looks the same everywhere it appears.
+/// The club's crest in a [size] x [size] box: the two-colour shield from
+/// [ClubCrest], as tall as the box.
 class ClubBadge extends StatelessWidget {
   const ClubBadge({super.key, required this.club, this.size = 40});
 
   final Club club;
   final double size;
 
-  /// Deterministic hue from the name. Saturation and lightness are fixed so
-  /// no badge can come out near-white and swallow the letters.
-  Color get _fill {
-    var hash = 0;
-    for (final unit in club.name.codeUnits) {
-      hash = (hash * 31 + unit) & 0x7fffffff;
-    }
-    return HSLColor.fromAHSL(1, (hash % 360).toDouble(), 0.42, 0.38).toColor();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: _fill,
-        shape: BoxShape.circle,
-        border: Border.all(color: T.beyaz030),
-      ),
-      alignment: Alignment.center,
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: size * 0.12),
-          child: Text(
-            club.badgeLetters,
-            style: TextStyle(
-              fontFamily: T.fontUi,
-              fontSize: size * 0.32,
-              color: T.beyaz100,
-            ),
-          ),
-        ),
+      child: Center(
+        child: ClubCrest(name: club.name, id: club.id, size: size / 1.15),
       ),
     );
   }

@@ -17,6 +17,7 @@ here is always a protocol or timing bug and never the bot being bad at
 football.
 """
 import argparse
+import os
 import random
 import sqlite3
 import sys
@@ -141,7 +142,10 @@ def main():
     args = ap.parse_args()
 
     global bot
-    bot = Player()
+    # One saved session per bot name (supabase/.bot_<name>.local, gitignored),
+    # so repeated runs are the same player rather than a new account each time.
+    bot = Player(session=os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                      ".bot_%s.local" % args.name.lower()))
     status, prof = bot.rpc("create_profile", p_username=args.name)
     if status != 200:
         sys.exit("could not create the bot's profile: %s" % prof)

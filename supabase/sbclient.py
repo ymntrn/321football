@@ -44,17 +44,46 @@ def anon_call(method, path, body=None, extra=None):
 
 
 class Player:
-    """One anonymous auth user."""
+    """One anonymous auth user.
 
-    def __init__(self):
+    With `session` (a file path) the user is REUSED across runs: the refresh
+    token is kept in that file, so `bot.py` stays one player instead of
+    leaving a new `Bot#XXXX` on the leaderboard every time it is started.
+    Smoke tests pass nothing and get a fresh user, as before.
+    """
+
+    def __init__(self, session=None):
+        self._session = session
+        if session and self._resume():
+            return
         status, body = _send("POST", "/auth/v1/signup", {},
                              {"apikey": KEY, "Content-Type": "application/json"})
         if status != 200 or not isinstance(body, dict) or "access_token" not in body:
             raise SystemExit(
                 "anonymous sign-in failed (%s): %s\n"
                 "Is 'Allow anonymous sign-ins' on in the dashboard?" % (status, body))
+        self._take(body)
+
+    def _take(self, body):
         self.token = body["access_token"]
         self.id = body["user"]["id"]
+        if self._session and body.get("refresh_token"):
+            with open(self._session, "w") as f:
+                f.write(body["refresh_token"])
+
+    def _resume(self):
+        try:
+            with open(self._session) as f:
+                refresh = f.read().strip()
+        except OSError:
+            return False
+        status, body = _send("POST", "/auth/v1/token?grant_type=refresh_token",
+                             {"refresh_token": refresh},
+                             {"apikey": KEY, "Content-Type": "application/json"})
+        if status != 200 or not isinstance(body, dict) or "access_token" not in body:
+            return False      # expired or revoked: fall back to a new sign-up
+        self._take(body)
+        return True
 
     def call(self, method, path, body=None, extra=None):
         headers = {"apikey": KEY, "Authorization": "Bearer " + self.token,
